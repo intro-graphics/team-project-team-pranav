@@ -72,19 +72,19 @@ class Shadow_Demo extends Scene_Component
       }
     make_control_panel()            // Draw the scene's buttons, setup their actions and keyboard shortcuts, and monitor live measurements.
       { 
-        this.key_triggered_button("Up", ["i"], () => {  // going Up with 'i'
+        this.key_triggered_button("Up", ["w"], () => {  // going Up with 'i'
                 if(this.ud >= -96.8)  // 485 steps max upwards (from starting position) (not 484 because >=)
                   this.ud = this.ud - 0.2;
             });
-        this.key_triggered_button("Down", ["k"], () => {  // going Down with 'k'
+        this.key_triggered_button("Down", ["s"], () => {  // going Down with 'k'
                 if(this.ud <= 4.6)  // 24 steps max downwards
                   this.ud = this.ud + 0.2;
             });
-        this.key_triggered_button("Left", ["j"], () => {  // going Left with 'j'
+        this.key_triggered_button("Left", ["a"], () => {  // going Left with 'j'
                 if(this.lr >= -10.4)  //  53 steps max left
                   this.lr = this.lr - 0.2;
             });
-        this.key_triggered_button("Right", ["l"], () => { // going right with 'l'
+        this.key_triggered_button("Right", ["d"], () => { // going right with 'l'
                 if(this.lr <= 10.4) //  53 steps max right
                   this.lr = this.lr + 0.2;
             });
