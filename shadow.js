@@ -1,7 +1,3 @@
-// cube definition from Assignment 2, can be moved into dependencies.js to improve readability
-
-
-
 window.Shadow_Demo = window.classes.Shadow_Demo =
 class Shadow_Demo extends Scene_Component
   { constructor( context, control_box )     // The scene begins by requesting the camera, shapes, and materials it will need.
@@ -25,7 +21,8 @@ class Shadow_Demo extends Scene_Component
 
                          // Shapes used so far                     
                          sub4: new (Subdivision_Sphere)(4), 
-                         body: new (Cube)()
+                         body: new (Cube)(),
+                         shadow_square: new Square()
                        }
         this.submit_shapes( context, shapes );
         this.materials =
@@ -38,11 +35,13 @@ class Shadow_Demo extends Scene_Component
 
             // materials from Assignment Three
             planets: context.get_instance( Phong_Shader ).material(Color.of(0, 0, 0, 1)),
-            test: context.get_instance( Phong_Shader ).material( Color.of(0, 0, 1, 1), { ambient: 0.2 } )
+            test: context.get_instance( Phong_Shader ).material( Color.of(0, 0, 1, 1), { ambient: 0.2 } ),
+            triangle: context.get_instance( Phong_Shader).material(Color.of(0,0,0,1),{ambient: 1})
+
           }
 
         //this.lights = [ new Light( Vec.of( 5,10,5,1 ), Color.of( 0, 0, 1, 1 ), 100 ) ];
-        this.lights = [new Light(Vec.of(5,10,15,1),Color.of(0,1,1,1),100)];
+        this.lights = [new Light(Vec.of(20,10,15,1),Color.of(0,1,1,1),1000)];
       }
     make_control_panel()            // Draw the scene's buttons, setup their actions and keyboard shortcuts, and monitor live measurements.
       { 
@@ -63,6 +62,43 @@ class Shadow_Demo extends Scene_Component
                   this.lr = this.lr + 0.2;
             });
       }
+    textures()
+    {
+//         var shadowDepthTextureSize = 1024;
+//         var lightVertexGLSL = `
+//             attribute vec3 aVertexPosition;
+
+//             uniform mat4 uPMatrix;
+//             uniform mat4 uMVMatrix;
+
+//             void main (void) 
+//             {
+//                 gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+//             }
+//        `
+        //gotta figure out how to integrate shadows into tiny graphics cause the libraries they use have half of it in tiny graphics and half of it
+        //we have to implement ourselves
+    }
+    draw_shad_map(graphics_state)
+    {
+            //Jacob - TRANSFORMATIONS FOR THE PREBAKED SHADOWS OF THE CLOSEST RIGHT BUILDING
+         let pos = Mat4.identity();
+         pos = pos.times(Mat4.translation([2.5,5.01,10]));
+         pos = pos.times(Mat4.scale([1,1,2]));
+         pos = pos.times(Mat4.translation([1,0,1]));
+         pos = pos.times(Mat4.rotation(Math.PI*1.5,Vec.of(1,0,0)));
+         this.shapes.shadow_square.draw(graphics_state, pos, this.materials.triangle);
+
+           //Jacob - TRANSFORMATIONS FOR THE PREBAKED SHADOWS OF THE CLOSEST LEFT BUILDING
+         let shadow_pos = Mat4.identity();
+         shadow_pos = shadow_pos.times(Mat4.translation([0,0,-15]));
+         shadow_pos = shadow_pos.times(Mat4.translation([2.5,5.01,10]));
+         shadow_pos = shadow_pos.times(Mat4.scale([1,1,2]));
+         shadow_pos = shadow_pos.times(Mat.of( [ 1,0,0,0 ], [ 0,1,0,0 ], [ .75,0,1,0 ], [ 0,0,0,1 ] ));
+         shadow_pos = shadow_pos.times(Mat4.translation([1,0,1]));
+         shadow_pos = shadow_pos.times(Mat4.rotation(Math.PI*1.5,Vec.of(1,0,0)));
+         this.shapes.shadow_square.draw(graphics_state, shadow_pos, this.materials.triangle);
+    }
     display( graphics_state )
       {        
         graphics_state.lights = this.lights;        // Use the lights stored in this.lights.
@@ -110,10 +146,12 @@ class Shadow_Demo extends Scene_Component
         pos = Mat4.identity().times(Mat4.translation([0,5.5,14])).times(Mat4.scale([0.3,0.5,0.3])).times(Mat4.translation([this.lr,0,this.ud]))
         this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(1, 0, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
 
-        pos = Mat4.identity().times(Mat4.translation([5,10,15]));
+        pos = Mat4.identity().times(Mat4.translation([20,10,15]));
         this.shapes.sub4.draw(graphics_state, pos, this.materials.suns);
-
+        
         // you guys can start from here
 
+        //Jacob - draw the shadow maps
+        this.draw_shad_map(graphics_state);
       }
   }
