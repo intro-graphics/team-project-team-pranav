@@ -44,8 +44,6 @@ class Shadow_Demo extends Scene_Component
         context.globals.graphics_state.projection_transform = Mat4.perspective( Math.PI/4, r, .1, 1000 );
         
         const shapes = { // Shapes from Assignment Three
-                         torus:  new Torus( 15, 15 ),
-                         torus2: new ( Torus.prototype.make_flat_shaded_version() )( 15, 15 ),
                          sub1: new (Subdivision_Sphere.prototype.make_flat_shaded_version())(1),
                          sub2: new (Subdivision_Sphere.prototype.make_flat_shaded_version())(2),
                          sub3: new (Subdivision_Sphere)(3),
@@ -60,7 +58,7 @@ class Shadow_Demo extends Scene_Component
             // the only material used so far
             suns: context.get_instance( Phong_Shader ).material( Color.of(1, 0, 0, 1), 
             { 
-              ambient: 1, specularity: 0
+              ambient: .75, specularity: 1
             }),
 
             // materials from Assignment Three
@@ -68,7 +66,8 @@ class Shadow_Demo extends Scene_Component
             test: context.get_instance( Phong_Shader ).material( Color.of(0, 0, 1, 1), { ambient: 0.2 } )
           }
 
-        this.lights = [ new Light( Vec.of( 5,-10,5,1 ), Color.of( 0, 1, 1, 1 ), 1000 ) ];
+        //this.lights = [ new Light( Vec.of( 5,10,5,1 ), Color.of( 0, 0, 1, 1 ), 100 ) ];
+        this.lights = [new Light(Vec.of(5,10,15,1),Color.of(0,1,1,1),1000)];
       }
     make_control_panel()            // Draw the scene's buttons, setup their actions and keyboard shortcuts, and monitor live measurements.
       { 
@@ -93,41 +92,40 @@ class Shadow_Demo extends Scene_Component
       {        
         graphics_state.lights = this.lights;        // Use the lights stored in this.lights.
         const t = graphics_state.animation_time / 1000, dt = graphics_state.animation_delta_time / 1000;
-
         // our position matrix
         let pos = Mat4.identity();
 
         // the road
         pos = pos.times(Mat4.scale([3.5,5,100])).times(Mat4.rotation(Math.PI / 2, Vec.of(0, 1, 0))).times(Mat4.translation([0, 0, 0]));
-        this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(0.5, 0.5, 0.5, 1)} ));
+        this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(0.5, 0.5, 0.5, 1)},{ambient:0,specular:1,gouraud:false} ));
 
         // the grass to the right
         pos = pos.times(Mat4.scale([1,1,8])).times(Mat4.translation([0, 0, 1.125]))
-        this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(0.5, 1, 0.5, 1)} ));
+        this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(0.5, 1, 0.5, 1)},{ambient:0,specular:1,gouraud:false} ));
 
         // the grass to the left
         pos = pos.times(Mat4.translation([0, 0, -2.25]))
-        this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(0.5, 1, 0.5, 1)} ));
+        this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(0.5, 1, 0.5, 1)}, {ambient:0,specular:1,gouraud:false}));
 
         // the cave
         pos = Mat4.identity().times(Mat4.scale([3.5,3.2,3])).times(Mat4.translation([0,1.5,-6]));
-        this.shapes.sub4.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(0.5, 0.25, 0, 1)} ));
+        this.shapes.sub4.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(0.5, 0.25, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
         
         //the cave entrance
         pos = Mat4.identity().times(Mat4.scale([2.5,3,3])).times(Mat4.translation([0,1.3,-5.6]));
-        this.shapes.sub4.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(0, 0, 0, 1)} ));
+        this.shapes.sub4.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(0, 0, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
 
         // the blue building
         pos = Mat4.identity().times(Mat4.translation([6,5,0])).times(Mat4.scale([1.5,2,2]));
-        this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(0.25, 0.9, 1, 1)} ));
+        this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(0.25, 0.9, 1, 1)},{ambient:0,specular:1,gouraud:false} ));
 
         //  the yellow building
         pos = pos.times(Mat4.translation([-8,0,4]))
-        this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(1, 1, 0.5, 1)} ));
+        this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(1, 1, 0.5, 1)},{ambient:0,specular:1,gouraud:false} ));
 
         // the gray building
         pos = pos.times(Mat4.translation([8,0,2]))
-        this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(0.5, 0.5, 0.5, 1)} ));
+        this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(0.5, 0.5, 0.5, 1)},{ambient:0,specular:1,gouraud:false} ));
 
         // the skybox (can be seen if you tilt the camera)
         pos = Mat4.identity().times(Mat4.scale([100,100,100]))
@@ -135,9 +133,10 @@ class Shadow_Demo extends Scene_Component
 
         // the character
         pos = Mat4.identity().times(Mat4.translation([0,5.5,14])).times(Mat4.scale([0.3,0.5,0.3])).times(Mat4.translation([this.lr,0,this.ud]))
-        this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(1, 0, 0, 1)} ));
+        this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(1, 0, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
 
-        pos = Mat4.identity()
+        pos = Mat4.identity().times(Mat4.translation([5,10,15]));
+        this.shapes.sub4.draw(graphics_state, pos, this.materials.suns);
 
         // you guys can start from here
 
