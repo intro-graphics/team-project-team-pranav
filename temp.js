@@ -10,6 +10,8 @@ class Shadow_Demo extends Scene_Component
 
         this.ud = 0;  // the up-down position of the character
         this.lr = 0; // the left-right position of the character
+        this.extend_shadow = false; //Jacob - extend shadow skill is turned off
+        this.counter = 0; //Jacob - counts to set how long extend_shadow lasts
 
         const r = context.width/context.height;
         context.globals.graphics_state.projection_transform = Mat4.perspective( Math.PI/4, r, .1, 1000 );
@@ -36,12 +38,10 @@ class Shadow_Demo extends Scene_Component
             // materials from Assignment Three
             planets: context.get_instance( Phong_Shader ).material(Color.of(0, 0, 0, 1)),
             test: context.get_instance( Phong_Shader ).material( Color.of(0, 0, 1, 1), { ambient: 0.2 } ),
-            triangle: context.get_instance( Phong_Shader).material(Color.of(0,0,0,1),{ambient: 1})
+            shadow_mat: context.get_instance( Phong_Shader).material(Color.of(0,0,0,1),{ambient: 1})
 
           }
-
-        //this.lights = [ new Light( Vec.of( 5,10,5,1 ), Color.of( 0, 0, 1, 1 ), 100 ) ];
-        this.lights = [new Light(Vec.of(20,10,15,1),Color.of(0,1,1,1),1000)];
+        this.lights = [new Light(Vec.of(20,10,15,1),Color.of(0,1,1,1),1000)];  //Jacob - set light at where the Sun is
       }
     make_control_panel()            // Draw the scene's buttons, setup their actions and keyboard shortcuts, and monitor live measurements.
       { 
@@ -61,24 +61,14 @@ class Shadow_Demo extends Scene_Component
                 if(this.lr <= 10.4) //  53 steps max right
                   this.lr = this.lr + 0.2;
             });
+        this.key_triggered_button("Right", ["d"], () => { // going right with 'l'
+                if(this.lr <= 10.4) //  53 steps max right
+                  this.lr = this.lr + 0.2;
+            });
+        this.key_triggered_button("Extend_Shadow", ["q"], () => { // going right with 'l'
+                this.extend_shadow = true;
+            });
       }
-    textures()
-    {
-//         var shadowDepthTextureSize = 1024;
-//         var lightVertexGLSL = `
-//             attribute vec3 aVertexPosition;
-
-//             uniform mat4 uPMatrix;
-//             uniform mat4 uMVMatrix;
-
-//             void main (void) 
-//             {
-//                 gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
-//             }
-//        `
-        //gotta figure out how to integrate shadows into tiny graphics cause the libraries they use have half of it in tiny graphics and half of it
-        //we have to implement ourselves
-    }
     draw_shad_map(graphics_state)
     {
             //Jacob - TRANSFORMATIONS FOR THE PREBAKED SHADOWS OF THE CLOSEST RIGHT BUILDING
@@ -87,7 +77,7 @@ class Shadow_Demo extends Scene_Component
          pos = pos.times(Mat4.scale([1,1,2]));
          pos = pos.times(Mat4.translation([1,0,1]));
          pos = pos.times(Mat4.rotation(Math.PI*1.5,Vec.of(1,0,0)));
-         this.shapes.shadow_square.draw(graphics_state, pos, this.materials.triangle);
+         this.shapes.shadow_square.draw(graphics_state, pos, this.materials.shadow_mat);
 
            //Jacob - TRANSFORMATIONS FOR THE PREBAKED SHADOWS OF THE CLOSEST LEFT BUILDING
          let shadow_pos = Mat4.identity();
@@ -97,14 +87,12 @@ class Shadow_Demo extends Scene_Component
          shadow_pos = shadow_pos.times(Mat.of( [ 1,0,0,0 ], [ 0,1,0,0 ], [ .75,0,1,0 ], [ 0,0,0,1 ] ));
          shadow_pos = shadow_pos.times(Mat4.translation([1,0,1]));
          shadow_pos = shadow_pos.times(Mat4.rotation(Math.PI*1.5,Vec.of(1,0,0)));
-         this.shapes.shadow_square.draw(graphics_state, shadow_pos, this.materials.triangle);
+         this.shapes.shadow_square.draw(graphics_state, shadow_pos, this.materials.shadow_mat);
     }
-    display( graphics_state )
-      {        
-        graphics_state.lights = this.lights;        // Use the lights stored in this.lights.
-        const t = graphics_state.animation_time / 1000, dt = graphics_state.animation_delta_time / 1000;
-        // our position matrix
-        let pos = Mat4.identity();
+    //Pranav's code for the world
+    draw_map(graphics_state)
+    {
+         let pos = Mat4.identity();
 
         // the road
         pos = pos.times(Mat4.scale([3.5,5,100])).times(Mat4.rotation(Math.PI / 2, Vec.of(0, 1, 0))).times(Mat4.translation([0, 0, 0]));
@@ -141,14 +129,49 @@ class Shadow_Demo extends Scene_Component
         // the skybox (can be seen if you tilt the camera)
         pos = Mat4.identity().times(Mat4.scale([100,100,100]))
         this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(0.25, 0.9, 1, 1)} ));
-
-        // the character
-        pos = Mat4.identity().times(Mat4.translation([0,5.5,14])).times(Mat4.scale([0.3,0.5,0.3])).times(Mat4.translation([this.lr,0,this.ud]))
-        this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(1, 0, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
-
+        
+        //Jacob - This is the sun 
         pos = Mat4.identity().times(Mat4.translation([20,10,15]));
         this.shapes.sub4.draw(graphics_state, pos, this.materials.suns);
-        
+    }
+    draw_char(graphics_state, time) //Jacob - draw char and their skills
+    {
+        if(this.counter > 0)
+            this.counter++;
+        let pos = Mat4.identity();
+        // Pranav's character, translate to origin, scale then move to wherever you want
+        pos = Mat4.identity().times(Mat4.translation([0,5,14]))
+            .times(Mat4.translation([this.lr,0,this.ud]))
+            .times(Mat4.scale([0.3,0.5,0.3]))
+            .times(Mat4.translation([1,1,1]));
+        this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(1, 0, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
+
+        //Jacob - If skill extend_shadow is on, draw the shadow in front of the character, order of transformations is to move to origin, scale, rotate
+        //then move to where the character is
+        if(this.extend_shadow || (this.counter < 120 && this.counter > 0))
+        {
+            if(this.extend_shadow) //Jacob - if extend_shadow is pressed set counter to 1
+                this.counter = 1;
+            //Jacob - transformation for the extend_shadow skill
+            pos = Mat4.identity();
+            pos = pos.times(Mat4.translation([0,5.01,12])).times(Mat4.translation([this.lr,0,this.ud]))
+            pos = pos.times(Mat4.rotation(Math.PI/2,Vec.of(1,0,0)));
+            pos = pos.times(Mat4.scale([.3,1,1]));
+            pos = pos.times(Mat4.translation([1,1,0]));
+            this.shapes.shadow_square.draw(graphics_state, pos, this.materials.shadow_mat);
+        }
+        else
+            this.counter = 0;               //Jacob - if counter goes over 120 or is 0, reset back to 0
+        this.extend_shadow = false;         //set extend_shadow back to false
+    }
+    display( graphics_state )
+      {        
+        graphics_state.lights = this.lights;        // Use the lights stored in this.lights.
+        const t = graphics_state.animation_time / 1000, dt = graphics_state.animation_delta_time / 1000;
+        // our position matrix
+   
+        this.draw_map(graphics_state);
+        this.draw_char(graphics_state, t);
         // you guys can start from here
 
         //Jacob - draw the shadow maps
