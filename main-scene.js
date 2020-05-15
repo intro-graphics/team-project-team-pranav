@@ -12,7 +12,8 @@ class Shadow_Demo extends Scene_Component
         this.lr = 0; // the left-right position of the character
         this.extend_shadow = false; //Jacob - extend shadow skill is turned off
         this.counter = 0; //Jacob - counts to set how long extend_shadow lasts
-
+        this.player_in_shadow = false;//Suvir- tells if in shadow or not
+        this.charHealth = 1000000;//Suvir- test to draw the character
         const r = context.width/context.height;
         context.globals.graphics_state.projection_transform = Mat4.perspective( Math.PI/4, r, .1, 1000 );
         
@@ -132,6 +133,17 @@ class Shadow_Demo extends Scene_Component
     }
     draw_char(graphics_state, time) //Jacob - draw char and their skills
     {
+
+      let shadowPos = Mat4.identity();
+          shadowPos = shadowPos.times(Mat4.translation([2.5,5.01,10]));
+          shadowPos = shadowPos.times(Mat4.scale([1,1,2]));
+          shadowPos = shadowPos.times(Mat4.translation([1,0,1]));
+          shadowPos = shadowPos.times(Mat4.rotation(Math.PI*1.5,Vec.of(1,0,0)));
+          //console.log("shadowPos: "+ shadowPos);
+          //pos[0][3] argument is left right
+          //2.5<x<4.2
+       //pos[2][3] argument is up down
+          //10.5<y<13.7
         if(this.counter > 0)
             this.counter++;
         let pos = Mat4.identity();
@@ -140,8 +152,20 @@ class Shadow_Demo extends Scene_Component
             .times(Mat4.translation([this.lr,0,this.ud]))
             .times(Mat4.scale([0.3,0.5,0.3]))
             .times(Mat4.translation([1,1,1]));
-        this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(1, 0, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
-
+        //console.log("x axis: "+ pos[0][3]);
+        //console.log("y axis: "+ pos[2][3]);
+         this.drawTheChar=true;
+        if(pos[0][3]<2.5||pos[0][3]>4.2||pos[2][3]<10.5||pos[2][3]>13.7)
+        {
+            this.charHealth-=1
+            this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(1, 0, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
+        }
+        else
+        {
+            this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(1, 0, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
+          this.charHealth += 1;
+        }
+        console.log("charHealth: "+this.charHealth);
         //Jacob - If skill extend_shadow is on, draw the shadow in front of the character, order of transformations is to move to origin, scale, rotate
         //then move to where the character is
         if(this.extend_shadow || (this.counter < 120 && this.counter > 0))
@@ -167,9 +191,10 @@ class Shadow_Demo extends Scene_Component
         // our position matrix
    
         this.draw_map(graphics_state);
+       
         this.draw_char(graphics_state, t);
         // you guys can start from here
-
+        
         //Jacob - draw the shadow maps
         this.draw_shad_map(graphics_state);
       }
