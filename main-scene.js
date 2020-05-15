@@ -61,10 +61,6 @@ class Shadow_Demo extends Scene_Component
                 if(this.lr <= 10.4) //  53 steps max right
                   this.lr = this.lr + 0.2;
             });
-        this.key_triggered_button("Right", ["d"], () => { // going right with 'l'
-                if(this.lr <= 10.4) //  53 steps max right
-                  this.lr = this.lr + 0.2;
-            });
         this.key_triggered_button("Extend_Shadow", ["q"], () => { // going right with 'l'
                 this.extend_shadow = true;
             });
