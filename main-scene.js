@@ -152,20 +152,28 @@ class Shadow_Demo extends Scene_Component
             .times(Mat4.translation([this.lr,0,this.ud]))
             .times(Mat4.scale([0.3,0.5,0.3]))
             .times(Mat4.translation([1,1,1]));
-        //console.log("x axis: "+ pos[0][3]);
-        //console.log("y axis: "+ pos[2][3]);
+        console.log("x axis: "+ (pos[0][3]));
+        console.log("y axis: "+ pos[2][3]);
          this.drawTheChar=true;
-        if(pos[0][3]<2.5||pos[0][3]>4.2||pos[2][3]<10.5||pos[2][3]>13.7)
+         if(pos[0][3]>2.9&&pos[0][3]<4.1&&pos[2][3]<pos[0][3]-3.6&&pos[2][3]>pos[0][3]-5.8)
+         {
+          console.log("in shadow 2");
+             this.charHealth+=1
+             this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(1, 0, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
+         }
+        else if(!(pos[0][3]<2.5||pos[0][3]>4.2||pos[2][3]<10.5||pos[2][3]>13.7))
         {
-            this.charHealth-=1
+            console.log("in shadow 1")
+            this.charHealth+=1
             this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(1, 0, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
         }
         else
         {
+          console.log(" in no shadow ");
             this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(1, 0, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
-          this.charHealth += 1;
+          this.charHealth -= 1;
         }
-        console.log("charHealth: "+this.charHealth);
+        //console.log("charHealth: "+this.charHealth);
         //Jacob - If skill extend_shadow is on, draw the shadow in front of the character, order of transformations is to move to origin, scale, rotate
         //then move to where the character is
         if(this.extend_shadow || (this.counter < 120 && this.counter > 0))
