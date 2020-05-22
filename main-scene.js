@@ -7,13 +7,22 @@ class Shadow_Demo extends Scene_Component
 
         context.globals.graphics_state.camera_transform = Mat4.look_at( Vec.of( 0,10,20 ), Vec.of( 0,0,0 ), Vec.of( 0,1,0 ) );
         this.initial_camera_location = Mat4.inverse( context.globals.graphics_state.camera_transform );
-
+        
+        // Pranav's variables
+        this.drawTheChar = true;    // whether to trigger the draw_char function
+        this.boom = false;  // whether to trigger an explosion during the draw_char function
+        this.initial_blow = 0;  // the time you died
+        this.move_dist = 0.2;   // the movement distance of the character in each axis
         this.ud = 0;  // the up-down position of the character
         this.lr = 0; // the left-right position of the character
+        this.maxHealth = 500;   // health shouldn't be able to rise higher than this, should be equal to charHealth at the start
+        this.redC = 1; // if in shadow, reduce to 0.5 and make it look darker
+
         this.extend_shadow = false; //Jacob - extend shadow skill is turned off
         this.counter = 0; //Jacob - counts to set how long extend_shadow lasts
         this.player_in_shadow = false;//Suvir- tells if in shadow or not
-        this.charHealth = 1000000;//Suvir- test to draw the character
+        this.charHealth = 500; //Suvir- health of the character
+
         const r = context.width/context.height;
         context.globals.graphics_state.projection_transform = Mat4.perspective( Math.PI/4, r, .1, 1000 );
         
@@ -42,24 +51,27 @@ class Shadow_Demo extends Scene_Component
             shadow_mat: context.get_instance( Phong_Shader).material(Color.of(0,0,0,1),{ambient: 1})
 
           }
-        this.lights = [new Light(Vec.of(20,10,15,1),Color.of(0,1,1,1),1000)];  //Jacob - set light at where the Sun is
+        this.lights = [new Light(Vec.of(20,10,15,1),Color.of(0,1,1,1),1000)];  // Jacob - set light at where the Sun is
       }
-    make_control_panel()            // Draw the scene's buttons, setup their actions and keyboard shortcuts, and monitor live measurements.
-      { 
+    make_control_panel()            // Pranav - Draw the scene's buttons, setup their actions and keyboard shortcuts, and monitor live measurements.
+      { /* 05-22-20 - Pranav
+            if the charHealth is less than 0, the character is dead, so don't move then
+            also, this.move_dist is the constant of move_dist, if it's value is changed, the max steps in each direction must be changed too 
+        */
         this.key_triggered_button("Up", ["w"], () => {  // going Up with 'i'
-                if(this.ud >= -96.8)  // 485 steps max upwards (from starting position) (not 484 because >=)
+                if(this.ud >= (-146 * this.move_dist) && this.charHealth > 0)  // 146 steps max upwards (from starting position) (not 484 because >=)
                   this.ud = this.ud - 0.2;
             });
         this.key_triggered_button("Down", ["s"], () => {  // going Down with 'k'
-                if(this.ud <= 4.6)  // 24 steps max downwards
+                if(this.ud <= (6 * this.move_dist) && this.charHealth > 0)  // 6 steps max downwards
                   this.ud = this.ud + 0.2;
             });
         this.key_triggered_button("Left", ["a"], () => {  // going Left with 'j'
-                if(this.lr >= -10.4)  //  53 steps max left
+                if(this.lr >= (-17 * this.move_dist) && this.charHealth > 0)  //  17 steps max left
                   this.lr = this.lr - 0.2;
             });
         this.key_triggered_button("Right", ["d"], () => { // going right with 'l'
-                if(this.lr <= 10.4) //  53 steps max right
+                if(this.lr <= (13 * this.move_dist) && this.charHealth > 0) //  13 steps max right
                   this.lr = this.lr + 0.2;
             });
         this.key_triggered_button("Extend_Shadow", ["q"], () => { // going right with 'l'
@@ -86,7 +98,7 @@ class Shadow_Demo extends Scene_Component
          shadow_pos = shadow_pos.times(Mat4.rotation(Math.PI*1.5,Vec.of(1,0,0)));
          this.shapes.shadow_square.draw(graphics_state, shadow_pos, this.materials.shadow_mat);
     }
-    //Pranav's code for the world
+    // Pranav's code for the world
     draw_map(graphics_state)
     {
          let pos = Mat4.identity();
@@ -133,6 +145,16 @@ class Shadow_Demo extends Scene_Component
     }
     draw_char(graphics_state, time) //Jacob - draw char and their skills
     {
+      /* 05-22-20 - Pranav
+            this.boom becoming true begins the blow_up sequence, which leads to death. We want to see the character disappear in the explosion,
+            so if the value returned is less than 100, keep drawing them. Since they can't move once their health is less than 0, we don't have to
+            worry that the character will move back into shadows to replenish health.
+      */
+      if(this.boom)
+      {
+          if(this.blow_up(graphics_state, time) > 100)
+            return;
+      }
 
       let shadowPos = Mat4.identity();
           shadowPos = shadowPos.times(Mat4.translation([2.5,5.01,10]));
@@ -154,25 +176,37 @@ class Shadow_Demo extends Scene_Component
             .times(Mat4.translation([1,1,1]));
         console.log("x axis: "+ (pos[0][3]));
         console.log("y axis: "+ pos[2][3]);
-         this.drawTheChar=true;
-         if(pos[0][3]>2.9&&pos[0][3]<4.1&&pos[2][3]<pos[0][3]-3.6&&pos[2][3]>pos[0][3]-5.8)
-         {
-          console.log("in shadow 2");
-             this.charHealth+=1
-             this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(1, 0, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
-         }
+
+        if(pos[0][3]>2.9&&pos[0][3]<4.1&&pos[2][3]<pos[0][3]-3.6&&pos[2][3]>pos[0][3]-5.8)
+        {
+            console.log("in shadow 2");
+            if(this.maxHealth > this.charHealth)    // don't go above max health
+                this.charHealth+=1
+            this.redC = 0.5;    // in shadow, then darken color
+        }
         else if(!(pos[0][3]<2.5||pos[0][3]>4.2||pos[2][3]<10.5||pos[2][3]>13.7))
         {
             console.log("in shadow 1")
-            this.charHealth+=1
-            this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(1, 0, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
+            if(this.maxHealth > this.charHealth)    // don't go above max health
+                this.charHealth+=1
+            this.redC = 0.5;    // in shadow, then darken color
         }
         else
         {
-          console.log(" in no shadow ");
-            this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(1, 0, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
+          console.log("in no shadow");
+          this.redC = 1;    // not in shadow, same color
           this.charHealth -= 1;
         }
+
+        if(this.charHealth <= 0 && !this.boom)  // if the charHealth is lower than 0, turn on this.boom so that the explosion will start
+                                                // this has to only happen when boom is false, otherwise, initial_blow will keep being reset, glitching the explosion 
+        {
+            this.boom = true;
+            this.initial_blow = time;
+            return;
+        }
+
+        this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(this.redC, 0, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
         //console.log("charHealth: "+this.charHealth);
         //Jacob - If skill extend_shadow is on, draw the shadow in front of the character, order of transformations is to move to origin, scale, rotate
         //then move to where the character is
@@ -192,15 +226,47 @@ class Shadow_Demo extends Scene_Component
             this.counter = 0;               //Jacob - if counter goes over 120 or is 0, reset back to 0
         this.extend_shadow = false;         //set extend_shadow back to false
     }
+
+    blow_up(graphics_state, time)   // 05-22-20 Pranav - Added this to create an explosion, if you need something changed, let me know, don't change urself
+                                    // this function is triggered through draw_char if boom has been made true
+    {
+        let boom_pos = Mat4.identity();
+        // Pranav's character, translate to origin, scale then move to wherever you want
+        boom_pos = Mat4.identity().times(Mat4.translation([0.4,5,14]))
+            .times(Mat4.translation([this.lr,0,this.ud]));
+        
+        // console.log("This is", time);
+        // console.log("That is", this.initial_blow);
+        let scaleT = ((time - this.initial_blow)*100) % 200;
+        let col = Math.sin(Math.PI * 0.005 * scaleT);
+        let big = 2 * col;
+
+        boom_pos = boom_pos.times(Mat4.scale([big, big, big]));
+        this.shapes.sub4.draw(graphics_state, boom_pos, this.materials.suns.override( {color: Color.of(1, (0.5*col) , 0, 1), diffusivity:0, specularity:0} ));
+        
+        if( (time - this.initial_blow)*100 >= 200 )
+        {
+            this.drawTheChar = false;   // after the explosion is done, don't draw the character again
+            return 200;
+        }
+
+        return scaleT;
+    }
+
     display( graphics_state )
       {        
         graphics_state.lights = this.lights;        // Use the lights stored in this.lights.
         const t = graphics_state.animation_time / 1000, dt = graphics_state.animation_delta_time / 1000;
         // our position matrix
-   
+
+        // console.log(this.ud)
+        // console.log(this.lr)
+        console.log(this.charHealth);
+
         this.draw_map(graphics_state);
        
-        this.draw_char(graphics_state, t);
+       if(this.drawTheChar) // 05-22-20 Pranav - If you're dead, don't try and draw stuff
+            this.draw_char(graphics_state, t);
         // you guys can start from here
         
         //Jacob - draw the shadow maps
