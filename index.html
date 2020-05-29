@@ -1,5 +1,6 @@
 <!-- Graphics Example Code.  index.html - The web page document containing the canvas (drawing surface), that launches your javascript files. //-->
 <!DOCTYPE html> <html> <head> <meta charset="UTF-8"/> <link rel="icon" href="assets/fav.ico">
+
 <script> window.tiny_graphics = {};             // Store all our JavaScipt code inside of classes here.
          window.classes = {}                    
          </script>        
@@ -8,8 +9,7 @@
 <script src=   "main-scene.js" ></script>
 <style>
   * { font-family: monospace }
-  body { background: DarkGray }
-  div { background: white }
+  body { background: DarkGray; margin:0; }
   canvas { width: 1080px; height: 600px; margin-bottom:-3px }
   .canvas-widget { width: 1080px; background: DimGray }
   table { border-collapse: collapse; display:block; overflow-x: auto; }
@@ -28,10 +28,21 @@
   .link { text-decoration:underline; cursor: pointer }
   .show { transform: scaleY(1); height:200px; overflow:auto }
   .hide { transform: scaleY(0); height:0px; overflow:hidden  }
+  
+  .container { position: relative; }  
+  #overlay { position: absolute; left: 10px; top: 10px; background-color: rgba(0, 0, 0, 0.7); color: white; font-family: monospace; padding: 1em; }
+}
+}
 </style>
 </head><body>       <!-- Begin typing the next of your web page here. //-->
 
-<div id="main-canvas" class="canvas-widget"></div>
+<div class="container">
+	<div id="overlay">
+		<div>Health: <span id="health"></span></div>
+	</div>
+	<div id="main-canvas" class="canvas-widget"></div>
+</div>
+
 <script> "use strict"     // ********************* THE ENTRY POINT OF YOUR WHOLE PROGRAM STARTS HERE ********************* 
                                            // Use this code to embed a widget into any web page.  The widget inclues a 3D WebGL area
                                            // (an HTML canvas) and various panels of controls.

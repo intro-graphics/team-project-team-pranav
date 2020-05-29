@@ -23,6 +23,12 @@ class Shadow_Demo extends Scene_Component
         this.player_in_shadow = false;//Suvir- tells if in shadow or not
         this.charHealth = 500; //Suvir- health of the character
 
+		// Chang Chun's UI variables, find elements in the HTML and create nodes to store values
+		this.healthElement = document.querySelector("#health");
+		this.healthNode = document.createTextNode("");
+		this.healthElement.appendChild(this.healthNode);
+		this.healthNode.nodeValue = this.charHealth;
+
         const r = context.width/context.height;
         context.globals.graphics_state.projection_transform = Mat4.perspective( Math.PI/4, r, .1, 1000 );
         
@@ -252,6 +258,12 @@ class Shadow_Demo extends Scene_Component
 
         return scaleT;
     }
+	
+		// Chang Chun's code for updating the UI
+	update_UI()
+		{
+			this.healthNode.nodeValue = this.charHealth;
+		}
 
     display( graphics_state )
       {        
@@ -271,5 +283,6 @@ class Shadow_Demo extends Scene_Component
         
         //Jacob - draw the shadow maps
         this.draw_shad_map(graphics_state);
+		this.update_UI()
       }
   }
