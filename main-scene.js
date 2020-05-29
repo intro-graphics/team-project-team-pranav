@@ -31,7 +31,7 @@ class Shadow_Demo extends Scene_Component
 		this.healthNode.nodeValue = "♥♥♥♥♥";
 		
 		// variables to govern the glow of the hearts
-		this.healthGlowFrames = (this.charHealth/100).toFixed(0);
+		this.healthGlowFrames = Math.ceil(this.charHealth/100);
 		this.healthGlow = 10;
 		this.healthBrighten = false;
 
@@ -268,7 +268,7 @@ class Shadow_Demo extends Scene_Component
 		// Chang Chun's code for updating the UI
 	update_UI()
 		{
-			var numBars = (this.charHealth/100).toFixed(0);
+			var numBars = Math.ceil(this.charHealth/100);
 			if ( numBars < 0 )
 				numBars = 0;
 			var BarsText = "";
