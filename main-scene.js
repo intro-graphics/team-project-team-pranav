@@ -27,7 +27,7 @@ class Shadow_Demo extends Scene_Component
 		this.healthElement = document.querySelector("#health");
 		this.healthNode = document.createTextNode("");
 		this.healthElement.appendChild(this.healthNode);
-		this.healthNode.nodeValue = this.charHealth;
+		this.healthNode.nodeValue = "█████";
 
         const r = context.width/context.height;
         context.globals.graphics_state.projection_transform = Mat4.perspective( Math.PI/4, r, .1, 1000 );
@@ -262,7 +262,13 @@ class Shadow_Demo extends Scene_Component
 		// Chang Chun's code for updating the UI
 	update_UI()
 		{
-			this.healthNode.nodeValue = this.charHealth;
+			var numBars = this.charHealth/100;
+			if ( numBars < 0 )
+				numBars = 0;
+			var BarsText = "";
+			for ( var i = 0; i < numBars; i++ )
+				BarsText += "█";
+			this.healthNode.nodeValue = BarsText;
 		}
 
     display( graphics_state )
