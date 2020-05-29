@@ -24,10 +24,16 @@ class Shadow_Demo extends Scene_Component
         this.charHealth = 500; //Suvir- health of the character
 
 		// Chang Chun's UI variables, find elements in the HTML and create nodes to store values
+		// grabs the health text
 		this.healthElement = document.querySelector("#health");
 		this.healthNode = document.createTextNode("");
 		this.healthElement.appendChild(this.healthNode);
 		this.healthNode.nodeValue = "♥♥♥♥♥";
+		
+		// variables to govern the glow of the hearts
+		this.healthGlowFrames = (this.charHealth/100).toFixed(0);
+		this.healthGlow = 10;
+		this.healthBrighten = false;
 
         const r = context.width/context.height;
         context.globals.graphics_state.projection_transform = Mat4.perspective( Math.PI/4, r, .1, 1000 );
@@ -262,8 +268,7 @@ class Shadow_Demo extends Scene_Component
 		// Chang Chun's code for updating the UI
 	update_UI()
 		{
-			var numBars = this.charHealth/100;
-			numBars.toFixed(0);
+			var numBars = (this.charHealth/100).toFixed(0);
 			if ( numBars < 0 )
 				numBars = 0;
 			var BarsText = "";
@@ -271,6 +276,24 @@ class Shadow_Demo extends Scene_Component
 			for ( var i = 0; i < numBars; i++ )
 				BarsText += "♥";
 			this.healthNode.nodeValue = BarsText;
+			
+			this.healthGlowFrames--;
+			
+			if (this.healthGlowFrames == 0)
+			{
+				if (this.healthGlow == 10)
+					this.healthBrighten = false;
+				else if (this.healthGlow == 0)
+					this.healthBrighten = true;
+				if ( this.healthBrighten )
+					this.healthGlow++;
+				else 
+					this.healthGlow--;
+				this.healthElement.style.textShadow = "0px 0px " + this.healthGlow + "px red" + ",0px 0px " + this.healthGlow + "px red" + ",0px 0px " + this.healthGlow + "px red";
+			
+				this.healthGlowFrames = numBars;
+			}
+			
 		}
 
     display( graphics_state )
