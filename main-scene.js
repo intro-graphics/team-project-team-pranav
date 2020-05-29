@@ -27,7 +27,7 @@ class Shadow_Demo extends Scene_Component
 		this.healthElement = document.querySelector("#health");
 		this.healthNode = document.createTextNode("");
 		this.healthElement.appendChild(this.healthNode);
-		this.healthNode.nodeValue = "█████";
+		this.healthNode.nodeValue = "♥♥♥♥♥";
 
         const r = context.width/context.height;
         context.globals.graphics_state.projection_transform = Mat4.perspective( Math.PI/4, r, .1, 1000 );
@@ -263,11 +263,13 @@ class Shadow_Demo extends Scene_Component
 	update_UI()
 		{
 			var numBars = this.charHealth/100;
+			numBars.toFixed(0);
 			if ( numBars < 0 )
 				numBars = 0;
 			var BarsText = "";
+			var LostBarsText = "";
 			for ( var i = 0; i < numBars; i++ )
-				BarsText += "█";
+				BarsText += "♥";
 			this.healthNode.nodeValue = BarsText;
 		}
 

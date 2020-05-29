@@ -30,8 +30,10 @@
   .hide { transform: scaleY(0); height:0px; overflow:hidden  }
   
   .container { position: relative; }  
-  #overlay { position: absolute; left: 10px; top: 10px; background-color: rgba(0, 0, 0, 0.7); color: white; font-family: monospace; padding: 1em; }
-  #health { color:red }
+  .absolutediv { position: absolute }
+  #overlay { position: absolute; left: 10px; top: 10px; background-color: rgba(0, 0, 0, 0.7); color: white; font-family: monospace; padding: 1em; font-size: 16px }
+  #health { position: absolute; color:red; letter-spacing: 5px; }
+  #losthealth {  color:black; letter-spacing: 5px; }
 }
 }
 </style>
@@ -39,7 +41,8 @@
 
 <div class="container">
 	<div id="overlay">
-		<div>Health: <span id="health"></span></div>
+		<div class="absolutediv">Health&nbsp<span id="health"></span></div>
+		<div id="absolutediv">Health&nbsp<span id="losthealth">♥♥♥♥♥</span></div>
 	</div>
 	<div id="main-canvas" class="canvas-widget"></div>
 </div>
