@@ -1,305 +1,353 @@
 <!-- Graphics Example Code.  index.html - The web page document containing the canvas (drawing surface), that launches your javascript files. //-->
 <!DOCTYPE html>
 <html>
-<head>
-	<meta charset="UTF-8">
-	<link href="assets/fav.ico" rel="icon">
-	<script>
-	window.tiny_graphics = {};             // Store all our JavaScipt code inside of classes here.
-	        window.classes = {}                    
-	</script>
-	<script src="tiny-graphics.js">
-	</script><!--  Javascript "include" files.  Any code in them gets executed as part of the page loading. //-->
+	<head>
+		<meta charset="UTF-8">
+		<link href="assets/fav.ico" rel="icon">
+		<script>
+			window.tiny_graphics = {};             // Store all our JavaScipt code inside of classes here.
+			        window.classes = {}                    
+		</script>
+		<script src="tiny-graphics.js"></script><!--  Javascript "include" files.  Any code in them gets executed as part of the page loading. //-->
+		<script src="dependencies.js"></script>
+		<script src="main-scene.js"></script>
+		<script src="shadow_shader.js"></script>
+		<style>
+			* {
+				font-family: monospace
+			}
 
-	<script src="dependencies.js">
-	</script>
-	<script src="main-scene.js">
-	</script>
-	<script src="shadow_shader.js">
-	</script>
-	<style>
-	 * {
-	 	font-family: monospace
-	 }
-	 body {
-	 	background: DarkGray;
-	 	margin: 0;
-	 }
-	 canvas {
-	 	width: 1080px;
-	 	height: 600px;
-	 	margin-bottom: -3px
-	 }
-	 .canvas-widget {
-	 	width: 1080px;
-	 	background: DimGray
-	 }
-	 table {
-	 	border-collapse: collapse;
-	 	display: block;
-	 	overflow-x: auto;
-	 }
-	 table.control-box {
-	 	width: 1080px;
-	 	border: 0;
-	 	margin: 0;
-	 	max-height: 380px;
-	 	transition: .5s;
-	 	overflow-y: scroll;
-	 	background: DimGray
-	 }
-	 table.control-box:hover {
-	 	max-height: 500px
-	 }
-	 table.control-box td {
-	 	overflow: hidden;
-	 	border: 0;
-	 	background: DimGray;
-	 	border-radius: 30px
-	 }
-	 table.control-box td .control-div {
-	 	background: #EEEEEE;
-	 	height: 338px;
-	 	padding: 5px 5px 5px 30px;
-	 	box-shadow: 25px 0px 60px -15px inset
-	 }
-	 table.control-box td * {
-	 	background: transparent
-	 }
-	 table.control-box .control-div td {
-	 	border-radius: unset
-	 }
-	 table.control-box .control-title {
-	 	padding: 7px 40px;
-	 	color: white;
-	 	background: DarkSlateGray;
-	 	box-shadow: 25px 0px 70px -15px inset black
-	 }
-	 .live_string {
-	 	display: inline-block;
-	 	background: unset
-	 }
-	 table, th, td {
-	 	border: 2px solid black;
-	 	vertical-align: top;
-	 	white-space: nowrap
-	 }
-	 button {
-	 	background: #4C9F50;
-	 	color: white;
-	 	padding: 6px;
-	 	border-radius: 9px;
-	 	box-shadow: 4px 6px 16px 0px rgba(0, 0, 0, 0.3);
-	 	transition: background .3s, transform .3s
-	 }
-	 button:hover, button:focus {
-	 	transform: scale(1.3);
-	 	color: gold
-	 }
-	 .link {
-	 	text-decoration: underline;
-	 	cursor: pointer
-	 }
-	 .show {
-	 	transform: scaleY(1);
-	 	height: 200px;
-	 	overflow: auto
-	 }
-	 .hide {
-	 	transform: scaleY(0);
-	 	height: 0px;
-	 	overflow: hidden
-	 }
-	 @keyframes red-pulse {
-	 	0% {
-	 		text-shadow: 0 0 0px red;
-	 	}
-	 	100% {
-	 		text-shadow: 0 0 5px red, 0 0 5px red, 0 0 7px red, 0 0 10px red;
-	 	}
-	 }
-	 @keyframes white-pulse {
-	 	0% {
-	 		text-shadow: 0 0 0px white;
-	 	}
-	 	100% {
-	 		text-shadow: 0 0 5px white, 0 0 20px white;
-	 	}
-	 }
-	 .container {
-	 	position: relative;
-	 	width: 1080px;
-	 	height?: 600px;
-	 	margin-bottom: -3px
-	 }
-	 #titlescreen {
-	 	background-color: black;
-	 	border: black;
-	 	position: absolute;
-	 	width: 1080px;
-	 	height: 600px;
-	 	margin-bottom: -3px;
-	 	z-index: 2;
-	 	color: white;
-	 	transition: all 0.5s ease
-	 }
-	 #titletext {
-	 	position: relative;
-	 	top: 200px;
-	 	text-align: center;
-	 	font-size: 72px;
-	 	font-family: impact;
-	 	animation: white-pulse 2s infinite alternate
-	 }
-	 #subtitletext {
-	 	position: relative;
-	 	top: 220px;
-	 	text-align: center;
-	 	font-size: 36px;
-	 	font-family: impact;
-	 	color: #880000
-	 }
-	 #startwrapper {
-	 	position: relative;
-	 	top: 300px;
-	 	text-align: center;
-	 }
-	 #startbutton {
-	 	all: initial;
-	 	background: black;
-	 	color: grey;
-	 	padding: 6px;
-	 	font-size: 24px;
-	 	font-family: monospace;
-	 	transition: transform .5s, color .5s
-	 }
-	 #startbutton:hover, button:focus {
-	 	transform: scale(1.2);
-	 	color: white
-	 }
-	 #copyright {
-	 	position: relative;
-	 	top: 360px;
-	 	text-align: center;
-	 	font-size: 12px;
-	 	font-family: times;
-	 	color: grey
-	 }
-	 #statsoverlay {
-	 	position: absolute;
-	 	left: 10px;
-	 	top: 10px;
-	 	background-color: rgba(0, 0, 0, 0.5);
-	 	color: white;
-	 	font-family: monospace;
-	 	padding: 1em;
-	 	font-size: 18px;
-	 	border-radius: 10px;
-	 }
-	 #controlsoverlay {
-	 	position: absolute;
-	 	right: 10px;
-	 	top: 10px;
-	 	background-color: rgba(0, 0, 0, 0.5);
-	 	color: white;
-	 	font-family: monospace;
-	 	padding: 1em;
-	 	font-size: 18px;
-	 	border-radius: 10px;
-	 }
-	 #deathoverlay {
-	 	position: absolute;
-	 	top: -100px;
-	 	text-align: center;
-	 	width: 1080px;
-	 	font-size: 72px;
-	 	font-family: times;
-	 	color: #990000;
-	 	opacity: 0.1;
-	 	text-shadow: 0 0 5px red, 0 0 40px red;
-	 	transition: opacity 2s ease, text-shadow 4s ease, font-size 4s ease;
-	 }
-	 #health {
-	 	position: absolute;
-	 	color: red;
-	 	letter-spacing: 5px;
-	 	animation: red-pulse 0.5s infinite alternate
-	 }
-	 #losthealth {
-	 	color: black;
-	 	letter-spacing: 5px
-	 }
-	 #manadiv {
-	 	opacity: 0;
-	 	transition: opacity 0.2s ease
-	 }
-	 #mana {
-	 	opacity: 1;
-	 	position: absolute;
-	 	color: white;
-	 	transition: opacity 1s ease;
-	 }
-	</style>
-	<title></title>
-</head>
-<body>
-	<!-- Begin typing the next of your web page here. //-->
-	<audio id="bgm"><source src="NutellaFrenchToast%20-%20SiIvaGunner's%20Highest%20Quality%20Rips%20Volum%20-%20121%20Smooth!%20Santana%20Girl.mp3"></audio>
-	<audio id="gamestartsfx"><source src="sfxZ10.wav"></audio> <audio id="skillsfx"><source src="This%20is%20the%20Monado's%20power.mp3"></audio> <audio id="deathsfx"><source src="Wilhelm%20Scream%20sound%20effect.mp3"></audio>
-	<audio id="youdied"><source src="youdied.mp3"></audio>
-	<div class="container">
-		<div id="titlescreen">
-			<div id="titletext">
-				It's Always Sunny in UCLA
-			</div>
-			<div id="subtitletext">
-				HD Turbo Remix Arcade Edition Re: Sunburn
-			</div>
-			<div id="startwrapper">
-				<button id="startbutton" onclick="startGame()">Start Game</button>
-			</div>
-			<div id="copyright">
-				©2020 Team Pranav Inc. All Rights Reserved. This is a work of fiction. All resemblance to actual figures are purely coincidental. Nico is best Love Live.
-			</div>
-		</div>
-		<div id="statsoverlay">
-			<div>
-				Health&nbsp;<span id="health"></span><span id="losthealth">♥♥♥♥♥♥♥♥♥♥</span>
-			</div>
-			<div id="manadiv">
-				You are filled with determination!<span id="mana">😤😤😤</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-			</div>
-		</div>
-		<div id="controlsoverlay">
-			<p>Use WASD to move your character.</p>
-			<p>Use Q to look deep within yourself</p>
-			<p>and draw out your hidden ability.</p>
-		</div>
-		<div id="deathoverlay">
-			YOU DIED
-		</div>
-		<div class="canvas-widget" id="main-canvas"></div>
-	</div>
-	<script>
-	"use strict" // ********************* THE ENTRY POINT OF YOUR WHOLE PROGRAM STARTS HERE ********************* 
-	// Use this code to embed a widget into any web page.  The widget inclues a 3D WebGL area
-	// (an HTML canvas) and various panels of controls.
-	function startGame() {
-		document.getElementById("startbutton").disabled = "disabled";
-		document.querySelector("#titlescreen").style.opacity = 0;
-		setTimeout(hideTitleScreen, 500);
-		var gameStartSFX = document.getElementById("gamestartsfx"); // this game is the Dark Souls of graphics projects
-		gameStartSFX.play();
-		const scenes = ["Shadow_Demo"]; // First, list the names of scenes we will add to our canvas.  These will register themselves
-		// with this widget's Canvas_Manager so that their code can be called upon every time a 
-		// draw / keyboard / mouse event happens on the web page.
-		new Canvas_Widget("main-canvas", scenes); // Use the Canvas_Widget class to display the WebGL demo.  Pass in
-		// the name of the HTML element we are to replace with the widget.
-	}
+			body {
+				background: DarkGray;
+				margin: 0;
+			}
 
-	function hideTitleScreen() {
-		document.querySelector("#titlescreen").style.display = "none";
-	}
-	</script>
-</body>
+			canvas {
+				width: 1080px;
+				height: 600px;
+				margin-bottom: -3px
+			}
+
+			.canvas-widget {
+				width: 1080px;
+				background: DimGray
+			}
+
+			table {
+				border-collapse: collapse;
+				display: block;
+				overflow-x: auto;
+			}
+
+			table.control-box {
+				width: 1080px;
+				border: 0;
+				margin: 0;
+				max-height: 380px;
+				transition: .5s;
+				overflow-y: scroll;
+				background: DimGray
+			}
+
+			table.control-box:hover {
+				max-height: 500px
+			}
+
+			table.control-box td {
+				overflow: hidden;
+				border: 0;
+				background: DimGray;
+				border-radius: 30px
+			}
+
+			table.control-box td .control-div {
+				background: #EEEEEE;
+				height: 338px;
+				padding: 5px 5px 5px 30px;
+				box-shadow: 25px 0px 60px -15px inset
+			}
+
+			table.control-box td * {
+				background: transparent
+			}
+
+			table.control-box .control-div td {
+				border-radius: unset
+			}
+
+			table.control-box .control-title {
+				padding: 7px 40px;
+				color: white;
+				background: DarkSlateGray;
+				box-shadow: 25px 0px 70px -15px inset black
+			}
+
+			.live_string {
+				display: inline-block;
+				background: unset
+			}
+
+			table,
+			th,
+			td {
+				border: 2px solid black;
+				vertical-align: top;
+				white-space: nowrap
+			}
+
+			button {
+				background: #4C9F50;
+				color: white;
+				padding: 6px;
+				border-radius: 9px;
+				box-shadow: 4px 6px 16px 0px rgba(0, 0, 0, 0.3);
+				transition: background .3s, transform .3s
+			}
+
+			button:hover,
+			button:focus {
+				transform: scale(1.3);
+				color: gold
+			}
+
+			.link {
+				text-decoration: underline;
+				cursor: pointer
+			}
+
+			.show {
+				transform: scaleY(1);
+				height: 200px;
+				overflow: auto
+			}
+
+			.hide {
+				transform: scaleY(0);
+				height: 0px;
+				overflow: hidden
+			}
+
+			@keyframes red-pulse {
+				0% {
+					text-shadow: 0 0 0px red;
+				}
+				100% {
+					text-shadow: 0 0 5px red, 0 0 5px red, 0 0 7px red, 0 0 10px red;
+				}
+			}
+
+			@keyframes white-pulse {
+				0% {
+					text-shadow: 0 0 0px white;
+				}
+				100% {
+					text-shadow: 0 0 5px white, 0 0 20px white;
+				}
+			}
+
+			.container {
+				position: relative;
+				width: 1080px;
+				height?: 600px;
+				margin-bottom: -3px
+			}
+
+			#titlescreen {
+				background-color: black;
+				border: black;
+				position: absolute;
+				width: 1080px;
+				height: 600px;
+				margin-bottom: -3px;
+				z-index: 2;
+				color: white;
+				transition: all 0.5s ease
+			}
+
+			#titletext {
+				position: relative;
+				top: 200px;
+				text-align: center;
+				font-size: 72px;
+				font-family: impact;
+				animation: white-pulse 2s infinite alternate
+			}
+
+			#subtitletext {
+				position: relative;
+				top: 220px;
+				text-align: center;
+				font-size: 36px;
+				font-family: impact;
+				color: #880000
+			}
+
+			#startwrapper {
+				position: relative;
+				top: 300px;
+				text-align: center;
+			}
+
+			#startbutton {
+				all: initial;
+				background: black;
+				color: grey;
+				padding: 6px;
+				font-size: 24px;
+				font-family: monospace;
+				transition: transform .5s, color .5s
+			}
+
+			#startbutton:hover,
+			button:focus {
+				transform: scale(1.2);
+				color: white
+			}
+
+			#copyright {
+				position: relative;
+				top: 360px;
+				text-align: center;
+				font-size: 12px;
+				font-family: times;
+				color: grey
+			}
+
+			#statsoverlay {
+				position: absolute;
+				left: 10px;
+				top: 10px;
+				background-color: rgba(0, 0, 0, 0.5);
+				color: white;
+				font-family: monospace;
+				padding: 1em;
+				font-size: 18px;
+				border-radius: 10px;
+			}
+
+			#controlsoverlay {
+				position: absolute;
+				right: 10px;
+				top: 10px;
+				background-color: rgba(0, 0, 0, 0.5);
+				color: white;
+				font-family: monospace;
+				padding: 1em;
+				font-size: 18px;
+				border-radius: 10px;
+			}
+
+			#deathoverlay {
+				position: absolute;
+				top: -100px;
+				text-align: center;
+				width: 1080px;
+				font-size: 72px;
+				font-family: times;
+				color: #990000;
+				opacity: 0.1;
+				text-shadow: 0 0 5px red, 0 0 40px red;
+				transition: opacity 2s ease, text-shadow 4s ease, font-size 4s ease;
+			}
+
+			#health {
+				position: absolute;
+				color: red;
+				letter-spacing: 5px;
+				animation: red-pulse 0.5s infinite alternate
+			}
+
+			#losthealth {
+				color: black;
+				letter-spacing: 5px
+			}
+
+			#manadiv {
+				opacity: 0;
+				transition: opacity 0.2s ease
+			}
+
+			#mana {
+				opacity: 1;
+				position: absolute;
+				color: white;
+				transition: opacity 1s ease;
+			}
+		</style>
+		<title></title>
+	</head>
+	<body>
+		<!-- Begin typing the next of your web page here. //-->
+		<audio id="bgm">
+			<source src="NutellaFrenchToast%20-%20SiIvaGunner's%20Highest%20Quality%20Rips%20Volum%20-%20121%20Smooth!%20Santana%20Girl.mp3">
+		</audio>
+		<audio id="gamestartsfx">
+			<source src="sfxZ10.wav">
+		</audio>
+		<audio id="skillsfx">
+			<source src="This%20is%20the%20Monado's%20power.mp3">
+		</audio>
+		<audio id="deathsfx">
+			<source src="Wilhelm%20Scream%20sound%20effect.mp3">
+		</audio>
+		<audio id="youdied">
+			<source src="youdied.mp3">
+		</audio>
+		<div class="container">
+			<div id="titlescreen">
+				<div id="titletext">
+					It's Always Sunny in UCLA
+				</div>
+				<div id="subtitletext">
+					HD Turbo Remix Arcade Edition Re: Sunburn
+				</div>
+				<div id="startwrapper">
+					<button id="startbutton" onclick="startGame()">Start Game</button>
+				</div>
+				<div id="copyright">
+					©2020 Team Pranav Inc. All Rights Reserved. This is a work of fiction. All resemblance to actual figures are purely coincidental. Nico is best Love Live.
+				</div>
+			</div>
+			<div id="statsoverlay">
+				<div>
+					Health&nbsp;<span id="health"></span><span id="losthealth">♥♥♥♥♥♥♥♥♥♥</span>
+				</div>
+				<div id="manadiv">
+					You are filled with determination!<span id="mana">😤😤😤</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				</div>
+			</div>
+			<div id="controlsoverlay">
+				<p>Use WASD to move your character.</p>
+				<p>Use Q to look deep within yourself</p>
+				<p>and draw out your hidden ability.</p>
+			</div>
+			<div id="deathoverlay">
+				YOU DIED
+			</div>
+			<div class="canvas-widget" id="main-canvas"></div>
+		</div>
+		<script>
+			"use strict" // ********************* THE ENTRY POINT OF YOUR WHOLE PROGRAM STARTS HERE ********************* 
+			// Use this code to embed a widget into any web page.  The widget inclues a 3D WebGL area
+			// (an HTML canvas) and various panels of controls.
+			function startGame()
+			{
+				document.getElementById("startbutton").disabled = "disabled";
+				document.querySelector("#titlescreen").style.opacity = 0;
+				setTimeout(hideTitleScreen, 500);
+				var gameStartSFX = document.getElementById("gamestartsfx"); // this game is the Dark Souls of graphics projects
+				gameStartSFX.play();
+				const scenes = ["Shadow_Demo"]; // First, list the names of scenes we will add to our canvas.  These will register themselves
+				// with this widget's Canvas_Manager so that their code can be called upon every time a 
+				// draw / keyboard / mouse event happens on the web page.
+				new Canvas_Widget("main-canvas", scenes); // Use the Canvas_Widget class to display the WebGL demo.  Pass in
+				// the name of the HTML element we are to replace with the widget.
+			}
+
+			function hideTitleScreen()
+			{
+				document.querySelector("#titlescreen").style.display = "none";
+			}
+		</script>
+	</body>
 </html>
