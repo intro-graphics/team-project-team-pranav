@@ -9,8 +9,11 @@ class Shadow_Demo extends Scene_Component
         this.initial_camera_location = Mat4.inverse( context.globals.graphics_state.camera_transform );
         
 		this.bgm = document.getElementById("bgm");
-		bgm.play();
+		this.bgm.play();
+		this.bgm.loop = true;
 		this.skillsfx = document.getElementById("skillsfx");
+		this.footstepsfx = document.getElementById("footstepsfx");
+		this.footstepsfx.volume = 0.4;
 		
         // Pranav's variables
         this.drawTheChar = true;    // whether to trigger the draw_char function
@@ -88,18 +91,22 @@ class Shadow_Demo extends Scene_Component
         this.key_triggered_button("Up", ["w"], () => {  // going Up with 'i'
                 if(this.ud >= (-146 * this.move_dist) && this.charHealth > 0)  // 146 steps max upwards (from starting position) (not 484 because >=)
                   this.ud = this.ud - 0.2;
+			  this.footstepsfx.play();
             });
         this.key_triggered_button("Down", ["s"], () => {  // going Down with 'k'
                 if(this.ud <= (6 * this.move_dist) && this.charHealth > 0)  // 6 steps max downwards
                   this.ud = this.ud + 0.2;
+				  this.footstepsfx.play();
             });
         this.key_triggered_button("Left", ["a"], () => {  // going Left with 'j'
                 if(this.lr >= (-17 * this.move_dist) && this.charHealth > 0)  //  17 steps max left
                   this.lr = this.lr - 0.2;
+				  this.footstepsfx.play();
             });
         this.key_triggered_button("Right", ["d"], () => { // going right with 'l'
                 if(this.lr <= (13 * this.move_dist) && this.charHealth > 0) //  13 steps max right
                   this.lr = this.lr + 0.2;
+				  this.footstepsfx.play();
             });
         this.key_triggered_button("Extend_Shadow", ["q"], () => { // going right with 'l'
                 this.extend_shadow = true;
