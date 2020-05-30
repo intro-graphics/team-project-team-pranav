@@ -8,6 +8,9 @@ class Shadow_Demo extends Scene_Component
         context.globals.graphics_state.camera_transform = Mat4.look_at( Vec.of( 0,10,20 ), Vec.of( 0,0,0 ), Vec.of( 0,1,0 ) );
         this.initial_camera_location = Mat4.inverse( context.globals.graphics_state.camera_transform );
         
+		this.bgm = document.getElementById("bgm");
+		bgm.play();
+		
         // Pranav's variables
         this.drawTheChar = true;    // whether to trigger the draw_char function
         this.boom = false;  // whether to trigger an explosion during the draw_char function
@@ -272,11 +275,18 @@ class Shadow_Demo extends Scene_Component
         return scaleT;
     }
 	
+	// Chang Chun's code for showing death screen and playing death sound
 	show_death_text()
 	{
+		// get You Died text and show it
 		var deathText = document.querySelector("#deathoverlay");
 		deathText.style.fontSize = "144px";
 		deathText.style.opacity = "0.8";
+		
+		this.bgm.pause(); // (jazz music stops)
+		
+		var deathSound = document.getElementById("youdied"); // this game is the Dark Souls of graphics projects
+		deathSound.play();
 	}
 	
 	// Chang Chun's code for updating the UI

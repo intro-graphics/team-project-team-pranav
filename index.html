@@ -38,9 +38,25 @@
     text-shadow: 0 0 5px red, 0 0 5px red, 0 0 7px red, 0 0 10px red;
   }
 	}
-
+	
+	@keyframes white-pulse
+	{
+		 0% {
+    text-shadow: 0 0 0px white;
+  }
+  100% {
+    text-shadow: 0 0 5px white, 0 0 20px white;
+  }
+	}
   
   .container { position: relative; width: 1080px; height?: 600px; margin-bottom: -3px }  
+  #titlescreen { background-color: black; border: black; position: absolute; width:1080px; height:600px; margin-bottom: -3px; z-index: 2; color: white; transition: all 0.5s ease }
+  #titletext { position: relative; top: 200px; text-align: center; font-size: 72px; font-family: impact; animation: white-pulse 2s infinite alternate }
+  #subtitletext{ position: relative; top: 220px; text-align: center; font-size: 36px; font-family: impact; color: #880000}
+  #startwrapper {position: relative; top: 300px; text-align: center;}
+  #startbutton { all:initial; background: black; color: grey; padding: 6px; font-size: 24px; font-family: monospace; transition: transform .5s, color .5s}
+  #startbutton:hover, button:focus { transform: scale(1.2); color:white }
+  #copyright { position: relative; top: 360px; text-align: center; font-size: 12px; font-family: times; color:grey }
   #statsoverlay { position: absolute; left: 10px; top: 10px; background-color: rgba(0, 0, 0, 0.5); color: white; font-family: monospace; padding: 1em; font-size: 18px ;border-radius: 10px; }
   #controlsoverlay { position: absolute; right: 10px; top: 10px; background-color: rgba(0, 0, 0, 0.5); color: white; font-family: monospace; padding: 1em; font-size: 18px ;border-radius: 10px; }
   #deathoverlay { position: absolute; top:250px; width: 1080px; height:300px; text-align: center; font-size: 72px; font-family: times; color: red; opacity: 0; text-shadow: 0 0 5px red; transition: opacity 2s ease, text-shadow 4s ease, font-size 6s ease; }
@@ -53,7 +69,25 @@
 </style>
 </head><body>       <!-- Begin typing the next of your web page here. //-->
 
+<audio id ="bgm">
+	<source src = "NutellaFrenchToast - SiIvaGunner's Highest Quality Rips Volum - 121 Smooth! Santana Girl.mp3">
+</audio>
+
+<audio id ="gamestartsfx">
+	<source src = "sfxZ10.wav">
+</audio>
+
+<audio id="youdied">
+	<source src="youdied.mp3"/>
+</audio>
+
 <div class="container">
+	<div id="titlescreen">
+	<div id = "titletext">It's Always Sunny in UCLA</div>
+	<div id = "subtitletext">HD Turbo Remix Arcade Edition Re: Sunburn</div>
+	<div id="startwrapper"><button id="startbutton" onclick="startGame()">Start Game</button></div>
+	<div id = "copyright">©2020 Team Pranav Inc. All Rights Reserved. This is a work of fiction. All resemblance to actual figures are purely coincidental. Part 4 is best Jojo, fight me.</div>
+	</div>
 	<div id="statsoverlay">
 		<div>Health&nbsp<span id="health"></span><span id="losthealth">♥♥♥♥♥♥♥♥♥♥</span></div>
 		<div id="manadiv">You are filled with determination!<span id="mana">😤😤😤</span>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</div>
@@ -72,10 +106,18 @@
 <script> "use strict"     // ********************* THE ENTRY POINT OF YOUR WHOLE PROGRAM STARTS HERE ********************* 
                                            // Use this code to embed a widget into any web page.  The widget inclues a 3D WebGL area
                                            // (an HTML canvas) and various panels of controls.
+		
+function startGame()
+{
+	document.querySelector("#titlescreen").style.opacity = 0;
+	var gameStartSFX = document.getElementById("gamestartsfx"); // this game is the Dark Souls of graphics projects
+		gameStartSFX.play();
   const scenes = [ "Shadow_Demo" ];// First, list the names of scenes we will add to our canvas.  These will register themselves
                                            // with this widget's Canvas_Manager so that their code can be called upon every time a 
                                            // draw / keyboard / mouse event happens on the web page.
   new Canvas_Widget( "main-canvas", scenes );             // Use the Canvas_Widget class to display the WebGL demo.  Pass in
                                                           // the name of the HTML element we are to replace with the widget.
+}
+
 </script>
 </body></html>
