@@ -35,7 +35,7 @@
     text-shadow: 0 0 0px red;
   }
   100% {
-    text-shadow: 0 0 5px red, 0 0 5px red, 0 0 5px red, 0 0 5px red;
+    text-shadow: 0 0 5px red, 0 0 5px red, 0 0 7px red, 0 0 10px red;
   }
 	}
 
@@ -43,6 +43,7 @@
   .container { position: relative; width: 1080px; height?: 600px; margin-bottom: -3px }  
   #statsoverlay { position: absolute; left: 10px; top: 10px; background-color: rgba(0, 0, 0, 0.5); color: white; font-family: monospace; padding: 1em; font-size: 18px ;border-radius: 10px; }
   #controlsoverlay { position: absolute; right: 10px; top: 10px; background-color: rgba(0, 0, 0, 0.5); color: white; font-family: monospace; padding: 1em; font-size: 18px ;border-radius: 10px; }
+  #deathoverlay { position: absolute; top:250px; width: 1080px; height:300px; text-align: center; font-size: 72px; font-family: times; color: red; opacity: 0; text-shadow: 0 0 5px red; transition: opacity 2s ease, text-shadow 4s ease, font-size 6s ease; }
   #health { position: absolute; color:red; letter-spacing: 5px; animation: red-pulse 0.5s infinite alternate}
   #losthealth { color:black; letter-spacing: 5px }
   #manadiv { opacity: 0; transition: opacity 0.5s ease }
@@ -61,6 +62,9 @@
 		<p>Use WASD to move your character.</p>
 		<p>Use Q to look deep within yourself</p>
 		<p>and draw out your hidden ability.</p>
+	</div>
+	<div id="deathoverlay">
+	YOU DIED
 	</div>
 	<div id="main-canvas" class="canvas-widget"></div>
 </div>

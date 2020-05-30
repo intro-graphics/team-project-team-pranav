@@ -17,7 +17,7 @@ class Shadow_Demo extends Scene_Component
         this.lr = 0; // the left-right position of the character
         this.maxHealth = 500;   // health shouldn't be able to rise higher than this, should be equal to charHealth at the start
         this.redC = 1; // if in shadow, reduce to 0.5 and make it look darker
-
+		
         this.extend_shadow = false; //Jacob - extend shadow skill is turned off
         this.counter = 0; //Jacob - counts to set how long extend_shadow lasts
         this.player_in_shadow = false;//Suvir- tells if in shadow or not
@@ -36,7 +36,7 @@ class Shadow_Demo extends Scene_Component
 
         const r = context.width/context.height;
         context.globals.graphics_state.projection_transform = Mat4.perspective( Math.PI/4, r, .1, 1000 );
-        
+		
         const shapes = { // Shapes from Assignment Three
                          sub1: new (Subdivision_Sphere.prototype.make_flat_shaded_version())(1),
                          sub2: new (Subdivision_Sphere.prototype.make_flat_shaded_version())(2),
@@ -64,6 +64,7 @@ class Shadow_Demo extends Scene_Component
           }
         this.lights = [new Light(Vec.of(20,10,15,1),Color.of(0,1,1,1),1000)];  // Jacob - set light at where the Sun is
       }
+	  
     make_control_panel()            // Pranav - Draw the scene's buttons, setup their actions and keyboard shortcuts, and monitor live measurements.
       { /* 05-22-20 - Pranav
             if the charHealth is less than 0, the character is dead, so don't move then
@@ -213,6 +214,7 @@ class Shadow_Demo extends Scene_Component
                                                 // this has to only happen when boom is false, otherwise, initial_blow will keep being reset, glitching the explosion 
         {
             this.boom = true;
+			this.show_death_text();
             this.initial_blow = time;
             return;
         }
@@ -270,26 +272,33 @@ class Shadow_Demo extends Scene_Component
         return scaleT;
     }
 	
-		// Chang Chun's code for updating the UI
+	show_death_text()
+	{
+		var deathText = document.querySelector("#deathoverlay");
+		deathText.style.fontSize = "144px";
+		deathText.style.opacity = "0.8";
+	}
+	
+	// Chang Chun's code for updating the UI
 	update_UI()
-		{
-			// update health
-			var numBars = Math.ceil(this.charHealth/50);
-			if ( numBars < 0 )
-				numBars = 0;
-			var BarsText = "";
-			for ( var i = 0; i < numBars; i++ )
-				BarsText += "♥";
-			this.healthNode.nodeValue = BarsText;
-			this.healthElement.style.animationDuration = (numBars/10).toFixed(1) + "s";
+	{
+		// update health
+		var numBars = Math.ceil(this.charHealth/50);
+		if ( numBars < 0 )
+			numBars = 0;
+		var BarsText = "";
+		for ( var i = 0; i < numBars; i++ )
+			BarsText += "♥";
+		this.healthNode.nodeValue = BarsText;
+		this.healthElement.style.animationDuration = (numBars/10).toFixed(1) + "s";
 
-			// update mana
-			var numBarsMana = 5 - Math.ceil(this.counter/24);
-			if ( numBarsMana < 0 )
-				numBarsMana = 0;
-			this.manaElement.style.opacity = (numBarsMana/5).toFixed(1);
-			
-		}
+		// update mana
+		var numBarsMana = 5 - Math.ceil(this.counter/24);
+		if ( numBarsMana < 0 )
+			numBarsMana = 0;
+		this.manaElement.style.opacity = (numBarsMana/5).toFixed(1);
+		
+	}
 
     display( graphics_state )
       {        
