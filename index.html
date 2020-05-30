@@ -59,7 +59,7 @@
   #copyright { position: relative; top: 360px; text-align: center; font-size: 12px; font-family: times; color:grey }
   #statsoverlay { position: absolute; left: 10px; top: 10px; background-color: rgba(0, 0, 0, 0.5); color: white; font-family: monospace; padding: 1em; font-size: 18px ;border-radius: 10px; }
   #controlsoverlay { position: absolute; right: 10px; top: 10px; background-color: rgba(0, 0, 0, 0.5); color: white; font-family: monospace; padding: 1em; font-size: 18px ;border-radius: 10px; }
-  #deathoverlay { position: absolute; top:250px; width: 1080px; height:300px; text-align: center; font-size: 72px; font-family: times; color: red; opacity: 0; text-shadow: 0 0 5px red; transition: opacity 2s ease, text-shadow 4s ease, font-size 6s ease; }
+  #deathoverlay { position: absolute; top:-100px; text-align: center; width:1080px; font-size: 72px; font-family: times; color: red; opacity: 0.1; text-shadow: 0 0 5px red; transition: opacity 2s ease, text-shadow 4s ease, font-size 6s ease;}
   #health { position: absolute; color:red; letter-spacing: 5px; animation: red-pulse 0.5s infinite alternate}
   #losthealth { color:black; letter-spacing: 5px }
   #manadiv { opacity: 0; transition: opacity 0.5s ease }
@@ -75,6 +75,14 @@
 
 <audio id ="gamestartsfx">
 	<source src = "sfxZ10.wav">
+</audio>
+
+<audio id ="skillsfx">
+	<source src = "This is the Monado's power.mp3">
+</audio>
+
+<audio id ="deathsfx">
+	<source src = "Wilhelm Scream sound effect.mp3">
 </audio>
 
 <audio id="youdied">
@@ -110,6 +118,7 @@
 function startGame()
 {
 	document.querySelector("#titlescreen").style.opacity = 0;
+	setTimeout(hideTitleScreen, 500);
 	var gameStartSFX = document.getElementById("gamestartsfx"); // this game is the Dark Souls of graphics projects
 		gameStartSFX.play();
   const scenes = [ "Shadow_Demo" ];// First, list the names of scenes we will add to our canvas.  These will register themselves
@@ -117,6 +126,11 @@ function startGame()
                                            // draw / keyboard / mouse event happens on the web page.
   new Canvas_Widget( "main-canvas", scenes );             // Use the Canvas_Widget class to display the WebGL demo.  Pass in
                                                           // the name of the HTML element we are to replace with the widget.
+}
+
+function hideTitleScreen()
+{
+	document.querySelector("#titlescreen").style.display = "none";
 }
 
 </script>

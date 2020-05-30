@@ -10,6 +10,7 @@ class Shadow_Demo extends Scene_Component
         
 		this.bgm = document.getElementById("bgm");
 		bgm.play();
+		this.skillsfx = document.getElementById("skillsfx");
 		
         // Pranav's variables
         this.drawTheChar = true;    // whether to trigger the draw_char function
@@ -159,7 +160,7 @@ class Shadow_Demo extends Scene_Component
         this.shapes.sub4.draw(graphics_state, pos, this.materials.suns);
     }
     draw_char(graphics_state, time) //Jacob - draw char and their skills
-    {
+    {	
       /* 05-22-20 - Pranav
             this.boom becoming true begins the blow_up sequence, which leads to death. We want to see the character disappear in the explosion,
             so if the value returned is less than 100, keep drawing them. Since they can't move once their health is less than 0, we don't have to
@@ -217,7 +218,11 @@ class Shadow_Demo extends Scene_Component
                                                 // this has to only happen when boom is false, otherwise, initial_blow will keep being reset, glitching the explosion 
         {
             this.boom = true;
-			this.show_death_text();
+			
+			var deathSound = document.getElementById("deathsfx"); // ouch
+			deathSound.play();
+			
+			setTimeout(this.show_death_text, 1000);
             this.initial_blow = time;
             return;
         }
@@ -232,6 +237,7 @@ class Shadow_Demo extends Scene_Component
 			{
                 this.counter = 1;
 				this.manaDivElement.style.opacity = "1.0";
+				this.skillsfx.play();
 			}
             //Jacob - transformation for the extend_shadow skill
             pos = Mat4.identity();
@@ -280,13 +286,14 @@ class Shadow_Demo extends Scene_Component
 	{
 		// get You Died text and show it
 		var deathText = document.querySelector("#deathoverlay");
+		deathText.style.top = "200px";
 		deathText.style.fontSize = "144px";
 		deathText.style.opacity = "0.8";
 		
 		this.bgm.pause(); // (jazz music stops)
 		
-		var deathSound = document.getElementById("youdied"); // this game is the Dark Souls of graphics projects
-		deathSound.play();
+		var youdiedSound = document.getElementById("youdied"); // this game is the Dark Souls of graphics projects
+		youdiedSound.play();
 	}
 	
 	// Chang Chun's code for updating the UI
