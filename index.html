@@ -29,20 +29,38 @@
   .show { transform: scaleY(1); height:200px; overflow:auto }
   .hide { transform: scaleY(0); height:0px; overflow:hidden  }
   
-  .container { position: relative; }  
-  .absolutediv { position: absolute }
-  #overlay { position: absolute; left: 10px; top: 10px; background-color: rgba(0, 0, 0, 0.7); color: white; font-family: monospace; padding: 1em; font-size: 16px }
-  #health { position: absolute; color:red; letter-spacing: 5px; }
-  #losthealth {  color:black; letter-spacing: 5px; }
+  @keyframes red-pulse
+	{
+		 0% {
+    text-shadow: 0 0 0px red;
+  }
+  100% {
+    text-shadow: 0 0 5px red, 0 0 5px red, 0 0 5px red, 0 0 5px red;
+  }
+	}
+
+  
+  .container { position: relative; width: 1080px; height?: 600px; margin-bottom: -3px }  
+  #statsoverlay { position: absolute; left: 10px; top: 10px; background-color: rgba(0, 0, 0, 0.5); color: white; font-family: monospace; padding: 1em; font-size: 18px ;border-radius: 10px; }
+  #controlsoverlay { position: absolute; right: 10px; top: 10px; background-color: rgba(0, 0, 0, 0.5); color: white; font-family: monospace; padding: 1em; font-size: 18px ;border-radius: 10px; }
+  #health { position: absolute; color:red; letter-spacing: 5px; animation: red-pulse 0.5s infinite alternate}
+  #losthealth { color:black; letter-spacing: 5px }
+  #manadiv { opacity: 0; transition: opacity 0.5s ease }
+  #mana { opacity: 1; position: absolute; color:white; transition: opacity 1s ease; }
 }
 }
 </style>
 </head><body>       <!-- Begin typing the next of your web page here. //-->
 
 <div class="container">
-	<div id="overlay">
-		<div class="absolutediv">Health&nbsp<span id="health"></span></div>
-		<div id="absolutediv">Health&nbsp<span id="losthealth">♥♥♥♥♥</span></div>
+	<div id="statsoverlay">
+		<div>Health&nbsp<span id="health"></span><span id="losthealth">♥♥♥♥♥♥♥♥♥♥</span></div>
+		<div id="manadiv">You are filled with determination!<span id="mana">😤😤😤</span>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</div>
+	</div>
+	<div id="controlsoverlay">
+		<p>Use WASD to move your character.</p>
+		<p>Use Q to look deep within yourself</p>
+		<p>and draw out your hidden ability.</p>
 	</div>
 	<div id="main-canvas" class="canvas-widget"></div>
 </div>

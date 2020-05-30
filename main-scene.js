@@ -22,18 +22,17 @@ class Shadow_Demo extends Scene_Component
         this.counter = 0; //Jacob - counts to set how long extend_shadow lasts
         this.player_in_shadow = false;//Suvir- tells if in shadow or not
         this.charHealth = 500; //Suvir- health of the character
-
+		
 		// Chang Chun's UI variables, find elements in the HTML and create nodes to store values
 		// grabs the health text
 		this.healthElement = document.querySelector("#health");
 		this.healthNode = document.createTextNode("");
 		this.healthElement.appendChild(this.healthNode);
-		this.healthNode.nodeValue = "♥♥♥♥♥";
+		this.healthNode.nodeValue = "♥♥♥♥♥♥♥♥♥♥";
 		
-		// variables to govern the glow of the hearts
-		this.healthGlowFrames = Math.ceil(this.charHealth/100);
-		this.healthGlow = 10;
-		this.healthBrighten = false;
+		// grabs the mana text
+		this.manaDivElement = document.querySelector("#manadiv");
+		this.manaElement = document.querySelector("#mana");	
 
         const r = context.width/context.height;
         context.globals.graphics_state.projection_transform = Mat4.perspective( Math.PI/4, r, .1, 1000 );
@@ -225,7 +224,10 @@ class Shadow_Demo extends Scene_Component
         if(this.extend_shadow || (this.counter < 120 && this.counter > 0))
         {
             if(this.extend_shadow) //Jacob - if extend_shadow is pressed set counter to 1
+			{
                 this.counter = 1;
+				this.manaDivElement.style.opacity = "1.0";
+			}
             //Jacob - transformation for the extend_shadow skill
             pos = Mat4.identity();
             pos = pos.times(Mat4.translation([0,5.01,12])).times(Mat4.translation([this.lr,0,this.ud]))
@@ -235,7 +237,10 @@ class Shadow_Demo extends Scene_Component
             this.shapes.shadow_square.draw(graphics_state, pos, this.materials.shadow_mat);
         }
         else
+		{
             this.counter = 0;               //Jacob - if counter goes over 120 or is 0, reset back to 0
+			this.manaDivElement.style.opacity = "0";
+		}
         this.extend_shadow = false;         //set extend_shadow back to false
     }
 
@@ -268,31 +273,21 @@ class Shadow_Demo extends Scene_Component
 		// Chang Chun's code for updating the UI
 	update_UI()
 		{
-			var numBars = Math.ceil(this.charHealth/100);
+			// update health
+			var numBars = Math.ceil(this.charHealth/50);
 			if ( numBars < 0 )
 				numBars = 0;
 			var BarsText = "";
-			var LostBarsText = "";
 			for ( var i = 0; i < numBars; i++ )
 				BarsText += "♥";
 			this.healthNode.nodeValue = BarsText;
-			
-			this.healthGlowFrames--;
-			
-			if (this.healthGlowFrames == 0)
-			{
-				if (this.healthGlow == 10)
-					this.healthBrighten = false;
-				else if (this.healthGlow == 0)
-					this.healthBrighten = true;
-				if ( this.healthBrighten )
-					this.healthGlow++;
-				else 
-					this.healthGlow--;
-				this.healthElement.style.textShadow = "0px 0px " + this.healthGlow + "px red" + ",0px 0px " + this.healthGlow + "px red" + ",0px 0px " + this.healthGlow + "px red";
-			
-				this.healthGlowFrames = numBars;
-			}
+			this.healthElement.style.animationDuration = (numBars/10).toFixed(1) + "s";
+
+			// update mana
+			var numBarsMana = 5 - Math.ceil(this.counter/24);
+			if ( numBarsMana < 0 )
+				numBarsMana = 0;
+			this.manaElement.style.opacity = (numBarsMana/5).toFixed(1);
 			
 		}
 
