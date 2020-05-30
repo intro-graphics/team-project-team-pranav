@@ -5,7 +5,7 @@ class Shadow_Demo extends Scene_Component
         if( !context.globals.has_controls   ) 
           context.register_scene_component( new Movement_Controls( context, control_box.parentElement.insertCell() ) ); 
 
-        context.globals.graphics_state.camera_transform = Mat4.look_at( Vec.of( 0,10,20 ), Vec.of( 0,0,0 ), Vec.of( 0,1,0 ) );
+        context.globals.graphics_state.camera_transform = Mat4.look_at( Vec.of( 0,10,30 ), Vec.of( 0,0,0 ), Vec.of( 0,1,0 ) );
         this.initial_camera_location = Mat4.inverse( context.globals.graphics_state.camera_transform );
         
 		this.bgm = document.getElementById("bgm");
@@ -63,10 +63,16 @@ class Shadow_Demo extends Scene_Component
             // materials from Assignment Three
             planets: context.get_instance( Phong_Shader ).material(Color.of(0, 0, 0, 1)),
             test: context.get_instance( Phong_Shader ).material( Color.of(0, 0, 1, 1), { ambient: 0.2 } ),
-            shadow_mat: context.get_instance( Phong_Shader).material(Color.of(0,0,0,1),{ambient: 1})
+            shadow_mat: context.get_instance( Phong_Shader).material(Color.of(0,0,0,1),{ambient: 1}),
+            shadow: context.get_instance(Shadow_Shader)
+			.material(Color.of(0,0,0,1),
+			{ambient: 1.0, diffusivity: 0.0, specularity: 0.0 })
 
           }
-        this.lights = [new Light(Vec.of(20,10,15,1),Color.of(0,1,1,1),1000)];  // Jacob - set light at where the Sun is
+          this.materials["shadow"] = context.get_instance(Shadow_Shader)
+			.material(Color.of(0,0,0,1),
+			{ambient: 1.0, diffusivity: 0.0, specularity: 0.0 });
+			
       }
 	  
     make_control_panel()            // Pranav - Draw the scene's buttons, setup their actions and keyboard shortcuts, and monitor live measurements.
@@ -94,69 +100,60 @@ class Shadow_Demo extends Scene_Component
                 this.extend_shadow = true;
             });
       }
-    draw_shad_map(graphics_state)
-    {
-            //Jacob - TRANSFORMATIONS FOR THE PREBAKED SHADOWS OF THE CLOSEST RIGHT BUILDING
-         let pos = Mat4.identity();
-         pos = pos.times(Mat4.translation([2.5,5.01,10]));
-         pos = pos.times(Mat4.scale([1,1,2]));
-         pos = pos.times(Mat4.translation([1,0,1]));
-         pos = pos.times(Mat4.rotation(Math.PI*1.5,Vec.of(1,0,0)));
-         this.shapes.shadow_square.draw(graphics_state, pos, this.materials.shadow_mat);
-
-           //Jacob - TRANSFORMATIONS FOR THE PREBAKED SHADOWS OF THE CLOSEST LEFT BUILDING
-         let shadow_pos = Mat4.identity();
-         shadow_pos = shadow_pos.times(Mat4.translation([0,0,-15]));
-         shadow_pos = shadow_pos.times(Mat4.translation([2.5,5.01,10]));
-         shadow_pos = shadow_pos.times(Mat4.scale([1,1,2]));
-         shadow_pos = shadow_pos.times(Mat.of( [ 1,0,0,0 ], [ 0,1,0,0 ], [ .75,0,1,0 ], [ 0,0,0,1 ] ));
-         shadow_pos = shadow_pos.times(Mat4.translation([1,0,1]));
-         shadow_pos = shadow_pos.times(Mat4.rotation(Math.PI*1.5,Vec.of(1,0,0)));
-         this.shapes.shadow_square.draw(graphics_state, shadow_pos, this.materials.shadow_mat);
-    }
     // Pranav's code for the world
     draw_map(graphics_state)
     {
          let pos = Mat4.identity();
-
+        //Jacob - the second draw of all the buildings and players are the shadow maps
         // the road
-        pos = pos.times(Mat4.scale([3.5,5,100])).times(Mat4.rotation(Math.PI / 2, Vec.of(0, 1, 0))).times(Mat4.translation([0, 0, 0]));
+        pos = pos.times(Mat4.translation([-3.5,-9.05,40]))
+          .times(Mat4.scale([3.5,5,100]))
+          .times(Mat4.rotation(Math.PI / 2, Vec.of(0, 1, 0))).times(Mat4.translation([1, 1, 1]));
         this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(0.5, 0.5, 0.5, 1)},{ambient:0,specular:1,gouraud:false} ));
 
         // the grass to the right
-        pos = pos.times(Mat4.scale([1,1,8])).times(Mat4.translation([0, 0, 1.125]))
+        pos = pos.times(Mat4.scale([1,1,8])).times(Mat4.translation([0, -0.01, 1.125]))
         this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(0.5, 1, 0.5, 1)},{ambient:0,specular:1,gouraud:false} ));
 
         // the grass to the left
-        pos = pos.times(Mat4.translation([0, 0, -2.25]))
+        pos = pos.times(Mat4.translation([0, 0, -2]))
         this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(0.5, 1, 0.5, 1)}, {ambient:0,specular:1,gouraud:false}));
 
         // the cave
-        pos = Mat4.identity().times(Mat4.scale([3.5,3.2,3])).times(Mat4.translation([0,1.5,-6]));
+        pos = Mat4.identity().times(Mat4.scale([3.5,3.2,3])).times(Mat4.translation([0,0,-6]));
         this.shapes.sub4.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(0.5, 0.25, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
+        this.shapes.sub4.draw(graphics_state,pos,this.materials.shadow)
         
         //the cave entrance
-        pos = Mat4.identity().times(Mat4.scale([2.5,3,3])).times(Mat4.translation([0,1.3,-5.6]));
+        pos = Mat4.identity().times(Mat4.scale([2.5,3,3])).times(Mat4.translation([0,0,-5.6]));
         this.shapes.sub4.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(0, 0, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
-
+        this.shapes.sub4.draw(graphics_state,pos,this.materials.shadow)
+      
         // the blue building
-        pos = Mat4.identity().times(Mat4.translation([6,5,0])).times(Mat4.scale([1.5,2,2]));
-        this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(0.25, 0.9, 1, 1)},{ambient:0,specular:1,gouraud:false} ));
+        pos = Mat4.identity().times(Mat4.translation([1,1,0])).times(Mat4.scale([1,2,2])).times(Mat4.translation([1,1,1]));
+        this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(0.25, 0.9, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
+        this.shapes.body.draw(graphics_state,pos,this.materials.shadow)
 
         //  the yellow building
-        pos = pos.times(Mat4.translation([-8,0,4]))
+        pos = Mat4.identity().times(Mat4.translation([-8,1,4])).times(Mat4.scale([1,2,2])).times(Mat4.translation([1,1,1]));
         this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(1, 1, 0.5, 1)},{ambient:0,specular:1,gouraud:false} ));
+        this.shapes.body.draw(graphics_state,pos,this.materials.shadow)
 
         // the gray building
-        pos = pos.times(Mat4.translation([8,0,2]))
+        pos = Mat4.identity().times(Mat4.translation([8,1,2])).times(Mat4.scale([1,2,2])).times(Mat4.translation([1,1,1]));
         this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(0.5, 0.5, 0.5, 1)},{ambient:0,specular:1,gouraud:false} ));
+        this.shapes.body.draw(graphics_state,pos,this.materials.shadow)
 
         // the skybox (can be seen if you tilt the camera)
         pos = Mat4.identity().times(Mat4.scale([100,100,100]))
         this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(0.25, 0.9, 1, 1)} ));
         
         //Jacob - This is the sun 
-        pos = Mat4.identity().times(Mat4.translation([20,10,15]));
+        const t = graphics_state.animation_time / 1000;
+        let period = t*(2*Math.PI)/10;                               //calculate period for when to change color and when to change radius
+        let x_period = Math.sin(period)/2;                            //figure out the period to create a circular path
+        let y_period = (2+Math.sin(period*2))/2.5;
+        pos = Mat4.identity().times(Mat4.translation([50*x_period,10*y_period,15]));
         this.shapes.sub4.draw(graphics_state, pos, this.materials.suns);
     }
     draw_char(graphics_state, time) //Jacob - draw char and their skills
@@ -186,7 +183,7 @@ class Shadow_Demo extends Scene_Component
             this.counter++;
         let pos = Mat4.identity();
         // Pranav's character, translate to origin, scale then move to wherever you want
-        pos = Mat4.identity().times(Mat4.translation([0,5,14]))
+        pos = Mat4.identity().times(Mat4.translation([0,1,14]))
             .times(Mat4.translation([this.lr,0,this.ud]))
             .times(Mat4.scale([0.3,0.5,0.3]))
             .times(Mat4.translation([1,1,1]));
@@ -211,7 +208,8 @@ class Shadow_Demo extends Scene_Component
         {
           console.log("in no shadow");
           this.redC = 1;    // not in shadow, same color
-          this.charHealth -= 1;
+         // this.charHealth -= 1;
+           this.charHealth -= 0;
         }
 
         if(this.charHealth <= 0 && !this.boom)  // if the charHealth is lower than 0, turn on this.boom so that the explosion will start
@@ -227,7 +225,12 @@ class Shadow_Demo extends Scene_Component
             return;
         }
 
-        this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(this.redC, 0, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
+        this.shapes.body.draw
+          (graphics_state, pos, this.materials.suns.override( {color: Color.of(this.redC, 0, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
+        //pos = pos.times(Mat4.translation([1,20,3]));
+        this.shapes.body.draw(graphics_state,pos,this.materials.shadow);
+        let origin_pos =(pos.times(Vec.of(0,0,0,1)));
+        
         //console.log("charHealth: "+this.charHealth);
         //Jacob - If skill extend_shadow is on, draw the shadow in front of the character, order of transformations is to move to origin, scale, rotate
         //then move to where the character is
@@ -318,9 +321,13 @@ class Shadow_Demo extends Scene_Component
 	}
 
     display( graphics_state )
-      {        
+      {   
+        const t = graphics_state.animation_time / 1000, dt = graphics_state.animation_delta_time / 1000;     
+        let period = t*(2*Math.PI)/10;                               //calculate period for when to change color and when to change radius
+        let x_period = Math.sin(period)/2;                            //figure out the period to create a circular path
+        let y_period = (2+Math.sin(period*2))/2.5;
+        this.lights = [new Light(Vec.of(50*x_period,10*y_period,15,1),Color.of(0,1,1,1),1000)]; //Jacob- Set light where sun is
         graphics_state.lights = this.lights;        // Use the lights stored in this.lights.
-        const t = graphics_state.animation_time / 1000, dt = graphics_state.animation_delta_time / 1000;
         // our position matrix
 
         // console.log(this.ud)
@@ -333,8 +340,6 @@ class Shadow_Demo extends Scene_Component
             this.draw_char(graphics_state, t);
         // you guys can start from here
         
-        //Jacob - draw the shadow maps
-        this.draw_shad_map(graphics_state);
 		this.update_UI()
       }
   }
