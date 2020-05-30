@@ -14,6 +14,7 @@ class Shadow_Demo extends Scene_Component
 		this.skillsfx = document.getElementById("skillsfx");
 		this.footstepsfx = document.getElementById("footstepsfx");
 		this.footstepsfx.volume = 0.4;
+		this.lowhealthsfx = document.getElementById("lowhealthsfx");
 		
         // Pranav's variables
         this.drawTheChar = true;    // whether to trigger the draw_char function
@@ -334,6 +335,8 @@ class Shadow_Demo extends Scene_Component
 		var numBars = Math.ceil(this.charHealth/50);
 		if ( numBars < 0 )
 			numBars = 0;
+		if ( numBars < 5 && numBars > 0 )
+			this.lowhealthsfx.play();
 		var BarsText = "";
 		for ( var i = 0; i < numBars; i++ )
 			BarsText += "♥";
