@@ -1,3 +1,70 @@
+//Jacob
+function bounded ( intercept, bound_low, bound_high)
+{
+	if(intercept <bound_low || intercept >bound_high)                  //check that the point is between low and high
+	{
+	  return false
+	}
+	return true
+}
+//Jacob:idea here is to basically do ray casting from the vampire to the sun and see if anything blocks the way
+//this function checks if the given bounded information will block the sun from view in which case we know it's in shadow
+function blockSunLR(start,ray,x_val,y_bound_low,y_bound_high,z_bound_low,z_bound_high)
+{
+  y_bound_low +=.5;                                                      //the center of the character is .5 above ground, adjust here
+  y_bound_high +=.5
+  if(ray[0] == 0)                                                        //in this case it means the suns directly shining from camera/parallel
+  {                                                                      //therefore it can't be blocked by left right walls
+    return false
+  }
+  let scale_factor = (x_val-start[0])/ray[0];                            //scale factor tells you how much you need to scale for x y
+  let y_intercept = scale_factor*ray[1] + start[1];                      //scale then add initial position for intersection of ray and plane
+  if(!bounded(y_intercept,y_bound_low,y_bound_high))                     //if not between specified bounds the plane doesn't cover you
+    return false;
+  let z_intercept = scale_factor*ray[2] + start[2];                      //^same as before
+  if(!bounded(z_intercept,z_bound_low,z_bound_high))
+    return false;
+  return true;                                                           //since its bounded in both y and z that means this blocks the sun
+}
+//Jacob: same situation up top but for Front and Back planes
+function blockSunFB(start,ray,z_val,y_bound_low,y_bound_high,x_bound_low,x_bound_high)
+{
+  y_bound_low +=.5;                                                      //the center of the character is .5 above ground, adjust here
+  y_bound_high +=.5
+  if(ray[2] == 0)                                                        //in this case its parallel 
+  {                                                                      //therefore it can't be blocked by front back walls
+    return false
+  }
+  let scale_factor = (z_val-start[2])/ray[2];                            //scale factor tells you how much you need to scale for x y
+  let y_intercept = scale_factor*ray[1] + start[1];                      //scale then add initial position for intersection of ray and plane
+  if(!bounded(y_intercept,y_bound_low,y_bound_high))                     //if not between specified bounds the plane doesn't cover you
+    return false;
+  let x_intercept = scale_factor*ray[0] + start[0];                      //^same as before
+  if(!bounded(x_intercept,x_bound_low,x_bound_high))
+    return false;
+  return true;                                                           //since its bounded in both y and z that means this blocks the sun
+}
+
+//Jacob
+function inShadow(start,ray,bound)
+{
+	len = bound.length;
+	var i =0;
+        for(i=0;i<len;i++)
+        {
+        	if(blockSunLR(start,ray,bound[i][0],bound[i][1],bound[i][2],bound[i][3],bound[i][4]) 
+        	|| blockSunLR(start,ray,bound[i][5],bound[i][6],bound[i][7],bound[i][8],bound[i][9])
+        	|| blockSunFB(start,ray,bound[i][10],bound[i][11],bound[i][12],bound[i][13],bound[i][14])
+        	|| blockSunFB(start,ray,bound[i][15],bound[i][16],bound[i][17],bound[i][18],bound[i][19]))
+        	{
+              return true;
+        	}
+        }
+    return false;
+}
+
+
+
 window.Shadow_Demo = window.classes.Shadow_Demo =
 class Shadow_Demo extends Scene_Component
   { constructor( context, control_box )     // The scene begins by requesting the camera, shapes, and materials it will need.
@@ -21,6 +88,7 @@ class Shadow_Demo extends Scene_Component
         this.lr = 0; // the left-right position of the character
         this.maxHealth = 500;   // health shouldn't be able to rise higher than this, should be equal to charHealth at the start
         this.redC = 1; // if in shadow, reduce to 0.5 and make it look darker
+        this.shad_bound_box = []; //add info to list to determine if the player is in shadow using other functions
 		
         this.extend_shadow = false; //Jacob - extend shadow skill is turned off
         this.counter = 0; //Jacob - counts to set how long extend_shadow lasts
@@ -129,15 +197,26 @@ class Shadow_Demo extends Scene_Component
         this.shapes.sub4.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(0, 0, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
         this.shapes.sub4.draw(graphics_state,pos,this.materials.shadow)
       
-        // the blue building
-        pos = Mat4.identity().times(Mat4.translation([1,1,0])).times(Mat4.scale([1,2,2])).times(Mat4.translation([1,1,1]));
+        // the green building
+        pos = Mat4.identity().times(Mat4.translation([0,1,0])).times(Mat4.scale([1,2,2])).times(Mat4.translation([1,1,1]));
         this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(0.25, 0.9, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
-        this.shapes.body.draw(graphics_state,pos,this.materials.shadow)
+        this.shapes.body.draw(graphics_state,pos,this.materials.shadow);
+        this.shad_bound_box.push([0,1,5,0,4,2,1,5,0,4,0,1,5,0,2,4,1,5,0,2]);      //Manually input all the bounding cases
+                                                                                  //0,1,5,0,4 and 2,1,5,0,4 is for Left Right
+                                                                                  //0 means the plane x = 0 ,1 is the lowerest y of the building
+                                                                                  //5 is the highest y of building
+                                                                                  //0 is the furthest z, 4 is the closest
+                                                                                  //categorized like this first the first two pairs
+                                                               //(plane that x equals, y_bound_low, y_bound_high, z_bound_low, z_bound_high)
+                                                               //For the second pair of 5's 0,1,5,0,2 and 4,1,5,0,2
+                                                               //This is for the front and back plane 
+                                                               //Format: (plane that z equals, y_bound_low, y_bound_high, x_bound_low, x_bound_high)
 
         //  the yellow building
         pos = Mat4.identity().times(Mat4.translation([-8,1,4])).times(Mat4.scale([1,2,2])).times(Mat4.translation([1,1,1]));
         this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(1, 1, 0.5, 1)},{ambient:0,specular:1,gouraud:false} ));
-        this.shapes.body.draw(graphics_state,pos,this.materials.shadow)
+        this.shapes.body.draw(graphics_state,pos,this.materials.shadow);
+
 
         // the gray building
         pos = Mat4.identity().times(Mat4.translation([8,1,2])).times(Mat4.scale([1,2,2])).times(Mat4.translation([1,1,1]));
@@ -153,7 +232,7 @@ class Shadow_Demo extends Scene_Component
         let period = t*(2*Math.PI)/10;                               //calculate period for when to change color and when to change radius
         let x_period = Math.sin(period)/2;                            //figure out the period to create a circular path
         let y_period = (2+Math.sin(period*2))/2.5;
-        pos = Mat4.identity().times(Mat4.translation([50*x_period,10*y_period,15]));
+        pos = Mat4.identity().times(Mat4.translation([50*x_period,10*y_period+20,15]));
         this.shapes.sub4.draw(graphics_state, pos, this.materials.suns);
     }
     draw_char(graphics_state, time) //Jacob - draw char and their skills
@@ -190,28 +269,6 @@ class Shadow_Demo extends Scene_Component
         console.log("x axis: "+ (pos[0][3]));
         console.log("y axis: "+ pos[2][3]);
 
-        if(pos[0][3]>2.9&&pos[0][3]<4.1&&pos[2][3]<pos[0][3]-3.6&&pos[2][3]>pos[0][3]-5.8)
-        {
-            console.log("in shadow 2");
-            if(this.maxHealth > this.charHealth)    // don't go above max health
-                this.charHealth+=1
-            this.redC = 0.5;    // in shadow, then darken color
-        }
-        else if(!(pos[0][3]<2.5||pos[0][3]>4.2||pos[2][3]<10.5||pos[2][3]>13.7))
-        {
-            console.log("in shadow 1")
-            if(this.maxHealth > this.charHealth)    // don't go above max health
-                this.charHealth+=1
-            this.redC = 0.5;    // in shadow, then darken color
-        }
-        else
-        {
-          console.log("in no shadow");
-          this.redC = 1;    // not in shadow, same color
-         // this.charHealth -= 1;
-           this.charHealth -= 0;
-        }
-
         if(this.charHealth <= 0 && !this.boom)  // if the charHealth is lower than 0, turn on this.boom so that the explosion will start
                                                 // this has to only happen when boom is false, otherwise, initial_blow will keep being reset, glitching the explosion 
         {
@@ -224,14 +281,27 @@ class Shadow_Demo extends Scene_Component
             this.initial_blow = time;
             return;
         }
+        //Draw the person
+        let origin_pos = (pos.times(Vec.of(0,0,0,1))); //This is the center position of the person
+        let ray = this.lights[0].position.minus(origin_pos);  //This is the vector from the position of the person to sun
+        let g = this.lights;
+        var inShad = inShadow(origin_pos,ray,this.shad_bound_box);
+        if(inShad)                                    //if not blocked by any of the four planes in shadow
+        {
+          this.shapes.body.draw
+            (graphics_state, pos, this.materials.suns.override( {color: Color.of(.5, 0, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
+          if(this.maxHealth > this.charHealth)    // don't go above max health
+                this.charHealth += 1;
+        }
+        else                                                        //else not in shadow
+        {
+          this.shapes.body.draw
+            (graphics_state, pos, this.materials.suns.override( {color: Color.of(1, 0, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
+          if(this.charHealth > 0)    // don't go above max health
+                this.charHealth -= 1;
+        }
+        this.shapes.body.draw(graphics_state,pos,this.materials.shadow); //Draw its shadow
 
-        this.shapes.body.draw
-          (graphics_state, pos, this.materials.suns.override( {color: Color.of(this.redC, 0, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
-        //pos = pos.times(Mat4.translation([1,20,3]));
-        this.shapes.body.draw(graphics_state,pos,this.materials.shadow);
-        let origin_pos =(pos.times(Vec.of(0,0,0,1)));
-        
-        //console.log("charHealth: "+this.charHealth);
         //Jacob - If skill extend_shadow is on, draw the shadow in front of the character, order of transformations is to move to origin, scale, rotate
         //then move to where the character is
         if(this.extend_shadow || (this.counter < 120 && this.counter > 0))
@@ -326,7 +396,7 @@ class Shadow_Demo extends Scene_Component
         let period = t*(2*Math.PI)/10;                               //calculate period for when to change color and when to change radius
         let x_period = Math.sin(period)/2;                            //figure out the period to create a circular path
         let y_period = (2+Math.sin(period*2))/2.5;
-        this.lights = [new Light(Vec.of(50*x_period,10*y_period,15,1),Color.of(0,1,1,1),1000)]; //Jacob- Set light where sun is
+        this.lights = [new Light(Vec.of(50*x_period,10*y_period+20,15,1),Color.of(0,1,1,1),100)]; //Jacob- Set light where sun is
         graphics_state.lights = this.lights;        // Use the lights stored in this.lights.
         // our position matrix
 
