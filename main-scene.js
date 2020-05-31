@@ -104,7 +104,13 @@ class Shadow_Demo extends Scene_Component
         this.counter = 0; //Jacob - counts to set how long extend_shadow lasts
         this.player_in_shadow = false;//Suvir- tells if in shadow or not
         this.charHealth = 500; //Suvir- health of the character
-		
+    
+        
+        this.collisionBuildW = false; //Suvir- detects collision for building
+        this.collisionBuildA = false;
+        this.collisionBuildS = false;
+        this.collisionBuildD = false;
+
 		// Chang Chun's UI variables, find elements in the HTML and create nodes to store values
 		// grabs the health text
 		this.healthElement = document.querySelector("#health");
@@ -159,24 +165,33 @@ class Shadow_Demo extends Scene_Component
             also, this.move_dist is the constant of move_dist, if it's value is changed, the max steps in each direction must be changed too 
         */
         this.key_triggered_button("Up", ["w"], () => {  // going Up with 'i'
-                if(this.ud >= (-146 * this.move_dist) && this.charHealth > 0)  // 146 steps max upwards (from starting position) (not 484 because >=)
+                if(this.ud >= (-146 * this.move_dist) && this.charHealth > 0&&!this.collisionBuildW)  // 146 steps max upwards (from starting position) (not 484 because >=)
+                {
+                 
+                  
                   this.ud = this.ud - 0.2;
-			  this.footstepsfx.play();
+                  this.footstepsfx.play();
+                }
+			  
             });
         this.key_triggered_button("Down", ["s"], () => {  // going Down with 'k'
-                if(this.ud <= (6 * this.move_dist) && this.charHealth > 0)  // 6 steps max downwards
-                  this.ud = this.ud + 0.2;
-				  this.footstepsfx.play();
+                if(this.ud <= (6 * this.move_dist) && this.charHealth > 0&&!this.collisionBuildS)  // 6 steps max downwards
+                {
+                    this.ud = this.ud + 0.2;
+                    this.footstepsfx.play();
+                }
             });
         this.key_triggered_button("Left", ["a"], () => {  // going Left with 'j'
-                if(this.lr >= (-17 * this.move_dist) && this.charHealth > 0)  //  17 steps max left
-                  this.lr = this.lr - 0.2;
-				  this.footstepsfx.play();
+                if(this.lr >= (-17 * this.move_dist) && this.charHealth > 0&&!this.collisionBuildA)  //  17 steps max left
+               {   this.lr = this.lr - 0.2;
+                  this.footstepsfx.play();
+               }
             });
         this.key_triggered_button("Right", ["d"], () => { // going right with 'l'
-                if(this.lr <= (13 * this.move_dist) && this.charHealth > 0) //  13 steps max right
-                  this.lr = this.lr + 0.2;
-				  this.footstepsfx.play();
+                if(this.lr <= (13 * this.move_dist) && this.charHealth > 0&&!this.collisionBuildD) //  13 steps max right
+                {  this.lr = this.lr + 0.2;
+                   this.footstepsfx.play();
+                }
             });
         this.key_triggered_button("Extend_Shadow", ["q"], () => { // going right with 'l'
                 this.extend_shadow = true;
@@ -272,6 +287,41 @@ class Shadow_Demo extends Scene_Component
             so if the value returned is less than 100, keep drawing them. Since they can't move once their health is less than 0, we don't have to
             worry that the character will move back into shadows to replenish health.
       */
+
+      //building 1
+     if(this.lr>=-0.4&&this.lr<=1.8&&this.ud-0.2<=-10&&this.ud>=-14.6)
+      {
+        this.collisionBuildW = true;
+      }
+      else
+      {
+        this.collisionBuildW=false;
+      }
+      if(this.lr>=-0.4&&this.lr<=1.8&&this.ud<=-10&&this.ud+0.2>=-14.6)
+      {
+        this.collisionBuildS = true;
+      }
+      else
+      {
+        this.collisionBuildS=false;
+      }
+      if(this.lr>=-0.4&&this.lr-0.2<=1.8&&this.ud<=-10&&this.ud>=-14.6)
+      {
+        this.collisionBuildA = true;
+      }
+      else
+      {
+        this.collisionBuildA=false;
+      }
+      if(this.lr+0.2>=-0.6&&this.lr<=1.8&&this.ud<=-10&&this.ud>=-14.6)
+      {
+        this.collisionBuildD = true;
+      }
+      else
+      {
+        this.collisionBuildD=false;
+      }
+      
       if(this.boom)
       {
           if(this.blow_up(graphics_state, time) > 100)
@@ -296,8 +346,8 @@ class Shadow_Demo extends Scene_Component
             .times(Mat4.translation([this.lr,0,this.ud]))
             .times(Mat4.scale([0.3,0.5,0.3]))
             .times(Mat4.translation([1,1,1]));
-        console.log("x axis: "+ (pos[0][3]));
-        console.log("y axis: "+ pos[2][3]);
+        console.log("this.ud: "+ this.ud);
+        console.log("this.lr: "+ this.lr);
 
         if(this.charHealth <= 0 && !this.boom)  // if the charHealth is lower than 0, turn on this.boom so that the explosion will start
                                                 // this has to only happen when boom is false, otherwise, initial_blow will keep being reset, glitching the explosion 
@@ -318,17 +368,18 @@ class Shadow_Demo extends Scene_Component
         var inShad = inShadow(origin_pos,ray,this.shad_bound_box);
         if(inShad)                                    //if not blocked by any of the four planes in shadow
         {
+          //this.charHealth -= 1;
           this.shapes.body.draw
             (graphics_state, pos, this.materials.suns.override( {color: Color.of(.5, 0, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
-          if(this.maxHealth > this.charHealth)    // don't go above max health
-                this.charHealth += 1;
+          //if(this.maxHealth > this.charHealth)    // don't go above max health
+                //this.charHealth += 1;
         }
         else                                                        //else not in shadow
         {
           this.shapes.body.draw
             (graphics_state, pos, this.materials.suns.override( {color: Color.of(1, 0, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
-          if(this.charHealth > 0)    // don't go above max health
-                this.charHealth -= 1;
+          //if(this.charHealth > 0)    // don't go above max health
+                //this.charHealth -= 1;
         }
         this.shapes.body.draw(graphics_state,pos,this.materials.shadow); //Draw its shadow
 
