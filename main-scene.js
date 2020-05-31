@@ -52,10 +52,10 @@ function inShadow(start,ray,bound)
 	var i =0;
         for(i=0;i<len;i++)
         {
-        	if(blockSunLR(start,ray,bound[i][0],bound[i][1],bound[i][2],bound[i][3],bound[i][4]) 
-        	|| blockSunLR(start,ray,bound[i][5],bound[i][6],bound[i][7],bound[i][8],bound[i][9])
-        	|| blockSunFB(start,ray,bound[i][10],bound[i][11],bound[i][12],bound[i][13],bound[i][14])
-        	|| blockSunFB(start,ray,bound[i][15],bound[i][16],bound[i][17],bound[i][18],bound[i][19]))
+        	if(blockSunLR(start,ray,bound[i][0][0],bound[i][0][1],bound[i][0][2],bound[i][0][3],bound[i][0][4]) 
+        	|| blockSunLR(start,ray,bound[i][1][0],bound[i][1][1],bound[i][1][2],bound[i][1][3],bound[i][1][4])
+        	|| blockSunFB(start,ray,bound[i][2][0],bound[i][2][1],bound[i][2][2],bound[i][2][3],bound[i][2][4])
+        	|| blockSunFB(start,ray,bound[i][3][0],bound[i][3][1],bound[i][3][2],bound[i][3][3],bound[i][3][4]))
         	{
               return true;
         	}
@@ -201,7 +201,7 @@ class Shadow_Demo extends Scene_Component
         pos = Mat4.identity().times(Mat4.translation([0,1,0])).times(Mat4.scale([1,2,2])).times(Mat4.translation([1,1,1]));
         this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(0.25, 0.9, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
         this.shapes.body.draw(graphics_state,pos,this.materials.shadow);
-        this.shad_bound_box.push([0,1,5,0,4,2,1,5,0,4,0,1,5,0,2,4,1,5,0,2]);      //Manually input all the bounding cases
+        this.shad_bound_box.push([[0,1,5,0,4],[2,1,5,0,4],[0,1,5,0,2],[4,1,5,0,2]]);      //Manually input list of bounding cases
                                                                                   //0,1,5,0,4 and 2,1,5,0,4 is for Left Right
                                                                                   //0 means the plane x = 0 ,1 is the lowerest y of the building
                                                                                   //5 is the highest y of building
@@ -216,12 +216,14 @@ class Shadow_Demo extends Scene_Component
         pos = Mat4.identity().times(Mat4.translation([-8,1,4])).times(Mat4.scale([1,2,2])).times(Mat4.translation([1,1,1]));
         this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(1, 1, 0.5, 1)},{ambient:0,specular:1,gouraud:false} ));
         this.shapes.body.draw(graphics_state,pos,this.materials.shadow);
-
+        this.shad_bound_box.push([[-8,1,5,4,8],[-6,1,5,4,8],[4,1,5,-8,-6],[8,1,5,-8,-6]]);
 
         // the gray building
         pos = Mat4.identity().times(Mat4.translation([8,1,2])).times(Mat4.scale([1,2,2])).times(Mat4.translation([1,1,1]));
         this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(0.5, 0.5, 0.5, 1)},{ambient:0,specular:1,gouraud:false} ));
-        this.shapes.body.draw(graphics_state,pos,this.materials.shadow)
+        this.shapes.body.draw(graphics_state,pos,this.materials.shadow);
+        this.shad_bound_box.push([[8,1,5,2,6],[10,1,5,2,6],[2,1,5,8,10],[6,1,5,8,10]]);
+
 
         // the skybox (can be seen if you tilt the camera)
         pos = Mat4.identity().times(Mat4.scale([100,100,100]))
@@ -396,7 +398,7 @@ class Shadow_Demo extends Scene_Component
         let period = t*(2*Math.PI)/10;                               //calculate period for when to change color and when to change radius
         let x_period = Math.sin(period)/2;                            //figure out the period to create a circular path
         let y_period = (2+Math.sin(period*2))/2.5;
-        this.lights = [new Light(Vec.of(50*x_period,10*y_period+20,15,1),Color.of(0,1,1,1),100)]; //Jacob- Set light where sun is
+        this.lights = [new Light(Vec.of(50*x_period,10*y_period+10,15,1),Color.of(0,1,1,1),100)]; //Jacob- Set light where sun is
         graphics_state.lights = this.lights;        // Use the lights stored in this.lights.
         // our position matrix
 
