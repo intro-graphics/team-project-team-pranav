@@ -185,7 +185,8 @@ class Shadow_Demo extends Scene_Component
     // Pranav's code for the world
     draw_map(graphics_state)
     {
-         let pos = Mat4.identity();
+        let pos = Mat4.identity();
+        this.shad_bound_box = [];  //reset the shadow boundary box every iteration
         //Jacob - the second draw of all the buildings and players are the shadow maps
         // the road
         pos = pos.times(Mat4.translation([-3.5,-9.05,40]))
@@ -254,15 +255,21 @@ class Shadow_Demo extends Scene_Component
         let car_period = 5.5 * Math.sin( Math.PI * ( (t/1.5) % 2) /2 );
 
         // car 1
-        pos = Mat4.identity().times(Mat4.translation([(2 - car_period),1,12])).times(Mat4.scale([0.7,0.4,0.5])).times(Mat4.translation([1,1,1]));
+        let x_start_pos = 2-car_period;
+        pos = Mat4.identity().times(Mat4.translation([x_start_pos,1,12])).times(Mat4.scale([0.7,0.4,0.5])).times(Mat4.translation([1,1,1]));
         this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(0.25, 0.9, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
-        this.shapes.body.draw(graphics_state,pos,this.materials.shadow)
+        this.shapes.body.draw(graphics_state,pos,this.materials.shadow);
+        this.shad_bound_box.push([[x_start_pos,1,1.8,12,13],[x_start_pos + 2*0.7,1,1.8,12,13],
+                                  [12,1,1.8,x_start_pos,x_start_pos+2*0.7],[13,1,1.8,x_start_pos,x_start_pos+2*0.7]]);
 
 
         // car 2
-        pos = Mat4.identity().times(Mat4.translation([(-3.5 + car_period),1,-6])).times(Mat4.scale([0.7,0.4,0.5])).times(Mat4.translation([1,1,1]));
+        x_start_pos = -3.5 + car_period
+        pos = Mat4.identity().times(Mat4.translation([x_start_pos,1,-6])).times(Mat4.scale([0.7,0.4,0.5])).times(Mat4.translation([1,1,1]));
         this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(0.25, 0.9, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
-        this.shapes.body.draw(graphics_state,pos,this.materials.shadow)
+        this.shapes.body.draw(graphics_state,pos,this.materials.shadow);
+        this.shad_bound_box.push([[x_start_pos,1,1.8,-6,-5],[x_start_pos + 2*0.7,1,1.8,-6,-5],
+                                  [-6,1,1.8,x_start_pos,x_start_pos+2*0.7],[-5,1,1.8,x_start_pos,x_start_pos+2*0.7]]);
     }
     
     draw_char(graphics_state, time) //Jacob - draw char and their skills
