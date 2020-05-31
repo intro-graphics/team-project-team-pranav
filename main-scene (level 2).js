@@ -281,7 +281,7 @@ class Shadow_Demo extends Scene_Component
           console.log("in no shadow");
           this.redC = 1;    // not in shadow, same color
          // this.charHealth -= 1;
-           this.charHealth -= 0;
+           this.charHealth -= 1;
         }
 
         if(this.charHealth <= 0 && !this.boom)  // if the charHealth is lower than 0, turn on this.boom so that the explosion will start
