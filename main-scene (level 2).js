@@ -86,28 +86,66 @@ class Shadow_Demo extends Scene_Component
     mover(dir)
     {
     	if(this.charHealth <= 0)
+    	{
     		return;
+    	}
 
         if(dir == 'w')
         {
-        	if( ( this.lr < (-20 * this.move_dist) && this.ud > (-188 * this.move_dist) ) || (this.ud > (-54 * this.move_dist)) )
-              this.ud = this.ud - 0.2;
+        	if(this.lr < (-20 * this.move_dist))
+        	{
+        		if(this.ud > (-188 * this.move_dist) )
+        		{
+        			this.ud = this.ud - 0.2;
+        		}
+        	}
+        	else
+        	{
+        		if(this.ud > (-54 * this.move_dist))
+        		{
+        			this.ud = this.ud - 0.2;
+        		}
+        	}
         }
         else if(dir == 's')
         {
-        	if( ( this.lr > (-20 * this.move_dist) && this.ud < (5 * this.move_dist)) || (this.ud < (-17 * this.move_dist) ) )
-        	  this.ud = this.ud + 0.2;
+        	if(this.lr < (-20 * this.move_dist))
+        	{
+        		if(this.ud < (-17 * this.move_dist) )
+        		{
+        			this.ud = this.ud + 0.2;
+        		}
+        	}
+        	else
+        	{
+        		if(this.ud < (5 * this.move_dist))
+        		{
+        			this.ud = this.ud + 0.2;
+        		}
+        	}
         }
         else if(dir == 'a')
         {
-            if( ( this.ud < (-16 * this.move_dist) && this.lr > (-51 * this.move_dist) ) || (this.lr > (-17 * this.move_dist)) )
-              this.lr = this.lr - 0.2;
+        	if(this.ud < (-16 * this.move_dist))
+        	{
+        		if(this.lr > (-51 * this.move_dist) )
+        		{
+        			this.lr = this.lr - 0.2;
+        		}
+        	}
+        	else
+        	{
+        		if(this.lr > (-17 * this.move_dist))
+        		{
+        			this.lr = this.lr - 0.2;
+        		}
+        	}
         }
         else if(dir == 'd')
         {
         	if(this.ud < (-55 * this.move_dist))
         	{
-        		if(this.lr < (-22 * this.move_dist) )
+        		if(this.lr < (-21 * this.move_dist) )
         		{
         			this.lr = this.lr + 0.2;
         		}
@@ -336,9 +374,7 @@ class Shadow_Demo extends Scene_Component
     {
         let boom_pos = Mat4.identity();
         // Pranav's character, translate to origin, scale then move to wherever you want
-        boom_pos = Mat4.identity().times(Mat4.translation([0.4,1,14]))
-            .times(Mat4.translation([this.lr,0,this.ud]));
-        
+        boom_pos = Mat4.identity().times(Mat4.translation([0.4+this.lr ,1,18+this.ud]))
         // console.log("This is", time);
         // console.log("That is", this.initial_blow);
         let scaleT = ((time - this.initial_blow)*100) % 200;
