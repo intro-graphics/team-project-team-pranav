@@ -331,7 +331,7 @@ class Shadow_Demo extends Scene_Component
           console.log("x_startpos: "+x_start_pos);
           if(x_start_pos-0.6<=this.lr&&x_start_pos+1.6>= this.lr)
           {
-            this.charHealth=500;
+            this.charHealth=0;
           }
           
         }
@@ -354,7 +354,7 @@ class Shadow_Demo extends Scene_Component
           console.log("x_startpos: "+x_start_pos);
           if(x_start_pos-0.6<=this.lr&&x_start_pos+1.6>= this.lr)
           {
-            this.charHealth=500;
+            this.charHealth=0;
           }
           
         }
@@ -457,7 +457,6 @@ class Shadow_Demo extends Scene_Component
         var inShad = inShadow(origin_pos,ray,this.shad_bound_box);
         if(inShad)                                    //if not blocked by any of the four planes in shadow
         {
-          //this.charHealth -= 1;
           this.shapes.body.draw
             (graphics_state, pos, this.materials.suns.override( {color: Color.of(.5, 0, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
           if(this.maxHealth > this.charHealth)    // don't go above max health
@@ -467,8 +466,8 @@ class Shadow_Demo extends Scene_Component
         {
           this.shapes.body.draw
             (graphics_state, pos, this.materials.suns.override( {color: Color.of(1, 0, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
-          //if(this.charHealth > 0)    // don't go above max health
-                //this.charHealth -= 1;
+          if(this.charHealth > 0)    // don't go above max health
+                this.charHealth -= 1;
         }
         this.shapes.body.draw(graphics_state,pos,this.materials.shadow); //Draw its shadow
 
