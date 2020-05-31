@@ -270,7 +270,21 @@ class Shadow_Demo extends Scene_Component
         let car_period = 5.5 * Math.sin( Math.PI * ( (t/1.5) % 2) /2 );
 
         // car 1
+        //x length is 2
+        //z length is 1
+       
         let x_start_pos = 2-car_period;
+        
+        if(this.ud<=-1&&this.ud>=-2.6)
+        {
+          console.log("x_startpos: "+x_start_pos);
+          if(x_start_pos-0.6<=this.lr&&x_start_pos+1.6>= this.lr)
+          {
+            this.charHealth=0;
+          }
+          
+        }
+        
         pos = Mat4.identity().times(Mat4.translation([x_start_pos,1,12])).times(Mat4.scale([0.7,0.4,0.5])).times(Mat4.translation([1,1,1]));
         this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(0.25, 0.9, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
         this.shapes.body.draw(graphics_state,pos,this.materials.shadow);
@@ -279,7 +293,19 @@ class Shadow_Demo extends Scene_Component
 
 
         // car 2
+        
+       
+        
         x_start_pos = -3.5 + car_period
+        if(this.ud<=-19&&this.ud>=-20.6)
+        {
+          console.log("x_startpos: "+x_start_pos);
+          if(x_start_pos-0.6<=this.lr&&x_start_pos+1.6>= this.lr)
+          {
+            this.charHealth=0;
+          }
+          
+        }
         pos = Mat4.identity().times(Mat4.translation([x_start_pos,1,-6])).times(Mat4.scale([0.7,0.4,0.5])).times(Mat4.translation([1,1,1]));
         this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(0.25, 0.9, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
         this.shapes.body.draw(graphics_state,pos,this.materials.shadow);
@@ -334,7 +360,10 @@ class Shadow_Demo extends Scene_Component
           if(this.blow_up(graphics_state, time) > 100)
             return;
       }
-
+      if(this.ud<=-29&&this.lr>=-1.8&&this.lr<=1.2)
+      {
+        console.log("in cave");
+      }
       let shadowPos = Mat4.identity();
           shadowPos = shadowPos.times(Mat4.translation([2.5,5.01,10]));
           shadowPos = shadowPos.times(Mat4.scale([1,1,2]));
@@ -378,8 +407,8 @@ class Shadow_Demo extends Scene_Component
           //this.charHealth -= 1;
           this.shapes.body.draw
             (graphics_state, pos, this.materials.suns.override( {color: Color.of(.5, 0, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
-          //if(this.maxHealth > this.charHealth)    // don't go above max health
-                //this.charHealth += 1;
+          if(this.maxHealth > this.charHealth)    // don't go above max health
+                this.charHealth += 1;
         }
         else                                                        //else not in shadow
         {
