@@ -76,9 +76,13 @@ class Shadow_Demo extends Scene_Component
         context.globals.graphics_state.camera_transform = Mat4.look_at( Vec.of( 0,10,30 ), Vec.of( 0,0,0 ), Vec.of( 0,1,0 ) );
         this.initial_camera_location = Mat4.inverse( context.globals.graphics_state.camera_transform );
         
-		this.bgm = document.getElementById("bgm");
-		bgm.play();
-		this.skillsfx = document.getElementById("skillsfx");
+        this.bgm = document.getElementById("bgm");
+        this.bgm.play();
+        this.bgm.loop = true;
+        this.skillsfx = document.getElementById("skillsfx");
+        this.footstepsfx = document.getElementById("footstepsfx");
+        this.footstepsfx.volume = 0.4;
+        this.lowhealthsfx = document.getElementById("lowhealthsfx");
 		
         // Pranav's variables
         this.drawTheChar = true;    // whether to trigger the draw_char function
@@ -90,6 +94,11 @@ class Shadow_Demo extends Scene_Component
         this.maxHealth = 500;   // health shouldn't be able to rise higher than this, should be equal to charHealth at the start
         this.redC = 1; // if in shadow, reduce to 0.5 and make it look darker
         this.shad_bound_box = []; //add info to list to determine if the player is in shadow using other functions
+        
+        this.car1ud = 0;
+        this.car1lr = 0;
+        this.car2ud = 0;
+        this.car2lr = 0;
 		
         this.extend_shadow = false; //Jacob - extend shadow skill is turned off
         this.counter = 0; //Jacob - counts to set how long extend_shadow lasts
@@ -144,7 +153,7 @@ class Shadow_Demo extends Scene_Component
 			
       }
 	  
-    make_control_panel()            // Pranav - Draw the scene's buttons, setup their actions and keyboard shortcuts, and monitor live measurements.
+      make_control_panel()            // Pranav - Draw the scene's buttons, setup their actions and keyboard shortcuts, and monitor live measurements.
       { /* 05-22-20 - Pranav
             if the charHealth is less than 0, the character is dead, so don't move then
             also, this.move_dist is the constant of move_dist, if it's value is changed, the max steps in each direction must be changed too 
@@ -152,18 +161,22 @@ class Shadow_Demo extends Scene_Component
         this.key_triggered_button("Up", ["w"], () => {  // going Up with 'i'
                 if(this.ud >= (-146 * this.move_dist) && this.charHealth > 0)  // 146 steps max upwards (from starting position) (not 484 because >=)
                   this.ud = this.ud - 0.2;
+			  this.footstepsfx.play();
             });
         this.key_triggered_button("Down", ["s"], () => {  // going Down with 'k'
                 if(this.ud <= (6 * this.move_dist) && this.charHealth > 0)  // 6 steps max downwards
                   this.ud = this.ud + 0.2;
+				  this.footstepsfx.play();
             });
         this.key_triggered_button("Left", ["a"], () => {  // going Left with 'j'
                 if(this.lr >= (-17 * this.move_dist) && this.charHealth > 0)  //  17 steps max left
                   this.lr = this.lr - 0.2;
+				  this.footstepsfx.play();
             });
         this.key_triggered_button("Right", ["d"], () => { // going right with 'l'
                 if(this.lr <= (13 * this.move_dist) && this.charHealth > 0) //  13 steps max right
                   this.lr = this.lr + 0.2;
+				  this.footstepsfx.play();
             });
         this.key_triggered_button("Extend_Shadow", ["q"], () => { // going right with 'l'
                 this.extend_shadow = true;
@@ -237,7 +250,21 @@ class Shadow_Demo extends Scene_Component
         let y_period = (2+Math.sin(period*2))/2.5;
         pos = Mat4.identity().times(Mat4.translation([50*x_period,10*y_period+20,15]));
         this.shapes.sub4.draw(graphics_state, pos, this.materials.suns);
+
+        let car_period = 5.5 * Math.sin( Math.PI * ( (t/1.5) % 2) /2 );
+
+        // car 1
+        pos = Mat4.identity().times(Mat4.translation([(2 - car_period),1,12])).times(Mat4.scale([0.7,0.4,0.5])).times(Mat4.translation([1,1,1]));
+        this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(0.25, 0.9, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
+        this.shapes.body.draw(graphics_state,pos,this.materials.shadow)
+
+
+        // car 2
+        pos = Mat4.identity().times(Mat4.translation([(-3.5 + car_period),1,-6])).times(Mat4.scale([0.7,0.4,0.5])).times(Mat4.translation([1,1,1]));
+        this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(0.25, 0.9, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
+        this.shapes.body.draw(graphics_state,pos,this.materials.shadow)
     }
+    
     draw_char(graphics_state, time) //Jacob - draw char and their skills
     {	
       /* 05-22-20 - Pranav
@@ -336,7 +363,7 @@ class Shadow_Demo extends Scene_Component
     {
         let boom_pos = Mat4.identity();
         // Pranav's character, translate to origin, scale then move to wherever you want
-        boom_pos = Mat4.identity().times(Mat4.translation([0.4,5,14]))
+        boom_pos = Mat4.identity().times(Mat4.translation([0.4,1,14]))
             .times(Mat4.translation([this.lr,0,this.ud]));
         
         // console.log("This is", time);
@@ -378,7 +405,9 @@ class Shadow_Demo extends Scene_Component
 		// update health
 		var numBars = Math.ceil(this.charHealth/50);
 		if ( numBars < 0 )
-			numBars = 0;
+      numBars = 0;
+    if ( numBars < 5 && numBars > 0 )
+			this.lowhealthsfx.play();
 		var BarsText = "";
 		for ( var i = 0; i < numBars; i++ )
 			BarsText += "♥";
