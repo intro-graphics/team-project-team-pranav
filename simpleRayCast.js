@@ -45,7 +45,7 @@ function getFaceNormals(pos)
         let right_face = findNormal(back_bottom_right,front_bottom_right,front_top_right);
         let front_face = findNormal(front_bottom_right,front_top_right,front_top_left);
         let back_face = findNormal(back_bottom_right,back_top_right,back_top_left);
-        return [[left_face,back_bottom_left],[right_face,back_bottom_right],[back_face,back_bottom_right],[front_face,front_bottom_left]];
+        return [[left_face,back_bottom_left],[right_face,front_bottom_right],[back_face,back_bottom_right],[front_face,front_bottom_left]];
 }
 
 //Jacob:idea here is to basically do ray casting from the vampire to the sun and see if anything blocks the way

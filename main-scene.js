@@ -345,7 +345,6 @@ class Shadow_Demo extends Scene_Component
         //Draw the person
         let origin_pos = (pos.times(Vec.of(0,0,0,1))); //This is the center position of the person
         let ray = this.lights[0].position.minus(origin_pos);  //This is the vector from the position of the person to sun
-        let g = this.lights;
         var inShad = inShadow(origin_pos,ray,this.shad_bound_box);
         if(inShad)                                    //if not blocked by any of the four planes in shadow
         {
