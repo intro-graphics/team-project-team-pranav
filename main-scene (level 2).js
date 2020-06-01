@@ -245,7 +245,7 @@ class Shadow_Demo extends Scene_Component
         //the cave entrance
         pos = Mat4.identity().times(Mat4.scale([2.5,3,3])).times(Mat4.translation([-2.75,0,-7.1]));
         this.shapes.sub4.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(0, 0, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
-        this.shapes.sub4.draw(graphics_state,pos,this.materials.shadow)
+        //this.shapes.sub4.draw(graphics_state,pos,this.materials.shadow)
 
         // the green building
         pos = Mat4.identity().times(Mat4.translation([7,1,14])).times(Mat4.scale([1,2,2])).times(Mat4.translation([1,1,1]));
@@ -472,7 +472,11 @@ class Shadow_Demo extends Scene_Component
                 this.charHealth -= 1;
         }
         this.shapes.body.draw(graphics_state,pos,this.materials.shadow);
-       
+        let camera_matrix = pos.times(Mat4.translation([0,20,15]))
+            .times(Mat4.rotation(-Math.PI/4,Vec.of(1,0,0)));        //Rotate the camera a bit so we can see from above              
+        camera_matrix = Mat4.inverse(camera_matrix);
+        camera_matrix = camera_matrix.map((x,i) => Vec.from(graphics_state.camera_transform[i]).mix(x,.1));
+        graphics_state.camera_transform = camera_matrix;
         //Jacob - If skill extend_shadow is on, draw the shadow in front of the character, order of transformations is to move to origin, scale, rotate
         //then move to where the character is
         if(this.extend_shadow || (this.counter < 120 && this.counter > 0))
