@@ -1,71 +1,3 @@
-//ignore this comment
-//Jacob
-function bounded ( intercept, bound_low, bound_high)
-{
-	if(intercept <bound_low || intercept >bound_high)                  //check that the point is between low and high
-	{
-	  return false
-	}
-	return true
-}
-//Jacob:idea here is to basically do ray casting from the vampire to the sun and see if anything blocks the way
-//this function checks if the given bounded information will block the sun from view in which case we know it's in shadow
-function blockSunLR(start,ray,x_val,y_bound_low,y_bound_high,z_bound_low,z_bound_high)
-{
-  y_bound_low +=.5;                                                      //the center of the character is .5 above ground, adjust here
-  y_bound_high +=.5
-  if(ray[0] == 0)                                                        //in this case it means the suns directly shining from camera/parallel
-  {                                                                      //therefore it can't be blocked by left right walls
-    return false
-  }
-  let scale_factor = (x_val-start[0])/ray[0];                            //scale factor tells you how much you need to scale for x y
-  let y_intercept = scale_factor*ray[1] + start[1];                      //scale then add initial position for intersection of ray and plane
-  if(!bounded(y_intercept,y_bound_low,y_bound_high))                     //if not between specified bounds the plane doesn't cover you
-    return false;
-  let z_intercept = scale_factor*ray[2] + start[2];                      //^same as before
-  if(!bounded(z_intercept,z_bound_low,z_bound_high))
-    return false;
-  return true;                                                           //since its bounded in both y and z that means this blocks the sun
-}
-//Jacob: same situation up top but for Front and Back planes
-function blockSunFB(start,ray,z_val,y_bound_low,y_bound_high,x_bound_low,x_bound_high)
-{
-  y_bound_low +=.5;                                                      //the center of the character is .5 above ground, adjust here
-  y_bound_high +=.5
-  if(ray[2] == 0)                                                        //in this case its parallel 
-  {                                                                      //therefore it can't be blocked by front back walls
-    return false
-  }
-  let scale_factor = (z_val-start[2])/ray[2];                            //scale factor tells you how much you need to scale for x y
-  let y_intercept = scale_factor*ray[1] + start[1];                      //scale then add initial position for intersection of ray and plane
-  if(!bounded(y_intercept,y_bound_low,y_bound_high))                     //if not between specified bounds the plane doesn't cover you
-    return false;
-  let x_intercept = scale_factor*ray[0] + start[0];                      //^same as before
-  if(!bounded(x_intercept,x_bound_low,x_bound_high))
-    return false;
-  return true;                                                           //since its bounded in both y and z that means this blocks the sun
-}
-
-//Jacob
-function inShadow(start,ray,bound)
-{
-	len = bound.length;
-	var i =0;
-        for(i=0;i<len;i++)
-        {
-        	if(blockSunLR(start,ray,bound[i][0][0],bound[i][0][1],bound[i][0][2],bound[i][0][3],bound[i][0][4]) 
-        	|| blockSunLR(start,ray,bound[i][1][0],bound[i][1][1],bound[i][1][2],bound[i][1][3],bound[i][1][4])
-        	|| blockSunFB(start,ray,bound[i][2][0],bound[i][2][1],bound[i][2][2],bound[i][2][3],bound[i][2][4])
-        	|| blockSunFB(start,ray,bound[i][3][0],bound[i][3][1],bound[i][3][2],bound[i][3][3],bound[i][3][4]))
-        	{
-              return true;
-        	}
-        }
-    return false;
-}
-
-
-
 window.Shadow_Demo = window.classes.Shadow_Demo =
 class Shadow_Demo extends Scene_Component
   { constructor( context, control_box )     // The scene begins by requesting the camera, shapes, and materials it will need.
@@ -93,7 +25,7 @@ class Shadow_Demo extends Scene_Component
         this.lr = 0; // the left-right position of the character
         this.maxHealth = 500;   // health shouldn't be able to rise higher than this, should be equal to charHealth at the start
         this.redC = 1; // if in shadow, reduce to 0.5 and make it look darker
-        this.shad_bound_box = []; //add info to list to determine if the player is in shadow using other functions
+        this.shad_bound_box = [];        //add info to this list so we can check for shadow detection
         
         this.car1ud = 0;
         this.car1lr = 0;
@@ -227,32 +159,43 @@ class Shadow_Demo extends Scene_Component
         this.shapes.sub4.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(0, 0, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
         this.shapes.sub4.draw(graphics_state,pos,this.materials.shadow)
       
-        // the green building
+        // the green building ALL BUILDINGS WILL FOLLOW THIS PROCESS
+        // use transformations, draw building, draw shadow, then get the norms of the four sides not top and bottom
+        //then push into shad_bound_box the boundary information we need so we can decide whether player is in this 
+        //buildings shadow later
         pos = Mat4.identity().times(Mat4.translation([0,1,0])).times(Mat4.scale([1,2,2])).times(Mat4.translation([1,1,1]));
         this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(0.25, 0.9, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
         this.shapes.body.draw(graphics_state,pos,this.materials.shadow);
-        this.shad_bound_box.push([[0,1,5,0,4],[2,1,5,0,4],[0,1,5,0,2],[4,1,5,0,2]]);      //Manually input list of bounding cases
-                                                                                  //0,1,5,0,4 and 2,1,5,0,4 is for Left Right
-                                                                                  //0 means the plane x = 0 ,1 is the lowerest y of the building
-                                                                                  //5 is the highest y of building
-                                                                                  //0 is the furthest z, 4 is the closest
-                                                                                  //categorized like this first the first two pairs
-                                                               //(plane that x equals, y_bound_low, y_bound_high, z_bound_low, z_bound_high)
-                                                               //For the second pair of 5's 0,1,5,0,2 and 4,1,5,0,2
-                                                               //This is for the front and back plane 
-                                                               //Format: (plane that z equals, y_bound_low, y_bound_high, x_bound_low, x_bound_high)
+
+        let faceNorms = getFaceNormals(pos);                              //Get the LR and FB normals as well as one point on it
+        //Pass in the normals and points, as long as the boundaries of the buildings
+        //Manually input list of bounding cases 0,1,5,0,4 and 2,1,5,0,4 is for Left Right
+        //0 means the plane x = 0 ,1 is the lowerest y of the building
+        //5 is the highest y of building
+        //0 is the furthest z, 4 is the closest
+        //categorized like this first the first two pairs
+        //([normal of left or right face, point inside it], y_bound_low, y_bound_high, z_bound_low, z_bound_high)
+        //For the second pair of 5's faceNorms[2],1,5,0,2 and faceNorms[3],1,5,0,2
+        //This is for the front and back plane 
+        //Format: ([normal of front or back face, point inside it], y_bound_low, y_bound_high, x_bound_low, x_bound_high)
+        this.shad_bound_box.push([[faceNorms[0],1,5,0,4],[faceNorms[1],1,5,0,4],[faceNorms[2],1,5,0,2],[faceNorms[3],1,5,0,2]]);
+
+      
+
 
         //  the yellow building
         pos = Mat4.identity().times(Mat4.translation([-8,1,4])).times(Mat4.scale([1,2,2])).times(Mat4.translation([1,1,1]));
         this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(1, 1, 0.5, 1)},{ambient:0,specular:1,gouraud:false} ));
         this.shapes.body.draw(graphics_state,pos,this.materials.shadow);
-        this.shad_bound_box.push([[-8,1,5,4,8],[-6,1,5,4,8],[4,1,5,-8,-6],[8,1,5,-8,-6]]);
+        faceNorms = getFaceNormals(pos);
+        this.shad_bound_box.push([[faceNorms[0],1,5,4,8],[faceNorms[1],1,5,4,8],[faceNorms[2],1,5,-8,-6],[faceNorms[3],1,5,-8,-6]]);
 
         // the gray building
         pos = Mat4.identity().times(Mat4.translation([8,1,2])).times(Mat4.scale([1,2,2])).times(Mat4.translation([1,1,1]));
         this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(0.5, 0.5, 0.5, 1)},{ambient:0,specular:1,gouraud:false} ));
         this.shapes.body.draw(graphics_state,pos,this.materials.shadow);
-        this.shad_bound_box.push([[8,1,5,2,6],[10,1,5,2,6],[2,1,5,8,10],[6,1,5,8,10]]);
+        faceNorms = getFaceNormals(pos);
+        this.shad_bound_box.push([[faceNorms[0],1,5,2,6],[faceNorms[1],1,5,2,6],[faceNorms[2],1,5,8,10],[faceNorms[3],1,5,8,10]])
 
 
         // the skybox (can be seen if you tilt the camera)
@@ -288,8 +231,9 @@ class Shadow_Demo extends Scene_Component
         pos = Mat4.identity().times(Mat4.translation([x_start_pos,1,12])).times(Mat4.scale([0.7,0.4,0.5])).times(Mat4.translation([1,1,1]));
         this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(0.25, 0.9, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
         this.shapes.body.draw(graphics_state,pos,this.materials.shadow);
-        this.shad_bound_box.push([[x_start_pos,1,1.8,12,13],[x_start_pos + 2*0.7,1,1.8,12,13],
-                                  [12,1,1.8,x_start_pos,x_start_pos+2*0.7],[13,1,1.8,x_start_pos,x_start_pos+2*0.7]]);
+        faceNorms = getFaceNormals(pos);
+        this.shad_bound_box.push([[faceNorms[0],1,1.8,12,13],[faceNorms[1],1,1.8,12,13],
+                                  [faceNorms[2],1,1.8,x_start_pos,x_start_pos+2*0.7],[faceNorms[3],1,1.8,x_start_pos,x_start_pos+2*0.7]]);
 
 
         // car 2
@@ -309,8 +253,9 @@ class Shadow_Demo extends Scene_Component
         pos = Mat4.identity().times(Mat4.translation([x_start_pos,1,-6])).times(Mat4.scale([0.7,0.4,0.5])).times(Mat4.translation([1,1,1]));
         this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(0.25, 0.9, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
         this.shapes.body.draw(graphics_state,pos,this.materials.shadow);
-        this.shad_bound_box.push([[x_start_pos,1,1.8,-6,-5],[x_start_pos + 2*0.7,1,1.8,-6,-5],
-                                  [-6,1,1.8,x_start_pos,x_start_pos+2*0.7],[-5,1,1.8,x_start_pos,x_start_pos+2*0.7]]);
+        faceNorms = getFaceNormals(pos);
+        this.shad_bound_box.push([[faceNorms[0],1,1.8,-6,-5],[faceNorms[1],1,1.8,-6,-5],
+                                  [faceNorms[2],1,1.8,x_start_pos,x_start_pos+2*0.7],[faceNorms[3],1,1.8,x_start_pos,x_start_pos+2*0.7]]);
     }
     
     draw_char(graphics_state, time) //Jacob - draw char and their skills
@@ -404,7 +349,6 @@ class Shadow_Demo extends Scene_Component
         var inShad = inShadow(origin_pos,ray,this.shad_bound_box);
         if(inShad)                                    //if not blocked by any of the four planes in shadow
         {
-          //this.charHealth -= 1;
           this.shapes.body.draw
             (graphics_state, pos, this.materials.suns.override( {color: Color.of(.5, 0, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
           if(this.maxHealth > this.charHealth)    // don't go above max health
@@ -414,8 +358,8 @@ class Shadow_Demo extends Scene_Component
         {
           this.shapes.body.draw
             (graphics_state, pos, this.materials.suns.override( {color: Color.of(1, 0, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
-          //if(this.charHealth > 0)    // don't go above max health
-                //this.charHealth -= 1;
+          if(this.charHealth > 0)    // don't go above max health
+                this.charHealth -= 1;
         }
         this.shapes.body.draw(graphics_state,pos,this.materials.shadow); //Draw its shadow
 
@@ -527,7 +471,6 @@ class Shadow_Demo extends Scene_Component
        
        if(this.drawTheChar) // 05-22-20 Pranav - If you're dead, don't try and draw stuff
             this.draw_char(graphics_state, t);
-        // you guys can start from here
         
 		this.update_UI()
       }

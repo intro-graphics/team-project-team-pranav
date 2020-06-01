@@ -81,12 +81,7 @@ class Shadow_Demo extends Scene_Component
             shadow: context.get_instance(Shadow_Shader)
 			.material(Color.of(0,0,0,1),
 			{ambient: 1.0, diffusivity: 0.0, specularity: 0.0 })
-
           }
-          this.materials["shadow"] = context.get_instance(Shadow_Shader)
-			.material(Color.of(0,0,0,1),
-			{ambient: 1.0, diffusivity: 0.0, specularity: 0.0 });
-			
       }
 
   
@@ -272,9 +267,9 @@ class Shadow_Demo extends Scene_Component
         //Jacob - This is the sun 
         const t = graphics_state.animation_time / 1000;
         let period = t*(2*Math.PI)/10;                               //calculate period for when to change color and when to change radius
-        let x_period = Math.sin(period)/2;                            //figure out the period to create a circular path
-        let y_period = (2+Math.sin(period*2))/2.5;
-        pos = Mat4.identity().times(Mat4.translation([50*x_period,10*y_period,15]));
+        let x_period = Math.sin(period/5)/2;                            //figure out the period to create a circular path
+        let y_period = (2+Math.sin(period*2/5))/2.5;
+        pos = Mat4.identity().times(Mat4.translation([50*x_period,10*y_period+10,15]));
         this.shapes.sub4.draw(graphics_state, pos, this.materials.suns);
 
         
@@ -424,7 +419,7 @@ class Shadow_Demo extends Scene_Component
           console.log("in no shadow");
           this.redC = 1;    // not in shadow, same color
          // this.charHealth -= 1;
-         //  this.charHealth -= 1;
+
         }
         */
 
@@ -541,7 +536,7 @@ class Shadow_Demo extends Scene_Component
         let period = t*(2*Math.PI)/10;                               //calculate period for when to change color and when to change radius
         let x_period = Math.sin(period/5)/2;                            //figure out the period to create a circular path
         let y_period = (2+Math.sin(period*2/5))/2.5;
-        this.lights = [new Light(Vec.of(50*x_period,10*y_period,15,1),Color.of(0,1,1,1),1000)]; //Jacob- Set light where sun is
+        this.lights = [new Light(Vec.of(50*x_period,10*y_period+10,15,1),Color.of(0,1,1,1),1000)]; //Jacob- Set light where sun is
         graphics_state.lights = this.lights;        // Use the lights stored in this.lights.
         // our position matrix
 
