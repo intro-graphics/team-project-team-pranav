@@ -50,8 +50,10 @@ function getFaceNormals(pos)
 
 //Jacob:idea here is to basically do ray casting from the vampire to the sun and see if anything blocks the way
 //this function checks if the given bounded information will block the sun from view in which case we know it's in shadow
-function inShadLR(start,ray,norm_and_pt,y_bound_low,y_bound_high,z_bound_low,z_bound_high)
+function inShadLR(start,ray,norm_and_pt,y_bound_low,y_bound_high,z_bound_1,z_bound_2)
 {
+  let z_bound_low = Math.min(z_bound_1,z_bound_2);
+  let z_bound_high = Math.max(z_bound_1,z_bound_2);
   y_bound_low +=.5;                                                      //the center of the character is .5 above ground, adjust here
   y_bound_high +=.5
   let scale_factor = intersect(norm_and_pt[0],start,ray,norm_and_pt[1])           //find what t is for the intersection
@@ -69,8 +71,10 @@ function inShadLR(start,ray,norm_and_pt,y_bound_low,y_bound_high,z_bound_low,z_b
 }
 
 //Jacob: same situation up top but for Front and Back planes
-function inShadFB(start,ray,norm_and_pt,y_bound_low,y_bound_high,x_bound_low,x_bound_high)
+function inShadFB(start,ray,norm_and_pt,y_bound_low,y_bound_high,x_bound_1,x_bound_2)
 {
+  let x_bound_low = Math.min(x_bound_1,x_bound_2);
+  let x_bound_high = Math.max(x_bound_1,x_bound_2);
   y_bound_low +=.5;                                                      //the center of the character is .5 above ground, adjust here
   y_bound_high +=.5
   let scale_factor = intersect(norm_and_pt[0],start,ray,norm_and_pt[1])  //find t to determine where it intersects
@@ -102,4 +106,19 @@ function inShadow(start,ray,bound)                                        //Chec
         	}
         }
     return false;
+}
+//This function when given the faces of the normals and the four corner points, will return a list of the bound box
+//to the caller. The bound box contains four normals, a point on each face and then the boundaries of that face.
+//If the objects were to be rectangular but rotated in the air, then we'd have to change this function to incorporate
+//all six faces. Currently all objects are still on the ground and rectagular so we are fine for now.
+function boundBox(faceNorms,y_bound_low,y_bound_high)          
+{
+	let back_bottom_left = faceNorms[0][1];                              //get the respective points so we can determine bounds
+    let front_bottom_right = faceNorms[1][1];
+    let back_bottom_right = faceNorms[2][1];
+    let front_bottom_left = faceNorms[3][1];
+    return ([[faceNorms[0],y_bound_low,y_bound_high,back_bottom_left[2],front_bottom_left[2]],
+                             [faceNorms[1],y_bound_low,y_bound_high,back_bottom_right[2],front_bottom_right[2]],
+                             [faceNorms[2],y_bound_low,y_bound_high,back_bottom_left[0],back_bottom_right[0]],
+                             [faceNorms[3],y_bound_low,y_bound_high,front_bottom_left[0],front_bottom_right[0]]]);
 }
