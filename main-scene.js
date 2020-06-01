@@ -107,7 +107,6 @@ class Shadow_Demo extends Scene_Component
 			    .material(Color.of(0,0,0,1),
 			    {ambient: 1.0, diffusivity: 0.0, specularity: 0.0 })
 			    .override({texture:context.get_instance("assets/car.png", true)})
-
           }
           this.materials["shadow"] = context.get_instance(Shadow_Shader)
 			.material(Color.of(0,0,0,1),
@@ -164,7 +163,6 @@ class Shadow_Demo extends Scene_Component
           .times(Mat4.scale([3.5,5,100]))
           .times(Mat4.rotation(Math.PI / 2, Vec.of(0, 1, 0))).times(Mat4.translation([1, 1, 1]));
         this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(0.5, 0.5, 0.5, 1)},{ambient:0,specular:1,gouraud:false} ));
-
         // the grass to the right
         pos = pos.times(Mat4.scale([1,1,8])).times(Mat4.translation([0, -0.01, 1.125]))
         this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(0.5, 1, 0.5, 1)},{ambient:0,specular:1,gouraud:false} ));
