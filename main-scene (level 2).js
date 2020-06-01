@@ -21,6 +21,7 @@ class Shadow_Demo extends Scene_Component
         this.lr = 0; // the left-right position of the character
         this.maxHealth = 500;   // health shouldn't be able to rise higher than this, should be equal to charHealth at the start
         this.redC = 1; // if in shadow, reduce to 0.5 and make it look darker
+        this.shad_bound_box = [];
 		
         this.car1ud = 0;
         this.car1lr = 0;
@@ -33,7 +34,7 @@ class Shadow_Demo extends Scene_Component
         this.counter = 0; //Jacob - counts to set how long extend_shadow lasts
         this.player_in_shadow = false;//Suvir- tells if in shadow or not
         this.charHealth = 500; //Suvir- health of the character
-        
+
         this.collisionBuildW = false; //Suvir- detects collision for building
         this.collisionBuildA = false;
         this.collisionBuildS = false;
@@ -41,6 +42,7 @@ class Shadow_Demo extends Scene_Component
 
         this.char_x_pos = 0;
         this.char_z_pos = 0;
+		
 		// Chang Chun's UI variables, find elements in the HTML and create nodes to store values
 		// grabs the health text
 		this.healthElement = document.querySelector("#health");
@@ -85,107 +87,107 @@ class Shadow_Demo extends Scene_Component
       }
 
   
-    mover(dir)
-    {
-    	if(this.charHealth <= 0)
-    	{
-    		return;
-    	}
-
-        if(dir == 'w')
+      mover(dir)
+      {
+        if(this.charHealth <= 0)
         {
-        	if(this.lr < (-20 * this.move_dist))
-        	{
-        		if(this.ud > (-188 * this.move_dist) )
-        		{
-              if(!this.collisionBuildW)
-              {
-                this.ud = this.ud - 0.2;
-              }
-        		}
-        	}
-        	else
-        	{
-        		if(this.ud > (-54 * this.move_dist))
-        		{
-              if(!this.collisionBuildW)
-              {
-                this.ud = this.ud - 0.2;
-              }
-        		}
-        	}
+          return;
         }
-        else if(dir == 's')
-        {
-        	if(this.lr < (-20 * this.move_dist))
-        	{
-        		if(this.ud < (-17 * this.move_dist) )
-        		{
-              if(!this.collisionBuildS)
+  
+          if(dir == 'w')
+          {
+            if(this.lr < (-20 * this.move_dist))
+            {
+              if(this.ud > (-188 * this.move_dist) )
               {
-                this.ud = this.ud + 0.2;
+                if(!this.collisionBuildW)
+                {
+                  this.ud = this.ud - 0.2;
+                }
               }
-        		}
-        	}
-        	else
-        	{
-        		if(this.ud < (5 * this.move_dist))
-        		{
-              if(!this.collisionBuildS)
+            }
+            else
+            {
+              if(this.ud > (-54 * this.move_dist))
               {
-                this.ud = this.ud + 0.2;
+                if(!this.collisionBuildW)
+                {
+                  this.ud = this.ud - 0.2;
+                }
               }
-        		}
-        	}
-        }
-        else if(dir == 'a')
-        {
-        	if(this.ud < (-16 * this.move_dist))
-        	{
-        		if(this.lr > (-51 * this.move_dist) )
-        		{
-              if(!this.collisionBuildA)
+            }
+          }
+          else if(dir == 's')
+          {
+            if(this.lr < (-20 * this.move_dist))
+            {
+              if(this.ud < (-17 * this.move_dist) )
               {
-                this.lr = this.lr - 0.2;
+                if(!this.collisionBuildS)
+                {
+                  this.ud = this.ud + 0.2;
+                }
               }
-        		}
-        	}
-        	else
-        	{
-        		if(this.lr > (-17 * this.move_dist))
-        		{
-              if(!this.collisionBuildA)
+            }
+            else
+            {
+              if(this.ud < (5 * this.move_dist))
               {
-                this.lr = this.lr - 0.2;
+                if(!this.collisionBuildS)
+                {
+                  this.ud = this.ud + 0.2;
+                }
               }
-        		}
-        	}
-        }
-        else if(dir == 'd')
-        {
-        	if(this.ud < (-55 * this.move_dist))
-        	{
-        		if(this.lr < (-21 * this.move_dist) )
-        		{
-              if(!this.collisionBuildD)
+            }
+          }
+          else if(dir == 'a')
+          {
+            if(this.ud < (-16 * this.move_dist))
+            {
+              if(this.lr > (-51 * this.move_dist) )
               {
-              this.lr = this.lr + 0.2;
+                if(!this.collisionBuildA)
+                {
+                  this.lr = this.lr - 0.2;
+                }
               }
-        		}
-        	}
-        	else
-        	{
-        		if(this.lr < (14 * this.move_dist))
-        		{
-              if(!this.collisionBuildW)
+            }
+            else
+            {
+              if(this.lr > (-17 * this.move_dist))
               {
+                if(!this.collisionBuildA)
+                {
+                  this.lr = this.lr - 0.2;
+                }
+              }
+            }
+          }
+          else if(dir == 'd')
+          {
+            if(this.ud < (-55 * this.move_dist))
+            {
+              if(this.lr < (-21 * this.move_dist) )
+              {
+                if(!this.collisionBuildD)
+                {
                 this.lr = this.lr + 0.2;
+                }
               }
-        		}
-        	}
-        }
-
-        return;
+            }
+            else
+            {
+              if(this.lr < (14 * this.move_dist))
+              {
+                if(!this.collisionBuildW)
+                {
+                  this.lr = this.lr + 0.2;
+                }
+              }
+            }
+          }
+  
+          return;
 
     	
     }
@@ -214,8 +216,8 @@ class Shadow_Demo extends Scene_Component
 
     draw_map(graphics_state)
     {
-         let pos = Mat4.identity();
-         //let npos = Mat4.identity();
+        let pos = Mat4.identity();
+        this.shad_bound_box = [];
         //Jacob - the second draw of all the buildings and players are the shadow maps
         // the road
         pos = Mat4.identity();
@@ -243,22 +245,28 @@ class Shadow_Demo extends Scene_Component
         //the cave entrance
         pos = Mat4.identity().times(Mat4.scale([2.5,3,3])).times(Mat4.translation([-2.75,0,-7.1]));
         this.shapes.sub4.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(0, 0, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
-        //this.shapes.sub4.draw(graphics_state,pos,this.materials.shadow)
+        this.shapes.sub4.draw(graphics_state,pos,this.materials.shadow)
 
         // the green building
         pos = Mat4.identity().times(Mat4.translation([7,1,14])).times(Mat4.scale([1,2,2])).times(Mat4.translation([1,1,1]));
         this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(0.25, 0.9, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
-        this.shapes.body.draw(graphics_state,pos,this.materials.shadow)
+        this.shapes.body.draw(graphics_state,pos,this.materials.shadow);
+        let faceNorms = getFaceNormals(pos);
+        this.shad_bound_box.push([[faceNorms[0],1,5,14,18],[faceNorms[1],1,5,14,18],[faceNorms[2],1,5,7,9],[faceNorms[3],1,5,7,9]]);
 
         //  the yellow building
         pos = Mat4.identity().times(Mat4.translation([-13,1,10])).times(Mat4.scale([1,2,2])).times(Mat4.translation([1,1,1]));
         this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(1, 1, 0.5, 1)},{ambient:0,specular:1,gouraud:false} ));
-        this.shapes.body.draw(graphics_state,pos,this.materials.shadow)
+        this.shapes.body.draw(graphics_state,pos,this.materials.shadow);
+        faceNorms = getFaceNormals(pos);
+        this.shad_bound_box.push([[faceNorms[0],1,5,10,14],[faceNorms[1],1,5,10,14],[faceNorms[2],1,5,-13,-11],[faceNorms[3],1,5,-13,-11]]);
 
         // the gray building
         pos = Mat4.identity().times(Mat4.translation([-4,1,-11])).times(Mat4.scale([1,2,2])).times(Mat4.translation([1,1,1]));
         this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(0.5, 0.5, 0.5, 1)},{ambient:0,specular:1,gouraud:false} ));
-        this.shapes.body.draw(graphics_state,pos,this.materials.shadow)
+        this.shapes.body.draw(graphics_state,pos,this.materials.shadow);
+        faceNorms = getFaceNormals(pos);
+        this.shad_bound_box.push([[faceNorms[0],1,5,-11,-7],[faceNorms[1],1,5,-11,-7],[faceNorms[2],1,5,-4,-2],[faceNorms[3],1,5,-4,-2]]);
 
         // the skybox (can be seen if you tilt the camera)
         pos = Mat4.identity().times(Mat4.scale([100,100,100]))
@@ -273,7 +281,7 @@ class Shadow_Demo extends Scene_Component
         this.shapes.sub4.draw(graphics_state, pos, this.materials.suns);
 
         
-        let car_period = 5.5 * Math.sin( Math.PI * ( (t/1.5) % 2) /2 );
+        let car_period = 5.5 * Math.sin( Math.PI * ( (t/1.5) % 2) / 2);
 
         // car 1
         console.log("this.ud: "+ this.ud);
@@ -287,10 +295,13 @@ class Shadow_Demo extends Scene_Component
           }
           
         }
-        pos = Mat4.identity().times(Mat4.translation([(2 - car_period),1,12])).times(Mat4.scale([0.7,0.4,0.5])).times(Mat4.translation([1,1,1]));
+        let x_start_pos = 2 - car_period;
+        pos = Mat4.identity().times(Mat4.translation([x_start_pos,1,12])).times(Mat4.scale([0.7,0.4,0.5])).times(Mat4.translation([1,1,1]));
         this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(0.25, 0.9, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
-        this.shapes.body.draw(graphics_state,pos,this.materials.shadow)
-
+        this.shapes.body.draw(graphics_state ,pos, this.materials.shadow)
+        faceNorms = getFaceNormals(pos);
+        this.shad_bound_box.push([[faceNorms[0],1,1.8,12,13],[faceNorms[1],1,1.8,12,13],
+                                  [faceNorms[2],1,1.8,x_start_pos,x_start_pos+2*0.7],[faceNorms[3],1,1.8,x_start_pos,x_start_pos+2*0.7]]);
 
         // car 2
         if(this.ud<=-23&&this.ud>=-24.6)
@@ -302,15 +313,15 @@ class Shadow_Demo extends Scene_Component
           }
           
         }
-        pos = Mat4.identity().times(Mat4.translation([(-10.5 + car_period),1,-6])).times(Mat4.scale([0.7,0.4,0.5])).times(Mat4.translation([1,1,1]));
+        x_start_pos = -10.5 + car_period;
+        pos = Mat4.identity().times(Mat4.translation([x_start_pos,1,-6])).times(Mat4.scale([0.7,0.4,0.5])).times(Mat4.translation([1,1,1]));
         this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(0.25, 0.9, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
         this.shapes.body.draw(graphics_state,pos,this.materials.shadow)
+        faceNorms = getFaceNormals(pos);
+        this.shad_bound_box.push([[faceNorms[0],1,1.8,-6,-5],[faceNorms[1],1,1.8,-6,-5],
+                                  [faceNorms[2],1,1.8,x_start_pos,x_start_pos+2*0.7],[faceNorms[3],1,1.8,x_start_pos,x_start_pos+2*0.7]]);
 
-        
-        pos = Mat4.identity().times(Mat4.translation([(-6.5),1,12])).times(Mat4.rotation(1.5 *Math.PI / 2, Vec.of(0, 1, 0))).times(Mat4.translation([3-car_period*1.2,0,0])).times(Mat4.scale([0.7,0.4,0.5])).times(Mat4.translation([1,1,1]));
         // car 3
-        //console.log("z pos-1.2 : "+(pos[2][3]-1.2));
-        //console.log("z pos+1.0 : " + (pos[2][3])+1.0);
         if(this.char_x_pos>=pos[0][3]-0.9&&this.char_x_pos<=pos[0][3]+0.5)
         {
           console.log("x's match up");
@@ -321,9 +332,23 @@ class Shadow_Demo extends Scene_Component
 
           
         }
-        
+        x_start_pos = 3 - car_period * 1.2;
+        pos = Mat4.identity().times(Mat4.translation([(-6.5),1,12]))
+            .times(Mat4.rotation(1.5 *Math.PI / 2, Vec.of(0, 1, 0)))
+            .times(Mat4.translation([x_start_pos,0,0]))
+            .times(Mat4.scale([0.7,0.4,0.5]))
+            .times(Mat4.translation([1,1,1]));
         this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(0.25, 0.9, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
-        this.shapes.body.draw(graphics_state,pos,this.materials.shadow)
+        this.shapes.body.draw(graphics_state,pos,this.materials.shadow);
+        faceNorms = getFaceNormals(pos);
+        let back_bottom_left = faceNorms[0][1];
+        let front_bottom_right = faceNorms[1][1];
+        let back_bottom_right = faceNorms[2][1];
+        let front_bottom_left = faceNorms[3][1];
+        this.shad_bound_box.push([[faceNorms[0],1,1.8,front_bottom_left[2],back_bottom_left[2]],
+                                  [faceNorms[1],1,1.8,front_bottom_right[2],back_bottom_right[2]],
+                                  [faceNorms[2],1,1.8,back_bottom_right[0],back_bottom_left[0]],
+                                  [faceNorms[3],1,1.8,front_bottom_right[0],front_bottom_left[0]]]);
 
     }
     draw_char(graphics_state, time) //Jacob - draw char and their skills
@@ -333,11 +358,11 @@ class Shadow_Demo extends Scene_Component
             so if the value returned is less than 100, keep drawing them. Since they can't move once their health is less than 0, we don't have to
             worry that the character will move back into shadows to replenish health.
       */
-     if(this.lr>=-8.8&&this.lr<=-5.8&&this.ud<=-36.8)
-     {
+      if(this.lr>=-8.8&&this.lr<=-5.8&&this.ud<=-36.8)
+      {
        console.log("in cave");
-     }
-     if(this.lr>=-4.6&&this.lr<=-4.0&&this.ud-0.2<=-25&&this.ud>=-29.6)
+      }
+      if(this.lr>=-4.6&&this.lr<=-4.0&&this.ud-0.2<=-25&&this.ud>=-29.6)
       {
         this.collisionBuildW = true;
       }
@@ -394,34 +419,8 @@ class Shadow_Demo extends Scene_Component
             .times(Mat4.translation([this.lr,0,this.ud]))
             .times(Mat4.scale([0.3,0.5,0.3]))
             .times(Mat4.translation([1,1,1]));
-        
-        this.char_x_pos = pos[0][3];
-        this.char_z_pos= pos[2][3];
-        /*
-        console.log("char x: "+ this.char_x_pos);
-        console.log("char z: "+ this.char_z_pos);
-        if(pos[0][3]>2.9&&pos[0][3]<4.1&&pos[2][3]<pos[0][3]-3.6&&pos[2][3]>pos[0][3]-5.8)
-        {
-            console.log("in shadow 2");
-            if(this.maxHealth > this.charHealth)    // don't go above max health
-                this.charHealth+=1
-            this.redC = 0.5;    // in shadow, then darken color
-        }
-        else if(!(pos[0][3]<2.5||pos[0][3]>4.2||pos[2][3]<10.5||pos[2][3]>13.7))
-        {
-            console.log("in shadow 1")
-            if(this.maxHealth > this.charHealth)    // don't go above max health
-                this.charHealth+=1
-            this.redC = 0.5;    // in shadow, then darken color
-        }
-        else
-        {
-          console.log("in no shadow");
-          this.redC = 1;    // not in shadow, same color
-         // this.charHealth -= 1;
-
-        }
-        */
+        console.log("x axis: "+ (pos[0][3]));
+        console.log("y axis: "+ pos[2][3]);
 
         if(this.charHealth <= 0 && !this.boom)  // if the charHealth is lower than 0, turn on this.boom so that the explosion will start
                                                 // this has to only happen when boom is false, otherwise, initial_blow will keep being reset, glitching the explosion 
@@ -435,15 +434,25 @@ class Shadow_Demo extends Scene_Component
             this.initial_blow = time;
             return;
         }
-
-        
-        this.shapes.body.draw
-          (graphics_state, pos, this.materials.suns.override( {color: Color.of(this.redC, 0, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
-        //pos = pos.times(Mat4.translation([1,20,3]));
+        let origin_pos = (pos.times(Vec.of(0,0,0,1))); //This is the center position of the person
+        let ray = this.lights[0].position.minus(origin_pos);  //This is the vector from the position of the person to sun
+        var inShad = inShadow(origin_pos,ray,this.shad_bound_box);
+        if(inShad)                                    //if not blocked by any of the four planes in shadow
+        {
+          this.shapes.body.draw
+            (graphics_state, pos, this.materials.suns.override( {color: Color.of(.5, 0, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
+          if(this.maxHealth > this.charHealth)    // don't go above max health
+                this.charHealth += 1;
+        }
+        else                                                        //else not in shadow
+        {
+          this.shapes.body.draw
+            (graphics_state, pos, this.materials.suns.override( {color: Color.of(1, 0, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
+          if(this.charHealth > 0)    // don't go above max health
+                this.charHealth -= 1;
+        }
         this.shapes.body.draw(graphics_state,pos,this.materials.shadow);
-        let origin_pos =(pos.times(Vec.of(0,0,0,1)));
-        
-        //console.log("charHealth: "+this.charHealth);
+       
         //Jacob - If skill extend_shadow is on, draw the shadow in front of the character, order of transformations is to move to origin, scale, rotate
         //then move to where the character is
         if(this.extend_shadow || (this.counter < 120 && this.counter > 0))
@@ -543,7 +552,6 @@ class Shadow_Demo extends Scene_Component
         // console.log(this.ud)
         // console.log(this.lr)
         console.log(this.charHealth);
-       
 
         this.draw_map(graphics_state);
        
