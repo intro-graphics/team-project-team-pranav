@@ -33,7 +33,14 @@ class Shadow_Demo extends Scene_Component
         this.counter = 0; //Jacob - counts to set how long extend_shadow lasts
         this.player_in_shadow = false;//Suvir- tells if in shadow or not
         this.charHealth = 500; //Suvir- health of the character
-		
+        
+        this.collisionBuildW = false; //Suvir- detects collision for building
+        this.collisionBuildA = false;
+        this.collisionBuildS = false;
+        this.collisionBuildD = false;
+
+        this.char_x_pos = 0;
+        this.char_z_pos = 0;
 		// Chang Chun's UI variables, find elements in the HTML and create nodes to store values
 		// grabs the health text
 		this.healthElement = document.querySelector("#health");
@@ -96,14 +103,20 @@ class Shadow_Demo extends Scene_Component
         	{
         		if(this.ud > (-188 * this.move_dist) )
         		{
-        			this.ud = this.ud - 0.2;
+              if(!this.collisionBuildW)
+              {
+                this.ud = this.ud - 0.2;
+              }
         		}
         	}
         	else
         	{
         		if(this.ud > (-54 * this.move_dist))
         		{
-        			this.ud = this.ud - 0.2;
+              if(!this.collisionBuildW)
+              {
+                this.ud = this.ud - 0.2;
+              }
         		}
         	}
         }
@@ -113,14 +126,20 @@ class Shadow_Demo extends Scene_Component
         	{
         		if(this.ud < (-17 * this.move_dist) )
         		{
-        			this.ud = this.ud + 0.2;
+              if(!this.collisionBuildS)
+              {
+                this.ud = this.ud + 0.2;
+              }
         		}
         	}
         	else
         	{
         		if(this.ud < (5 * this.move_dist))
         		{
-        			this.ud = this.ud + 0.2;
+              if(!this.collisionBuildS)
+              {
+                this.ud = this.ud + 0.2;
+              }
         		}
         	}
         }
@@ -130,14 +149,20 @@ class Shadow_Demo extends Scene_Component
         	{
         		if(this.lr > (-51 * this.move_dist) )
         		{
-        			this.lr = this.lr - 0.2;
+              if(!this.collisionBuildA)
+              {
+                this.lr = this.lr - 0.2;
+              }
         		}
         	}
         	else
         	{
         		if(this.lr > (-17 * this.move_dist))
         		{
-        			this.lr = this.lr - 0.2;
+              if(!this.collisionBuildA)
+              {
+                this.lr = this.lr - 0.2;
+              }
         		}
         	}
         }
@@ -147,14 +172,20 @@ class Shadow_Demo extends Scene_Component
         	{
         		if(this.lr < (-21 * this.move_dist) )
         		{
-        			this.lr = this.lr + 0.2;
+              if(!this.collisionBuildD)
+              {
+              this.lr = this.lr + 0.2;
+              }
         		}
         	}
         	else
         	{
         		if(this.lr < (14 * this.move_dist))
         		{
-        			this.lr = this.lr + 0.2;
+              if(!this.collisionBuildW)
+              {
+                this.lr = this.lr + 0.2;
+              }
         		}
         	}
         }
@@ -250,18 +281,52 @@ class Shadow_Demo extends Scene_Component
         let car_period = 5.5 * Math.sin( Math.PI * ( (t/1.5) % 2) /2 );
 
         // car 1
+        console.log("this.ud: "+ this.ud);
+        console.log("this.lr: "+ this.lr);
+        if(this.ud<=-5&&this.ud>=-6.6)
+        {
+          
+          if(2-car_period-0.6<=this.lr&&2-car_period+1.6>= this.lr)
+          {
+            this.charHealth=0;
+          }
+          
+        }
         pos = Mat4.identity().times(Mat4.translation([(2 - car_period),1,12])).times(Mat4.scale([0.7,0.4,0.5])).times(Mat4.translation([1,1,1]));
         this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(0.25, 0.9, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
         this.shapes.body.draw(graphics_state,pos,this.materials.shadow)
 
 
         // car 2
+        if(this.ud<=-23&&this.ud>=-24.6)
+        {
+          
+          if(-10.5+car_period-0.6<=this.lr&&-10.5+car_period+1.6>= this.lr)
+          {
+            this.charHealth=0;
+          }
+          
+        }
         pos = Mat4.identity().times(Mat4.translation([(-10.5 + car_period),1,-6])).times(Mat4.scale([0.7,0.4,0.5])).times(Mat4.translation([1,1,1]));
         this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(0.25, 0.9, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
         this.shapes.body.draw(graphics_state,pos,this.materials.shadow)
 
-        // car 3
+        
         pos = Mat4.identity().times(Mat4.translation([(-6.5),1,12])).times(Mat4.rotation(1.5 *Math.PI / 2, Vec.of(0, 1, 0))).times(Mat4.translation([3-car_period*1.2,0,0])).times(Mat4.scale([0.7,0.4,0.5])).times(Mat4.translation([1,1,1]));
+        // car 3
+        //console.log("z pos-1.2 : "+(pos[2][3]-1.2));
+        //console.log("z pos+1.0 : " + (pos[2][3])+1.0);
+        if(this.char_x_pos>=pos[0][3]-0.9&&this.char_x_pos<=pos[0][3]+0.5)
+        {
+          console.log("x's match up");
+          if(this.char_z_pos>=pos[2][3]-1.2&&this.char_z_pos<=pos[2][3]+1.0)
+          {
+            this.charHealth=0;
+          }
+
+          
+        }
+        
         this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(0.25, 0.9, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
         this.shapes.body.draw(graphics_state,pos,this.materials.shadow)
 
@@ -273,6 +338,43 @@ class Shadow_Demo extends Scene_Component
             so if the value returned is less than 100, keep drawing them. Since they can't move once their health is less than 0, we don't have to
             worry that the character will move back into shadows to replenish health.
       */
+     if(this.lr>=-8.8&&this.lr<=-5.8&&this.ud<=-36.8)
+     {
+       console.log("in cave");
+     }
+     if(this.lr>=-4.6&&this.lr<=-4.0&&this.ud-0.2<=-25&&this.ud>=-29.6)
+      {
+        this.collisionBuildW = true;
+      }
+      else
+      {
+        this.collisionBuildW=false;
+      }
+      if(this.lr>=-4.6&&this.lr<=-4.0&&this.ud<=-25&&this.ud+0.2>=-29.6)
+      {
+        this.collisionBuildS = true;
+      }
+      else
+      {
+        this.collisionBuildS=false;
+      }
+      if(this.lr>=-4.6&&this.lr-0.2<=-4.0&&this.ud<=-25&&this.ud>=-29.6)
+      {
+        this.collisionBuildA = true;
+      }
+      else
+      {
+        this.collisionBuildA=false;
+      }
+      if(this.lr+0.2>=-4.6&&this.lr<=-4.0&&this.ud<=-25&&this.ud>=-29.6)
+      {
+        this.collisionBuildD = true;
+      }
+      else
+      {
+        this.collisionBuildD=false;
+      }
+      
       if(this.boom)
       {
           if(this.blow_up(graphics_state, time) > 100)
@@ -297,9 +399,12 @@ class Shadow_Demo extends Scene_Component
             .times(Mat4.translation([this.lr,0,this.ud]))
             .times(Mat4.scale([0.3,0.5,0.3]))
             .times(Mat4.translation([1,1,1]));
-        console.log("x axis: "+ (pos[0][3]));
-        console.log("y axis: "+ pos[2][3]);
-
+        
+        this.char_x_pos = pos[0][3];
+        this.char_z_pos= pos[2][3];
+        /*
+        console.log("char x: "+ this.char_x_pos);
+        console.log("char z: "+ this.char_z_pos);
         if(pos[0][3]>2.9&&pos[0][3]<4.1&&pos[2][3]<pos[0][3]-3.6&&pos[2][3]>pos[0][3]-5.8)
         {
             console.log("in shadow 2");
@@ -319,8 +424,9 @@ class Shadow_Demo extends Scene_Component
           console.log("in no shadow");
           this.redC = 1;    // not in shadow, same color
          // this.charHealth -= 1;
-           this.charHealth -= 1;
+         //  this.charHealth -= 1;
         }
+        */
 
         if(this.charHealth <= 0 && !this.boom)  // if the charHealth is lower than 0, turn on this.boom so that the explosion will start
                                                 // this has to only happen when boom is false, otherwise, initial_blow will keep being reset, glitching the explosion 
@@ -442,8 +548,7 @@ class Shadow_Demo extends Scene_Component
         // console.log(this.ud)
         // console.log(this.lr)
         console.log(this.charHealth);
-        console.log(this.lr);
-        console.log(this.ud)
+       
 
         this.draw_map(graphics_state);
        
