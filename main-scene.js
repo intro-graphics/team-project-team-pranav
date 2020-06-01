@@ -1,3 +1,22 @@
+class Model extends Shape {
+    constructor(name, size=1) {
+        super("positions", "normals", "texture_coords");
+        var request = new XMLHttpRequest();
+        request.open("GET", name, false);
+        request.send();
+        var mesh = JSON.parse(request.responseText);
+		var vertex = mesh.data.attributes.position.array;
+		for (var i=0; i<vertex.length; i++) {
+			vertex[i] = vertex[i] * size;
+		}
+
+		
+		this.positions.push(vertex);
+		this.normals.push(mesh.data.attributes.normal.array);
+		this.texture_coords.push(mesh.data.attributes.uv.array);
+		this.indices = mesh.data.index.array;
+    }
+};
 window.Shadow_Demo = window.classes.Shadow_Demo =
 class Shadow_Demo extends Scene_Component
   { constructor( context, control_box )     // The scene begins by requesting the camera, shapes, and materials it will need.
@@ -65,7 +84,8 @@ class Shadow_Demo extends Scene_Component
                          // Shapes used so far                     
                          sub4: new (Subdivision_Sphere)(4), 
                          body: new (Cube)(),
-                         shadow_square: new Square()
+                         shadow_square: new Square(),
+                         car:new Model("assets/car.json", 1.5)
                        }
         this.submit_shapes( context, shapes );
         this.materials =
@@ -82,7 +102,11 @@ class Shadow_Demo extends Scene_Component
             shadow_mat: context.get_instance( Phong_Shader).material(Color.of(0,0,0,1),{ambient: 1}),
             shadow: context.get_instance(Shadow_Shader)
 			.material(Color.of(0,0,0,1),
-			{ambient: 1.0, diffusivity: 0.0, specularity: 0.0 })
+			{ambient: 1.0, diffusivity: 0.0, specularity: 0.0 }),
+			car: context.get_instance(Phong_Shader)
+			    .material(Color.of(0,0,0,1),
+			    {ambient: 1.0, diffusivity: 0.0, specularity: 0.0 })
+			    .override({texture:context.get_instance("assets/car.png", true)})
 
           }
           this.materials["shadow"] = context.get_instance(Shadow_Shader)
@@ -228,9 +252,14 @@ class Shadow_Demo extends Scene_Component
           
         }
         
-        pos = Mat4.identity().times(Mat4.translation([x_start_pos,1,12])).times(Mat4.scale([0.7,0.4,0.5])).times(Mat4.translation([1,1,1]));
-        this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(0.25, 0.9, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
-        this.shapes.body.draw(graphics_state,pos,this.materials.shadow);
+        pos = Mat4.identity().times(Mat4.translation([x_start_pos,1,12]))
+            .times(Mat4.scale([0.7,0.4,0.5]))
+            .times(Mat4.translation([1,1,1]))
+            .times(Mat4.rotation(Math.PI/2,Vec.of(0,1,0)));
+        let car_pos = pos.times(Mat4.translation([0,-1,0]));
+        this.shapes.car.draw(graphics_state, car_pos, this.materials.car);
+        this.shapes.car.draw(graphics_state,pos,this.materials.shadow);
+        pos = pos.times(Mat4.rotation(-Math.PI/2, Vec.of(0,1,0)));
         faceNorms = getFaceNormals(pos);
         this.shad_bound_box.push([[faceNorms[0],1,1.8,12,13],[faceNorms[1],1,1.8,12,13],
                                   [faceNorms[2],1,1.8,x_start_pos,x_start_pos+2*0.7],[faceNorms[3],1,1.8,x_start_pos,x_start_pos+2*0.7]]);
@@ -250,9 +279,14 @@ class Shadow_Demo extends Scene_Component
           }
           
         }
-        pos = Mat4.identity().times(Mat4.translation([x_start_pos,1,-6])).times(Mat4.scale([0.7,0.4,0.5])).times(Mat4.translation([1,1,1]));
-        this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(0.25, 0.9, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
-        this.shapes.body.draw(graphics_state,pos,this.materials.shadow);
+        pos = Mat4.identity().times(Mat4.translation([x_start_pos,1,-6]))
+            .times(Mat4.scale([0.7,0.4,0.5]))
+            .times(Mat4.translation([1,1,1]))
+            .times(Mat4.rotation(Math.PI/2,Vec.of(0,1,0)));
+        car_pos = pos.times(Mat4.translation([0,-1,0]));
+        this.shapes.car.draw(graphics_state, car_pos, this.materials.car);
+        this.shapes.car.draw(graphics_state,pos,this.materials.shadow);
+        pos = pos.times(Mat4.rotation(-Math.PI/2, Vec.of(0,1,0)));
         faceNorms = getFaceNormals(pos);
         this.shad_bound_box.push([[faceNorms[0],1,1.8,-6,-5],[faceNorms[1],1,1.8,-6,-5],
                                   [faceNorms[2],1,1.8,x_start_pos,x_start_pos+2*0.7],[faceNorms[3],1,1.8,x_start_pos,x_start_pos+2*0.7]]);

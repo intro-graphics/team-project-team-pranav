@@ -17,7 +17,6 @@ class Model extends Shape {
 		this.indices = mesh.data.index.array;
     }
 };
-
 window.Shadow_Demo = window.classes.Shadow_Demo =
 class Shadow_Demo extends Scene_Component
   { constructor( context, control_box )     // The scene begins by requesting the camera, shapes, and materials it will need.
