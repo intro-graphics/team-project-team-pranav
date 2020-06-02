@@ -1,3 +1,22 @@
+class Model extends Shape {
+    constructor(name, size=1) {
+        super("positions", "normals", "texture_coords");
+        var request = new XMLHttpRequest();
+        request.open("GET", name, false);
+        request.send();
+        var mesh = JSON.parse(request.responseText);
+		var vertex = mesh.data.attributes.position.array;
+		for (var i=0; i<vertex.length; i++) {
+			vertex[i] = vertex[i] * size;
+		}
+
+		
+		this.positions.push(vertex);
+		this.normals.push(mesh.data.attributes.normal.array);
+		this.texture_coords.push(mesh.data.attributes.uv.array);
+		this.indices = mesh.data.index.array;
+    }
+};
 window.Shadow_Demo = window.classes.Shadow_Demo =
 class Shadow_Demo extends Scene_Component
   { constructor( context, control_box )     // The scene begins by requesting the camera, shapes, and materials it will need.
@@ -65,7 +84,8 @@ class Shadow_Demo extends Scene_Component
                          // Shapes used so far                     
                          sub4: new (Subdivision_Sphere)(4), 
                          body: new (Cube)(),
-                         shadow_square: new Square()
+                         shadow_square: new Square(),
+                         car:new Model("assets/car.json", 1.5)
                        }
         this.submit_shapes( context, shapes );
         this.materials =
@@ -82,8 +102,11 @@ class Shadow_Demo extends Scene_Component
             shadow_mat: context.get_instance( Phong_Shader).material(Color.of(0,0,0,1),{ambient: 1}),
             shadow: context.get_instance(Shadow_Shader)
 			.material(Color.of(0,0,0,1),
-			{ambient: 1.0, diffusivity: 0.0, specularity: 0.0 })
-
+			{ambient: 1.0, diffusivity: 0.0, specularity: 0.0 }),
+			car: context.get_instance(Phong_Shader)
+			    .material(Color.of(0,0,0,1),
+			    {ambient: 1.0, diffusivity: 0.0, specularity: 0.0 })
+			    .override({texture:context.get_instance("assets/car.png", true)})
           }
           this.materials["shadow"] = context.get_instance(Shadow_Shader)
 			.material(Color.of(0,0,0,1),
@@ -140,7 +163,6 @@ class Shadow_Demo extends Scene_Component
           .times(Mat4.scale([3.5,5,100]))
           .times(Mat4.rotation(Math.PI / 2, Vec.of(0, 1, 0))).times(Mat4.translation([1, 1, 1]));
         this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(0.5, 0.5, 0.5, 1)},{ambient:0,specular:1,gouraud:false} ));
-
         // the grass to the right
         pos = pos.times(Mat4.scale([1,1,8])).times(Mat4.translation([0, -0.01, 1.125]))
         this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(0.5, 1, 0.5, 1)},{ambient:0,specular:1,gouraud:false} ));
@@ -161,24 +183,15 @@ class Shadow_Demo extends Scene_Component
       
         // the green building ALL BUILDINGS WILL FOLLOW THIS PROCESS
         // use transformations, draw building, draw shadow, then get the norms of the four sides not top and bottom
-        //then push into shad_bound_box the boundary information we need so we can decide whether player is in this 
+        //then get the boundary info and push into shad_bound_box so we can decide whether player is in this 
         //buildings shadow later
         pos = Mat4.identity().times(Mat4.translation([0,1,0])).times(Mat4.scale([1,2,2])).times(Mat4.translation([1,1,1]));
         this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(0.25, 0.9, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
         this.shapes.body.draw(graphics_state,pos,this.materials.shadow);
 
         let faceNorms = getFaceNormals(pos);                              //Get the LR and FB normals as well as one point on it
-        //Pass in the normals and points, as long as the boundaries of the buildings
-        //Manually input list of bounding cases 0,1,5,0,4 and 2,1,5,0,4 is for Left Right
-        //0 means the plane x = 0 ,1 is the lowerest y of the building
-        //5 is the highest y of building
-        //0 is the furthest z, 4 is the closest
-        //categorized like this first the first two pairs
-        //([normal of left or right face, point inside it], y_bound_low, y_bound_high, z_bound_low, z_bound_high)
-        //For the second pair of 5's faceNorms[2],1,5,0,2 and faceNorms[3],1,5,0,2
-        //This is for the front and back plane 
-        //Format: ([normal of front or back face, point inside it], y_bound_low, y_bound_high, x_bound_low, x_bound_high)
-        this.shad_bound_box.push([[faceNorms[0],1,5,0,4],[faceNorms[1],1,5,0,4],[faceNorms[2],1,5,0,2],[faceNorms[3],1,5,0,2]]);
+        let bound_list = boundBox(faceNorms,1,5);                         //get the boundary information 1 and 5 are the y bounds
+        this.shad_bound_box.push(bound_list);                             //push list into shad_bound_box
 
       
 
@@ -188,14 +201,16 @@ class Shadow_Demo extends Scene_Component
         this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(1, 1, 0.5, 1)},{ambient:0,specular:1,gouraud:false} ));
         this.shapes.body.draw(graphics_state,pos,this.materials.shadow);
         faceNorms = getFaceNormals(pos);
-        this.shad_bound_box.push([[faceNorms[0],1,5,4,8],[faceNorms[1],1,5,4,8],[faceNorms[2],1,5,-8,-6],[faceNorms[3],1,5,-8,-6]]);
+        bound_list = boundBox(faceNorms,1,5);
+        this.shad_bound_box.push(bound_list);
 
         // the gray building
         pos = Mat4.identity().times(Mat4.translation([8,1,2])).times(Mat4.scale([1,2,2])).times(Mat4.translation([1,1,1]));
         this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(0.5, 0.5, 0.5, 1)},{ambient:0,specular:1,gouraud:false} ));
         this.shapes.body.draw(graphics_state,pos,this.materials.shadow);
         faceNorms = getFaceNormals(pos);
-        this.shad_bound_box.push([[faceNorms[0],1,5,2,6],[faceNorms[1],1,5,2,6],[faceNorms[2],1,5,8,10],[faceNorms[3],1,5,8,10]])
+        bound_list = boundBox(faceNorms,1,5);
+        this.shad_bound_box.push(bound_list);
 
 
         // the skybox (can be seen if you tilt the camera)
@@ -223,17 +238,23 @@ class Shadow_Demo extends Scene_Component
           console.log("x_startpos: "+x_start_pos);
           if(x_start_pos-0.6<=this.lr&&x_start_pos+1.6>= this.lr)
           {
-            this.charHealth=0;
+            this.charHealth=500;
           }
           
         }
         
-        pos = Mat4.identity().times(Mat4.translation([x_start_pos,1,12])).times(Mat4.scale([0.7,0.4,0.5])).times(Mat4.translation([1,1,1]));
-        this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(0.25, 0.9, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
-        this.shapes.body.draw(graphics_state,pos,this.materials.shadow);
+        pos = Mat4.identity().times(Mat4.translation([x_start_pos,1,12]))
+            .times(Mat4.scale([0.7,0.4,0.5]))
+            .times(Mat4.translation([1,1,1]))
+            .times(Mat4.rotation(Math.PI/2,Vec.of(0,1,0)));                      //this first rotation rotates the car model doesn't affect
+                                                                                 //the transformation
+        let car_pos = pos.times(Mat4.translation([0,-1,0]));                     //the car model is 1 unit higher, so lower it by 1
+        this.shapes.car.draw(graphics_state, car_pos, this.materials.car);
+        this.shapes.car.draw(graphics_state,pos,this.materials.shadow);
+        pos = pos.times(Mat4.rotation(-Math.PI/2, Vec.of(0,1,0)));               //reset the rotation so the faces are transformed correctly
         faceNorms = getFaceNormals(pos);
-        this.shad_bound_box.push([[faceNorms[0],1,1.8,12,13],[faceNorms[1],1,1.8,12,13],
-                                  [faceNorms[2],1,1.8,x_start_pos,x_start_pos+2*0.7],[faceNorms[3],1,1.8,x_start_pos,x_start_pos+2*0.7]]);
+        bound_list = boundBox(faceNorms,1,1.8);                                  //y bounds here are different cause cars are shorter
+        this.shad_bound_box.push(bound_list);
 
 
         // car 2
@@ -246,16 +267,21 @@ class Shadow_Demo extends Scene_Component
           console.log("x_startpos: "+x_start_pos);
           if(x_start_pos-0.6<=this.lr&&x_start_pos+1.6>= this.lr)
           {
-            this.charHealth=0;
+            this.charHealth=500;
           }
           
         }
-        pos = Mat4.identity().times(Mat4.translation([x_start_pos,1,-6])).times(Mat4.scale([0.7,0.4,0.5])).times(Mat4.translation([1,1,1]));
-        this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(0.25, 0.9, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
-        this.shapes.body.draw(graphics_state,pos,this.materials.shadow);
+        pos = Mat4.identity().times(Mat4.translation([x_start_pos,1,-6]))
+            .times(Mat4.scale([0.7,0.4,0.5]))
+            .times(Mat4.translation([1,1,1]))
+            .times(Mat4.rotation(Math.PI/2,Vec.of(0,1,0)));
+        car_pos = pos.times(Mat4.translation([0,-1,0]));
+        this.shapes.car.draw(graphics_state, car_pos, this.materials.car);
+        this.shapes.car.draw(graphics_state,pos,this.materials.shadow);
+        pos = pos.times(Mat4.rotation(-Math.PI/2, Vec.of(0,1,0)));
         faceNorms = getFaceNormals(pos);
-        this.shad_bound_box.push([[faceNorms[0],1,1.8,-6,-5],[faceNorms[1],1,1.8,-6,-5],
-                                  [faceNorms[2],1,1.8,x_start_pos,x_start_pos+2*0.7],[faceNorms[3],1,1.8,x_start_pos,x_start_pos+2*0.7]]);
+        bound_list = boundBox(faceNorms,1,1.8);
+        this.shad_bound_box.push(bound_list);
     }
     
     draw_char(graphics_state, time) //Jacob - draw char and their skills
@@ -361,6 +387,13 @@ class Shadow_Demo extends Scene_Component
                 this.charHealth -= 1;
         }
         this.shapes.body.draw(graphics_state,pos,this.materials.shadow); //Draw its shadow
+
+        //Set camera to follow the human
+        let camera_matrix = pos.times(Mat4.translation([0,20,15]))
+            .times(Mat4.rotation(-Math.PI/4,Vec.of(1,0,0)));        //Rotate the camera a bit so we can see from above              
+        camera_matrix = Mat4.inverse(camera_matrix);
+        camera_matrix = camera_matrix.map((x,i) => Vec.from(graphics_state.camera_transform[i]).mix(x,.05));
+        //graphics_state.camera_transform = camera_matrix;            //comment out this line to set camera to still
 
         //Jacob - If skill extend_shadow is on, draw the shadow in front of the character, order of transformations is to move to origin, scale, rotate
         //then move to where the character is
