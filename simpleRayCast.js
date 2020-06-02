@@ -52,10 +52,14 @@ function getFaceNormals(pos)
 //this function checks if the given bounded information will block the sun from view in which case we know it's in shadow
 function blockedInShad(start,ray,norm_and_pt,x_bound_1,x_bound_2,y_bound_low,y_bound_high,z_bound_1,z_bound_2)
 {
-  let x_bound_low = Math.min(x_bound_1,x_bound_2);
+  let x_bound_low = Math.min(x_bound_1,x_bound_2);            //Set the bouds for x and z, the - and + .01 is for floating point precision
+  x_bound_low -=.01;
   let x_bound_high = Math.max(x_bound_1,x_bound_2);
+  x_bound_high+=.01;
   let z_bound_low = Math.min(z_bound_1,z_bound_2);
+  z_bound_low-=.01;
   let z_bound_high = Math.max(z_bound_1,z_bound_2);
+  z_bound_high +=.01;
   y_bound_low +=.5;                                                      //the center of the character is .5 above ground, adjust here
   y_bound_high +=.25;
   let scale_factor = intersect(norm_and_pt[0],start,ray,norm_and_pt[1])           //find what t is for the intersection
