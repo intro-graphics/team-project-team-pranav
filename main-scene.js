@@ -51,7 +51,7 @@ class Shadow_Demo extends Scene_Component
         this.player_in_shadow = false;//Suvir- tells if in shadow or not
         this.charHealth = 500; //Suvir- health of the character
 
-        this.level = 3;
+        this.level = 1;
     
         
         this.collisionBuildW = false; //Suvir- detects collision for building
@@ -1099,9 +1099,12 @@ class Shadow_Demo extends Scene_Component
         pos = Mat4.identity().times(Mat4.translation([(2.5),1,dmax]))
               .times(Mat4.rotation(Math.PI / 2, Vec.of(0, 1, 0)))
               .times(Mat4.scale([0.7,0.4,0.5]))
-              .times(Mat4.translation([1,1,1]));
-        this.shapes.car.draw(graphics_state, pos, this.materials.car.override( {color: Color.of(0.25, 0.9, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
-        this.shapes.car.draw(graphics_state,pos,this.materials.shadow);
+              .times(Mat4.translation([1,1,1]))
+              .times(Mat4.rotation(Math.PI/2,Vec.of(0,1,0)));
+        let car_pos = pos.times(Mat4.translation([0,-1,0]));
+        this.shapes.car.draw(graphics_state, car_pos, this.materials.car);
+        this.shapes.car.draw(graphics_state, pos, this.materials.shadow);
+        pos = pos.times(Mat4.rotation(-Math.PI/2, Vec.of(0,1,0)));
         faceNorms = getFaceNormals(pos);
         bound_list = boundBox(faceNorms,1,1.8);
         this.shad_bound_box.push(bound_list);
@@ -1109,30 +1112,51 @@ class Shadow_Demo extends Scene_Component
         pos = Mat4.identity().times(Mat4.translation([(1),1,dmax]))
               .times(Mat4.rotation(Math.PI / 2, Vec.of(0, 1, 0)))
               .times(Mat4.scale([0.7,0.4,0.5]))
-              .times(Mat4.translation([1,1,1]));
-        this.shapes.car.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(0.25, 0.9, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
-        this.shapes.car.draw(graphics_state,pos,this.materials.shadow);
+              .times(Mat4.translation([1,1,1]))
+              .times(Mat4.rotation(Math.PI/2,Vec.of(0,1,0)));
+        car_pos = pos.times(Mat4.translation([0,-1,0]));
+        this.shapes.car.draw(graphics_state, car_pos, this.materials.car);
+        this.shapes.car.draw(graphics_state, pos, this.materials.shadow);
+        pos = pos.times(Mat4.rotation(-Math.PI/2, Vec.of(0,1,0)));
         faceNorms = getFaceNormals(pos);
         bound_list = boundBox(faceNorms,1,1.8);
         this.shad_bound_box.push(bound_list);
 
-        pos = Mat4.identity().times(Mat4.translation([(-0.5),1,dmax])).times(Mat4.rotation(Math.PI / 2, Vec.of(0, 1, 0))).times(Mat4.scale([0.7,0.4,0.5])).times(Mat4.translation([1,1,1]));
-        this.shapes.car.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(0.25, 0.9, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
-        this.shapes.car.draw(graphics_state,pos,this.materials.shadow);
+        pos = Mat4.identity().times(Mat4.translation([(-0.5),1,dmax]))
+              .times(Mat4.rotation(Math.PI / 2, Vec.of(0, 1, 0)))
+              .times(Mat4.scale([0.7,0.4,0.5]))
+              .times(Mat4.translation([1,1,1]))
+              .times(Mat4.rotation(Math.PI/2,Vec.of(0,1,0)));
+        car_pos = pos.times(Mat4.translation([0,-1,0]));
+        this.shapes.car.draw(graphics_state, car_pos, this.materials.car);
+        this.shapes.car.draw(graphics_state, pos, this.materials.shadow);
+        pos = pos.times(Mat4.rotation(-Math.PI/2, Vec.of(0,1,0)));
         faceNorms = getFaceNormals(pos);
         bound_list = boundBox(faceNorms,1,1.8);
         this.shad_bound_box.push(bound_list);
 
-        pos = Mat4.identity().times(Mat4.translation([(-2),1,dmax])).times(Mat4.rotation(Math.PI / 2, Vec.of(0, 1, 0))).times(Mat4.scale([0.7,0.4,0.5])).times(Mat4.translation([1,1,1]));
-        this.shapes.car.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(0.25, 0.9, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
-        this.shapes.car.draw(graphics_state,pos,this.materials.shadow);
+        pos = Mat4.identity().times(Mat4.translation([(-2),1,dmax]))
+              .times(Mat4.rotation(Math.PI / 2, Vec.of(0, 1, 0)))
+              .times(Mat4.scale([0.7,0.4,0.5]))
+              .times(Mat4.translation([1,1,1])) 
+              .times(Mat4.rotation(Math.PI/2,Vec.of(0,1,0)));
+        car_pos = pos.times(Mat4.translation([0,-1,0]));
+        this.shapes.car.draw(graphics_state, car_pos, this.materials.car);
+        this.shapes.car.draw(graphics_state, pos, this.materials.shadow);
+        pos = pos.times(Mat4.rotation(-Math.PI/2, Vec.of(0,1,0)));
         faceNorms = getFaceNormals(pos);
         bound_list = boundBox(faceNorms,1,1.8);
         this.shad_bound_box.push(bound_list);
 
-        pos = Mat4.identity().times(Mat4.translation([(-3.5),1,dmax])).times(Mat4.rotation(Math.PI / 2, Vec.of(0, 1, 0))).times(Mat4.scale([0.7,0.4,0.5])).times(Mat4.translation([1,1,1]));
-        this.shapes.car.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(0.25, 0.9, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
-        this.shapes.car.draw(graphics_state,pos,this.materials.shadow);
+        pos = Mat4.identity().times(Mat4.translation([(-3.5),1,dmax]))
+              .times(Mat4.rotation(Math.PI / 2, Vec.of(0, 1, 0)))
+              .times(Mat4.scale([0.7,0.4,0.5]))
+              .times(Mat4.translation([1,1,1]))
+              .times(Mat4.rotation(Math.PI/2,Vec.of(0,1,0)));
+        car_pos = pos.times(Mat4.translation([0,-1,0]));
+        this.shapes.car.draw(graphics_state, car_pos, this.materials.car);
+        this.shapes.car.draw(graphics_state, pos, this.materials.shadow);
+        pos = pos.times(Mat4.rotation(-Math.PI/2, Vec.of(0,1,0)));
         faceNorms = getFaceNormals(pos);
         bound_list = boundBox(faceNorms,1,1.8);
         this.shad_bound_box.push(bound_list);
@@ -1146,9 +1170,16 @@ class Shadow_Demo extends Scene_Component
         // diagonal cars 1,2,3,4
 
         // left side
-        pos = Mat4.identity().times(Mat4.translation([-7,1,14.5])).times(Mat4.rotation(1.5 *Math.PI / 2, Vec.of(0, 1, 0))).times(Mat4.translation([dcar_period,0,0])).times(Mat4.scale([0.7,0.4,0.5])).times(Mat4.translation([1,1,1]));
-        this.shapes.car.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(0.25, 0.9, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
-        this.shapes.car.draw(graphics_state,pos,this.materials.shadow);
+        pos = Mat4.identity().times(Mat4.translation([-7,1,14.5]))
+              .times(Mat4.rotation(1.5 *Math.PI / 2, Vec.of(0, 1, 0)))
+              .times(Mat4.translation([dcar_period,0,0]))
+              .times(Mat4.scale([0.7,0.4,0.5]))
+              .times(Mat4.translation([1,1,1]))
+              .times(Mat4.rotation(Math.PI/2,Vec.of(0,1,0)));
+        car_pos = pos.times(Mat4.translation([0,-1,0]));
+        this.shapes.car.draw(graphics_state, car_pos, this.materials.car);
+        this.shapes.car.draw(graphics_state, pos, this.materials.shadow);
+        pos = pos.times(Mat4.rotation(-Math.PI/2, Vec.of(0,1,0)));
         faceNorms = getFaceNormals(pos);
         bound_list = boundBox(faceNorms,1,1.8);
         this.shad_bound_box.push(bound_list);
@@ -1162,9 +1193,16 @@ class Shadow_Demo extends Scene_Component
           }  
         }
 
-        pos = Mat4.identity().times(Mat4.translation([-7,1,-5.5])).times(Mat4.rotation(1.5 *Math.PI / 2, Vec.of(0, 1, 0))).times(Mat4.translation([dcar_period,0,0])).times(Mat4.scale([0.7,0.4,0.5])).times(Mat4.translation([1,1,1]));
-        this.shapes.car.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(0.25, 0.9, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
-        this.shapes.car.draw(graphics_state,pos,this.materials.shadow);
+        pos = Mat4.identity().times(Mat4.translation([-7,1,-5.5]))
+              .times(Mat4.rotation(1.5 *Math.PI / 2, Vec.of(0, 1, 0)))
+              .times(Mat4.translation([dcar_period,0,0]))
+              .times(Mat4.scale([0.7,0.4,0.5]))
+              .times(Mat4.translation([1,1,1])) 
+              .times(Mat4.rotation(Math.PI/2,Vec.of(0,1,0)));
+        car_pos = pos.times(Mat4.translation([0,-1,0]));
+        this.shapes.car.draw(graphics_state, car_pos, this.materials.car);
+        this.shapes.car.draw(graphics_state, pos, this.materials.shadow);
+        pos = pos.times(Mat4.rotation(-Math.PI/2, Vec.of(0,1,0)));
         faceNorms = getFaceNormals(pos);
         bound_list = boundBox(faceNorms,1,1.8);
         this.shad_bound_box.push(bound_list);
@@ -1178,9 +1216,16 @@ class Shadow_Demo extends Scene_Component
           }  
         }
         // right side
-        pos = Mat4.identity().times(Mat4.translation([7,1,4.5])).times(Mat4.rotation(-1.5 *Math.PI / 2, Vec.of(0, 1, 0))).times(Mat4.translation([-1+dcar_period,0,0])).times(Mat4.scale([0.7,0.4,0.5])).times(Mat4.translation([1,1,1]));
-        this.shapes.car.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(0.25, 0.9, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
-        this.shapes.car.draw(graphics_state,pos,this.materials.shadow);
+        pos = Mat4.identity().times(Mat4.translation([7,1,4.5]))
+              .times(Mat4.rotation(-1.5 *Math.PI / 2, Vec.of(0, 1, 0)))
+              .times(Mat4.translation([-1+dcar_period,0,0]))
+              .times(Mat4.scale([0.7,0.4,0.5]))
+              .times(Mat4.translation([1,1,1]))
+               .times(Mat4.rotation(Math.PI/2,Vec.of(0,1,0)));
+        car_pos = pos.times(Mat4.translation([0,-1,0]));
+        this.shapes.car.draw(graphics_state, car_pos, this.materials.car);
+        this.shapes.car.draw(graphics_state, pos, this.materials.shadow);
+        pos = pos.times(Mat4.rotation(-Math.PI/2, Vec.of(0,1,0)));
         faceNorms = getFaceNormals(pos);
         bound_list = boundBox(faceNorms,1,1.8);
         this.shad_bound_box.push(bound_list);
@@ -1194,9 +1239,16 @@ class Shadow_Demo extends Scene_Component
           }  
         }
 
-        pos = Mat4.identity().times(Mat4.translation([7,1,-15.5])).times(Mat4.rotation(-1.5 *Math.PI / 2, Vec.of(0, 1, 0))).times(Mat4.translation([-1+dcar_period,0,0])).times(Mat4.scale([0.7,0.4,0.5])).times(Mat4.translation([1,1,1]));
-        this.shapes.car.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(0.25, 0.9, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
-        this.shapes.car.draw(graphics_state,pos,this.materials.shadow);
+        pos = Mat4.identity().times(Mat4.translation([7,1,-15.5]))
+              .times(Mat4.rotation(-1.5 *Math.PI / 2, Vec.of(0, 1, 0)))
+              .times(Mat4.translation([-1+dcar_period,0,0]))
+              .times(Mat4.scale([0.7,0.4,0.5]))
+              .times(Mat4.translation([1,1,1]))
+              .times(Mat4.rotation(Math.PI/2,Vec.of(0,1,0)));
+        car_pos = pos.times(Mat4.translation([0,-1,0]));
+        this.shapes.car.draw(graphics_state, car_pos, this.materials.car);
+        this.shapes.car.draw(graphics_state, pos, this.materials.shadow);
+        pos = pos.times(Mat4.rotation(-Math.PI/2, Vec.of(0,1,0)));
         faceNorms = getFaceNormals(pos);
         bound_list = boundBox(faceNorms,1,1.8);
         this.shad_bound_box.push(bound_list);
