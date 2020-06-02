@@ -27,6 +27,9 @@ class Shadow_Demo3 extends Scene_Component
         this.counter = 0; //Jacob - counts to set how long extend_shadow lasts
         this.player_in_shadow = false;//Suvir- tells if in shadow or not
         this.charHealth = 500; //Suvir- health of the character
+
+        this.char_x_pos = 0;
+        this.char_z_pos = 0;
 		
 		// Chang Chun's UI variables, find elements in the HTML and create nodes to store values
 		// grabs the health text
@@ -338,7 +341,13 @@ class Shadow_Demo3 extends Scene_Component
         faceNorms = getFaceNormals(pos);
         bound_list = boundBox(faceNorms,1,1.8);
         this.shad_bound_box.push(bound_list);
-
+        if( this.lr > (-17 * this.move_dist) && this.lr < (16 * this.move_dist))
+        {
+          if(this.char_z_pos>=pos[2][3]-2&&this.char_z_pos<=pos[2][3]+2)
+            {
+              this.charHealth=0;
+            }  
+        }
         // diagonal cars 1,2,3,4
 
         // left side
@@ -349,6 +358,15 @@ class Shadow_Demo3 extends Scene_Component
         bound_list = boundBox(faceNorms,1,1.8);
         this.shad_bound_box.push(bound_list);
 
+        if(this.char_x_pos>=pos[0][3]-0.9&&this.char_x_pos<=pos[0][3]+0.5)
+        {
+          console.log("x's match up");
+          if(this.char_z_pos>=pos[2][3]-1.2&&this.char_z_pos<=pos[2][3]+1.0)
+          {
+            this.charHealth=0;
+          }  
+        }
+
         pos = Mat4.identity().times(Mat4.translation([-7,1,-5.5])).times(Mat4.rotation(1.5 *Math.PI / 2, Vec.of(0, 1, 0))).times(Mat4.translation([dcar_period,0,0])).times(Mat4.scale([0.7,0.4,0.5])).times(Mat4.translation([1,1,1]));
         this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(0.25, 0.9, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
         this.shapes.body.draw(graphics_state,pos,this.materials.shadow);
@@ -356,6 +374,14 @@ class Shadow_Demo3 extends Scene_Component
         bound_list = boundBox(faceNorms,1,1.8);
         this.shad_bound_box.push(bound_list);
 
+        if(this.char_x_pos>=pos[0][3]-0.9&&this.char_x_pos<=pos[0][3]+0.5)
+        {
+          console.log("x's match up");
+          if(this.char_z_pos>=pos[2][3]-1.2&&this.char_z_pos<=pos[2][3]+1.0)
+          {
+            this.charHealth=0;
+          }  
+        }
         // right side
         pos = Mat4.identity().times(Mat4.translation([7,1,4.5])).times(Mat4.rotation(-1.5 *Math.PI / 2, Vec.of(0, 1, 0))).times(Mat4.translation([-1+dcar_period,0,0])).times(Mat4.scale([0.7,0.4,0.5])).times(Mat4.translation([1,1,1]));
         this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(0.25, 0.9, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
@@ -364,12 +390,29 @@ class Shadow_Demo3 extends Scene_Component
         bound_list = boundBox(faceNorms,1,1.8);
         this.shad_bound_box.push(bound_list);
 
+        if(this.char_x_pos>=pos[0][3]-0.9&&this.char_x_pos<=pos[0][3]+0.5)
+        {
+          console.log("x's match up");
+          if(this.char_z_pos>=pos[2][3]-1.2&&this.char_z_pos<=pos[2][3]+1.0)
+          {
+            this.charHealth=0;
+          }  
+        }
+
         pos = Mat4.identity().times(Mat4.translation([7,1,-15.5])).times(Mat4.rotation(-1.5 *Math.PI / 2, Vec.of(0, 1, 0))).times(Mat4.translation([-1+dcar_period,0,0])).times(Mat4.scale([0.7,0.4,0.5])).times(Mat4.translation([1,1,1]));
         this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(0.25, 0.9, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
         this.shapes.body.draw(graphics_state,pos,this.materials.shadow);
         faceNorms = getFaceNormals(pos);
         bound_list = boundBox(faceNorms,1,1.8);
         this.shad_bound_box.push(bound_list);
+        if(this.char_x_pos>=pos[0][3]-0.9&&this.char_x_pos<=pos[0][3]+0.5)
+        {
+          console.log("x's match up");
+          if(this.char_z_pos>=pos[2][3]-1.2&&this.char_z_pos<=pos[2][3]+1.0)
+          {
+            this.charHealth=0;
+          }  
+        }
 
     }
     draw_char(graphics_state, time) //Jacob - draw char and their skills
@@ -406,6 +449,10 @@ class Shadow_Demo3 extends Scene_Component
         console.log("x axis: "+ (pos[0][3]));
         console.log("y axis: "+ pos[2][3]);
 
+        
+      
+        this.char_x_pos = pos[0][3];
+        this.char_z_pos= pos[2][3];
         if(this.charHealth <= 0 && !this.boom)  // if the charHealth is lower than 0, turn on this.boom so that the explosion will start
                                                 // this has to only happen when boom is false, otherwise, initial_blow will keep being reset, glitching the explosion 
         {
@@ -538,10 +585,10 @@ class Shadow_Demo3 extends Scene_Component
 
         // console.log(this.ud)
         // console.log(this.lr)
-        console.log("Health: ", this.charHealth);
+      /*  console.log("Health: ", this.charHealth);
         console.log("LR: ", this.lr);
         console.log("UD: ", this.ud)
-
+*/
         this.draw_map(graphics_state);
        
        if(this.drawTheChar) // 05-22-20 Pranav - If you're dead, don't try and draw stuff

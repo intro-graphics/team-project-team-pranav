@@ -238,7 +238,7 @@ class Shadow_Demo extends Scene_Component
           console.log("x_startpos: "+x_start_pos);
           if(x_start_pos-0.6<=this.lr&&x_start_pos+1.6>= this.lr)
           {
-            this.charHealth=500;
+            this.charHealth=0;
           }
           
         }
@@ -267,7 +267,7 @@ class Shadow_Demo extends Scene_Component
           console.log("x_startpos: "+x_start_pos);
           if(x_start_pos-0.6<=this.lr&&x_start_pos+1.6>= this.lr)
           {
-            this.charHealth=500;
+            this.charHealth=0;
           }
           
         }
