@@ -10,7 +10,9 @@
 		</script>
 		<script src="tiny-graphics.js"></script><!--  Javascript "include" files.  Any code in them gets executed as part of the page loading. //-->
 		<script src="dependencies.js"></script>
+		<script src="main-scene.js"></script>
 		<script src="main-scene (level 2).js"></script>
+		<script src="main-scene (level 3).js"></script>
 		<script src="shadow_shader.js"></script>
 		<script src="simpleRayCast.js"></script>
 		<style>
@@ -152,6 +154,21 @@
 				height?: 600px;
 				margin-bottom: -3px
 			}
+			
+			.greybutton {
+				all: initial;
+				background-color: Transparent;
+				color: grey;
+				padding: 6px;
+				font-family: monospace;
+				transition: transform .5s, color .5s
+			}
+			
+			.greybutton:hover,
+			button:focus {
+				transform: scale(1.2);
+				color: white
+			}
 
 			#titlescreen {
 				background-color: black;
@@ -190,19 +207,7 @@
 			}
 
 			#startbutton {
-				all: initial;
-				background: black;
-				color: grey;
-				padding: 6px;
 				font-size: 24px;
-				font-family: monospace;
-				transition: transform .5s, color .5s
-			}
-
-			#startbutton:hover,
-			button:focus {
-				transform: scale(1.2);
-				color: white
 			}
 
 			#copyright {
@@ -309,7 +314,7 @@
 					HD Turbo Remix Arcade Edition Re: Sunburn
 				</div>
 				<div id="startwrapper">
-					<button id="startbutton" onclick="startGame()">Start Game</button>
+					<button class="greybutton" id="startbutton" onclick="startGame()">Start Game</button>
 				</div>
 				<div id="copyright">
 					©2020 Team Pranav Inc. All Rights Reserved. This is a work of fiction. All resemblance to actual figures are purely coincidental. Nico is best Love Live.
@@ -327,11 +332,14 @@
 				<p>Use WASD to move your character.</p>
 				<p>Use Q to look deep within yourself</p>
 				<p>and draw out your hidden ability.</p>
+				<button class="greybutton" id="iwinbutton" onclick="iWin()">Press here to win the game!</button>
 			</div>
 			<div id="deathoverlay">
 				YOU DIED
 			</div>
 			<div class="canvas-widget" id="main-canvas"></div>
+			<div class="canvas-widget" id="main-canvas2"></div>
+			<div class="canvas-widget" id="main-canvas3"></div>
 		</div>
 		<script>
 			"use strict" // ********************* THE ENTRY POINT OF YOUR WHOLE PROGRAM STARTS HERE ********************* 
@@ -349,6 +357,28 @@
 				// draw / keyboard / mouse event happens on the web page.
 				new Canvas_Widget("main-canvas", scenes); // Use the Canvas_Widget class to display the WebGL demo.  Pass in
 				// the name of the HTML element we are to replace with the widget.
+			}
+			
+			function iWin()
+			{
+				if ( document.getElementById("main-canvas") != null )
+				{
+					const scenes2 = ["Shadow_Demo2"]; // First, list the names of scenes we will add to our canvas.  These will register themselves
+					// with this widget's Canvas_Manager so that their code can be called upon every time a 
+					// draw / keyboard / mouse event happens on the web page.
+					document.getElementById("main-canvas").remove();					
+					new Canvas_Widget("main-canvas2", scenes2); // Use the Canvas_Widget class to display the WebGL demo.  Pass in
+					// the name of the HTML element we are to replace with the widget.
+				}
+				else if ( document.getElementById("main-canvas2") != null )
+				{
+					const scenes3 = ["Shadow_Demo3"]; // First, list the names of scenes we will add to our canvas.  These will register themselves
+					// with this widget's Canvas_Manager so that their code can be called upon every time a 
+					// draw / keyboard / mouse event happens on the web page.
+					document.getElementById("main-canvas2").remove();
+					new Canvas_Widget("main-canvas3", scenes3); // Use the Canvas_Widget class to display the WebGL demo.  Pass in
+					// the name of the HTML element we are to replace with the widget.
+				}
 			}
 
 			function hideTitleScreen()

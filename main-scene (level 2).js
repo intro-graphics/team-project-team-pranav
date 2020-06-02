@@ -1,24 +1,5 @@
-class Model extends Shape {
-    constructor(name, size=1) {
-        super("positions", "normals", "texture_coords");
-        var request = new XMLHttpRequest();
-        request.open("GET", name, false);
-        request.send();
-        var mesh = JSON.parse(request.responseText);
-		var vertex = mesh.data.attributes.position.array;
-		for (var i=0; i<vertex.length; i++) {
-			vertex[i] = vertex[i] * size;
-		}
-
-		
-		this.positions.push(vertex);
-		this.normals.push(mesh.data.attributes.normal.array);
-		this.texture_coords.push(mesh.data.attributes.uv.array);
-		this.indices = mesh.data.index.array;
-    }
-};
-window.Shadow_Demo = window.classes.Shadow_Demo =
-class Shadow_Demo extends Scene_Component
+window.Shadow_Demo2 = window.classes.Shadow_Demo2 =
+class Shadow_Demo2 extends Scene_Component
   { constructor( context, control_box )     // The scene begins by requesting the camera, shapes, and materials it will need.
       { super(   context, control_box );    // First, include a secondary Scene that provides movement controls:
         if( !context.globals.has_controls   ) 

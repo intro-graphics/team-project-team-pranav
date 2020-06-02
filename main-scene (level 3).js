@@ -1,5 +1,5 @@
-window.Shadow_Demo = window.classes.Shadow_Demo =
-class Shadow_Demo extends Scene_Component
+window.Shadow_Demo3 = window.classes.Shadow_Demo3 =
+class Shadow_Demo3 extends Scene_Component
   { constructor( context, control_box )     // The scene begins by requesting the camera, shapes, and materials it will need.
       { super(   context, control_box );    // First, include a secondary Scene that provides movement controls:
         if( !context.globals.has_controls   ) 
