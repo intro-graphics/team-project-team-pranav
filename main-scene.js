@@ -393,7 +393,7 @@ class Shadow_Demo extends Scene_Component
             .times(Mat4.rotation(-Math.PI/4,Vec.of(1,0,0)));        //Rotate the camera a bit so we can see from above              
         camera_matrix = Mat4.inverse(camera_matrix);
         camera_matrix = camera_matrix.map((x,i) => Vec.from(graphics_state.camera_transform[i]).mix(x,.05));
-        graphics_state.camera_transform = camera_matrix;            //comment out this line to set camera to still
+        //graphics_state.camera_transform = camera_matrix;            //comment out this line to set camera to still
 
         //Jacob - If skill extend_shadow is on, draw the shadow in front of the character, order of transformations is to move to origin, scale, rotate
         //then move to where the character is
