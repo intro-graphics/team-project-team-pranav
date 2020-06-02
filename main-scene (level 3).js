@@ -21,6 +21,7 @@ class Shadow_Demo extends Scene_Component
         this.lr = 0; // the left-right position of the character
         this.maxHealth = 500;   // health shouldn't be able to rise higher than this, should be equal to charHealth at the start
         this.redC = 1; // if in shadow, reduce to 0.5 and make it look darker
+        this.shad_bound_box = [];
 		
         this.extend_shadow = false; //Jacob - extend shadow skill is turned off
         this.counter = 0; //Jacob - counts to set how long extend_shadow lasts
@@ -199,8 +200,9 @@ class Shadow_Demo extends Scene_Component
 
     draw_map(graphics_state)
     {
-         let pos = Mat4.identity();
-         let npos = Mat4.identity();
+        let pos = Mat4.identity();
+        let npos = Mat4.identity();
+        this.shad_bound_box = [];
         //Jacob - the second draw of all the buildings and players are the shadow maps
         // the road
         pos = Mat4.identity();
@@ -247,22 +249,34 @@ class Shadow_Demo extends Scene_Component
         //  the yellow building
         pos = Mat4.identity().times(Mat4.translation([-13,1,11.5])).times(Mat4.scale([1,2,2])).times(Mat4.translation([1,1,1]));
         this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(1, 1, 0.5, 1)},{ambient:0,specular:1,gouraud:false} ));
-        this.shapes.body.draw(graphics_state,pos,this.materials.shadow)
+        this.shapes.body.draw(graphics_state,pos,this.materials.shadow);
+        let faceNorms = getFaceNormals(pos);
+        let bound_list = boundBox(faceNorms,1,5);
+        this.shad_bound_box.push(bound_list);
 
         // the green building
         pos = Mat4.identity().times(Mat4.translation([11,1,2])).times(Mat4.scale([1,2,2])).times(Mat4.translation([1,1,1]));
         this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(0.25, 0.9, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
-        this.shapes.body.draw(graphics_state,pos,this.materials.shadow)
+        this.shapes.body.draw(graphics_state,pos,this.materials.shadow);
+        faceNorms = getFaceNormals(pos);
+        bound_list = boundBox(faceNorms,1,5);
+        this.shad_bound_box.push(bound_list);
 
         // the gray building
         pos = Mat4.identity().times(Mat4.translation([-13,1,-7.5])).times(Mat4.scale([1,2,2])).times(Mat4.translation([1,1,1]));
         this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(0.5, 0.5, 0.5, 1)},{ambient:0,specular:1,gouraud:false} ));
-        this.shapes.body.draw(graphics_state,pos,this.materials.shadow)
+        this.shapes.body.draw(graphics_state,pos,this.materials.shadow);
+        faceNorms = getFaceNormals(pos);
+        bound_list = boundBox(faceNorms,1,5);
+        this.shad_bound_box.push(bound_list);
 
         // the blue building
         pos = Mat4.identity().times(Mat4.translation([11,1,-17])).times(Mat4.scale([1,2,2])).times(Mat4.translation([1,1,1]));
         this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(0.25, 0.9, 1, 1)},{ambient:0,specular:1,gouraud:false} ));
-        this.shapes.body.draw(graphics_state,pos,this.materials.shadow)
+        this.shapes.body.draw(graphics_state,pos,this.materials.shadow);
+        faceNorms = getFaceNormals(pos);
+        bound_list = boundBox(faceNorms,1,5);
+        this.shad_bound_box.push(bound_list);
 
         // the skybox (can be seen if you tilt the camera)
         pos = Mat4.identity().times(Mat4.scale([100,100,100]))
@@ -271,9 +285,9 @@ class Shadow_Demo extends Scene_Component
         //Jacob - This is the sun 
         const t = graphics_state.animation_time / 1000;
         let period = t*(2*Math.PI)/10;                               //calculate period for when to change color and when to change radius
-        let x_period = Math.sin(period)/2;                            //figure out the period to create a circular path
-        let y_period = (2+Math.sin(period*2))/2.5;
-        pos = Mat4.identity().times(Mat4.translation([50*x_period,10*y_period,15]));
+        let x_period = Math.sin(period/5)/2;                            //figure out the period to create a circular path
+        let y_period = (2+Math.sin(period*2/5))/2.5;
+        pos = Mat4.identity().times(Mat4.translation([50*x_period,10*y_period+10,15]));
         this.shapes.sub4.draw(graphics_state, pos, this.materials.suns);
 
         
@@ -284,45 +298,78 @@ class Shadow_Demo extends Scene_Component
 
         // 5 middle cars
 
-        pos = Mat4.identity().times(Mat4.translation([(2.5),1,dmax])).times(Mat4.rotation(Math.PI / 2, Vec.of(0, 1, 0))).times(Mat4.scale([0.7,0.4,0.5])).times(Mat4.translation([1,1,1]));
+        pos = Mat4.identity().times(Mat4.translation([(2.5),1,dmax]))
+              .times(Mat4.rotation(Math.PI / 2, Vec.of(0, 1, 0)))
+              .times(Mat4.scale([0.7,0.4,0.5]))
+              .times(Mat4.translation([1,1,1]));
         this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(0.25, 0.9, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
-        this.shapes.body.draw(graphics_state,pos,this.materials.shadow)
+        this.shapes.body.draw(graphics_state,pos,this.materials.shadow);
+        faceNorms = getFaceNormals(pos);
+        bound_list = boundBox(faceNorms,1,1.8);
+        this.shad_bound_box.push(bound_list);
 
-        pos = Mat4.identity().times(Mat4.translation([(1),1,dmax])).times(Mat4.rotation(Math.PI / 2, Vec.of(0, 1, 0))).times(Mat4.scale([0.7,0.4,0.5])).times(Mat4.translation([1,1,1]));
+        pos = Mat4.identity().times(Mat4.translation([(1),1,dmax]))
+              .times(Mat4.rotation(Math.PI / 2, Vec.of(0, 1, 0)))
+              .times(Mat4.scale([0.7,0.4,0.5]))
+              .times(Mat4.translation([1,1,1]));
         this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(0.25, 0.9, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
-        this.shapes.body.draw(graphics_state,pos,this.materials.shadow)
+        this.shapes.body.draw(graphics_state,pos,this.materials.shadow);
+        faceNorms = getFaceNormals(pos);
+        bound_list = boundBox(faceNorms,1,1.8);
+        this.shad_bound_box.push(bound_list);
 
         pos = Mat4.identity().times(Mat4.translation([(-0.5),1,dmax])).times(Mat4.rotation(Math.PI / 2, Vec.of(0, 1, 0))).times(Mat4.scale([0.7,0.4,0.5])).times(Mat4.translation([1,1,1]));
         this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(0.25, 0.9, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
-        this.shapes.body.draw(graphics_state,pos,this.materials.shadow)
+        this.shapes.body.draw(graphics_state,pos,this.materials.shadow);
+        faceNorms = getFaceNormals(pos);
+        bound_list = boundBox(faceNorms,1,1.8);
+        this.shad_bound_box.push(bound_list);
 
         pos = Mat4.identity().times(Mat4.translation([(-2),1,dmax])).times(Mat4.rotation(Math.PI / 2, Vec.of(0, 1, 0))).times(Mat4.scale([0.7,0.4,0.5])).times(Mat4.translation([1,1,1]));
         this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(0.25, 0.9, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
-        this.shapes.body.draw(graphics_state,pos,this.materials.shadow)
+        this.shapes.body.draw(graphics_state,pos,this.materials.shadow);
+        faceNorms = getFaceNormals(pos);
+        bound_list = boundBox(faceNorms,1,1.8);
+        this.shad_bound_box.push(bound_list);
 
         pos = Mat4.identity().times(Mat4.translation([(-3.5),1,dmax])).times(Mat4.rotation(Math.PI / 2, Vec.of(0, 1, 0))).times(Mat4.scale([0.7,0.4,0.5])).times(Mat4.translation([1,1,1]));
         this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(0.25, 0.9, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
-        this.shapes.body.draw(graphics_state,pos,this.materials.shadow)
+        this.shapes.body.draw(graphics_state,pos,this.materials.shadow);
+        faceNorms = getFaceNormals(pos);
+        bound_list = boundBox(faceNorms,1,1.8);
+        this.shad_bound_box.push(bound_list);
 
         // diagonal cars 1,2,3,4
 
         // left side
         pos = Mat4.identity().times(Mat4.translation([-7,1,14.5])).times(Mat4.rotation(1.5 *Math.PI / 2, Vec.of(0, 1, 0))).times(Mat4.translation([dcar_period,0,0])).times(Mat4.scale([0.7,0.4,0.5])).times(Mat4.translation([1,1,1]));
         this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(0.25, 0.9, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
-        this.shapes.body.draw(graphics_state,pos,this.materials.shadow)
+        this.shapes.body.draw(graphics_state,pos,this.materials.shadow);
+        faceNorms = getFaceNormals(pos);
+        bound_list = boundBox(faceNorms,1,1.8);
+        this.shad_bound_box.push(bound_list);
 
         pos = Mat4.identity().times(Mat4.translation([-7,1,-5.5])).times(Mat4.rotation(1.5 *Math.PI / 2, Vec.of(0, 1, 0))).times(Mat4.translation([dcar_period,0,0])).times(Mat4.scale([0.7,0.4,0.5])).times(Mat4.translation([1,1,1]));
         this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(0.25, 0.9, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
-        this.shapes.body.draw(graphics_state,pos,this.materials.shadow)
+        this.shapes.body.draw(graphics_state,pos,this.materials.shadow);
+        faceNorms = getFaceNormals(pos);
+        bound_list = boundBox(faceNorms,1,1.8);
+        this.shad_bound_box.push(bound_list);
 
         // right side
         pos = Mat4.identity().times(Mat4.translation([7,1,4.5])).times(Mat4.rotation(-1.5 *Math.PI / 2, Vec.of(0, 1, 0))).times(Mat4.translation([-1+dcar_period,0,0])).times(Mat4.scale([0.7,0.4,0.5])).times(Mat4.translation([1,1,1]));
         this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(0.25, 0.9, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
-        this.shapes.body.draw(graphics_state,pos,this.materials.shadow)
+        this.shapes.body.draw(graphics_state,pos,this.materials.shadow);
+        faceNorms = getFaceNormals(pos);
+        bound_list = boundBox(faceNorms,1,1.8);
+        this.shad_bound_box.push(bound_list);
 
         pos = Mat4.identity().times(Mat4.translation([7,1,-15.5])).times(Mat4.rotation(-1.5 *Math.PI / 2, Vec.of(0, 1, 0))).times(Mat4.translation([-1+dcar_period,0,0])).times(Mat4.scale([0.7,0.4,0.5])).times(Mat4.translation([1,1,1]));
         this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(0.25, 0.9, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
-        this.shapes.body.draw(graphics_state,pos,this.materials.shadow)
+        this.shapes.body.draw(graphics_state,pos,this.materials.shadow);
+        faceNorms = getFaceNormals(pos);
+        bound_list = boundBox(faceNorms,1,1.8);
+        this.shad_bound_box.push(bound_list);
 
     }
     draw_char(graphics_state, time) //Jacob - draw char and their skills
@@ -359,27 +406,6 @@ class Shadow_Demo extends Scene_Component
         console.log("x axis: "+ (pos[0][3]));
         console.log("y axis: "+ pos[2][3]);
 
-        if(pos[0][3]>2.9&&pos[0][3]<4.1&&pos[2][3]<pos[0][3]-3.6&&pos[2][3]>pos[0][3]-5.8)
-        {
-            console.log("in shadow 2");
-            if(this.maxHealth > this.charHealth)    // don't go above max health
-                this.charHealth+=1
-            this.redC = 0.5;    // in shadow, then darken color
-        }
-        else if(!(pos[0][3]<2.5||pos[0][3]>4.2||pos[2][3]<10.5||pos[2][3]>13.7))
-        {
-            console.log("in shadow 1")
-            if(this.maxHealth > this.charHealth)    // don't go above max health
-                this.charHealth+=1
-            this.redC = 0.5;    // in shadow, then darken color
-        }
-        else
-        {
-          console.log("in no shadow");
-          this.redC = 1;    // not in shadow, same color
-          this.charHealth -= 1;
-        }
-
         if(this.charHealth <= 0 && !this.boom)  // if the charHealth is lower than 0, turn on this.boom so that the explosion will start
                                                 // this has to only happen when boom is false, otherwise, initial_blow will keep being reset, glitching the explosion 
         {
@@ -393,12 +419,25 @@ class Shadow_Demo extends Scene_Component
             return;
         }
 
-        
-        this.shapes.body.draw
-          (graphics_state, pos, this.materials.suns.override( {color: Color.of(this.redC, 0, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
-        //pos = pos.times(Mat4.translation([1,20,3]));
+        let origin_pos = (pos.times(Vec.of(0,0,0,1))); //This is the center position of the person
+        let ray = this.lights[0].position.minus(origin_pos);  //This is the vector from the position of the person to sun
+        var inShad = inShadow(origin_pos,ray,this.shad_bound_box);
+        if(inShad)                                    //if not blocked by any of the four planes in shadow
+        {
+          this.shapes.body.draw
+            (graphics_state, pos, this.materials.suns.override( {color: Color.of(.5, 0, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
+          if(this.maxHealth > this.charHealth)    // don't go above max health
+                this.charHealth += 1;
+        }
+        else                                                        //else not in shadow
+        {
+          this.shapes.body.draw
+            (graphics_state, pos, this.materials.suns.override( {color: Color.of(1, 0, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
+          if(this.charHealth > 0)    // don't go above max health
+                this.charHealth -= 0;
+        }
         this.shapes.body.draw(graphics_state,pos,this.materials.shadow);
-        let origin_pos =(pos.times(Vec.of(0,0,0,1)));
+        
         
         //console.log("charHealth: "+this.charHealth);
         //Jacob - If skill extend_shadow is on, draw the shadow in front of the character, order of transformations is to move to origin, scale, rotate
@@ -491,9 +530,9 @@ class Shadow_Demo extends Scene_Component
       {   
         const t = graphics_state.animation_time / 1000, dt = graphics_state.animation_delta_time / 1000;     
         let period = t*(2*Math.PI)/10;                               //calculate period for when to change color and when to change radius
-        let x_period = Math.sin(period/5)/2;                            //figure out the period to create a circular path
-        let y_period = (2+Math.sin(period*2/5))/2.5;
-        this.lights = [new Light(Vec.of(50*x_period,10*y_period,15,1),Color.of(0,1,1,1),1000)]; //Jacob- Set light where sun is
+        let x_period = Math.sin(period)/2;                            //figure out the period to create a circular path
+        let y_period = (2+Math.sin(period*2))/2.5;
+        this.lights = [new Light(Vec.of(50*x_period,10*y_period+10,15,1),Color.of(0,1,1,1),1000)]; //Jacob- Set light where sun is
         graphics_state.lights = this.lights;        // Use the lights stored in this.lights.
         // our position matrix
 

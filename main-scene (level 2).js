@@ -382,7 +382,6 @@ class Shadow_Demo extends Scene_Component
         faceNorms = getFaceNormals(pos);
         bound_list = boundBox(faceNorms,1,1.8);
         this.shad_bound_box.push(bound_list);
-
     }
     draw_char(graphics_state, time) //Jacob - draw char and their skills
     {	
@@ -475,6 +474,7 @@ class Shadow_Demo extends Scene_Component
         var inShad = inShadow(origin_pos,ray,this.shad_bound_box);
         if(inShad)                                    //if not blocked by any of the four planes in shadow
         {
+          var inShad = inShadow(origin_pos,ray,this.shad_bound_box);
           this.shapes.body.draw
             (graphics_state, pos, this.materials.suns.override( {color: Color.of(.5, 0, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
           if(this.maxHealth > this.charHealth)    // don't go above max health
@@ -485,7 +485,7 @@ class Shadow_Demo extends Scene_Component
           this.shapes.body.draw
             (graphics_state, pos, this.materials.suns.override( {color: Color.of(1, 0, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
           if(this.charHealth > 0)    // don't go above max health
-                this.charHealth -= 1;
+                this.charHealth -= 0;
         }
         this.shapes.body.draw(graphics_state,pos,this.materials.shadow);
 
