@@ -300,7 +300,7 @@ class Shadow_Demo2 extends Scene_Component
           
           if(2-car_period-0.6<=this.lr&&2-car_period+1.6>= this.lr)
           {
-            this.charHealth=500;
+            this.charHealth=0;
           }
           
         }
@@ -322,7 +322,7 @@ class Shadow_Demo2 extends Scene_Component
           
           if(-10.5+car_period-0.6<=this.lr&&-10.5+car_period+1.6>= this.lr)
           {
-            this.charHealth=500;
+            this.charHealth=0;
           }
           
         }
@@ -353,7 +353,7 @@ class Shadow_Demo2 extends Scene_Component
           console.log("x's match up");
           if(this.char_z_pos>=pos[2][3]-1.2&&this.char_z_pos<=pos[2][3]+1.0)
           {
-            this.charHealth=500;
+            this.charHealth=0;
           }  
         }
         car_pos = pos.times(Mat4.translation([0,-1,0]));
