@@ -229,6 +229,7 @@
 				padding: 1em;
 				font-size: 18px;
 				border-radius: 10px;
+				transition: opacity 0.2s ease
 			}
 
 			#controlsoverlay {
@@ -241,6 +242,28 @@
 				padding: 1em;
 				font-size: 18px;
 				border-radius: 10px;
+				transition: opacity 0.2s ease
+			}
+			
+			#levelcompleteoverlay {
+				position: absolute;
+				left: 0; 
+				right: 0; 
+				margin-left: auto; 
+				margin-right: auto; 
+				top: 100px;
+				width: 500px;
+				height: 200px;
+				top: 100px;
+				text-align: center;
+				background-color: rgba(0, 0, 0, 0.5);
+				color: white;
+				font-family: monospace;
+				padding: 1em;
+				font-size: 96px;
+				border-radius: 10px;
+				transition: opacity 0.2s ease
+				opacity: 0;
 			}
 
 			#deathoverlay {
@@ -251,7 +274,7 @@
 				font-size: 72px;
 				font-family: times;
 				color: #990000;
-				opacity: 0.1;
+				opacity: 0;
 				text-shadow: 0 0 5px red, 0 0 40px red;
 				transition: opacity 2s ease, text-shadow 4s ease, font-size 4s ease;
 			}
@@ -334,6 +357,10 @@
 				<p>and draw out your hidden ability.</p>
 				<!--- <button class="greybutton" id="iwinbutton" onclick="iWin()">Press here to win the game!</button> -->
 			</div>
+			<div id="levelcompleteoverlay">
+				<div>YOU WIN!</div>
+				<button class="greybutton" id="levelcompletebutton">Click here to proceed to the next level.</button>
+			</div>
 			<div id="deathoverlay">
 				YOU DIED
 			</div>
@@ -361,24 +388,7 @@
 			
 			function iWin()
 			{
-				if ( document.getElementById("main-canvas") != null )
-				{
-					const scenes2 = ["Shadow_Demo2"]; // First, list the names of scenes we will add to our canvas.  These will register themselves
-					// with this widget's Canvas_Manager so that their code can be called upon every time a 
-					// draw / keyboard / mouse event happens on the web page.
-					document.getElementById("main-canvas").remove();					
-					new Canvas_Widget("main-canvas2", scenes2); // Use the Canvas_Widget class to display the WebGL demo.  Pass in
-					// the name of the HTML element we are to replace with the widget.
-				}
-				else if ( document.getElementById("main-canvas2") != null )
-				{
-					const scenes3 = ["Shadow_Demo3"]; // First, list the names of scenes we will add to our canvas.  These will register themselves
-					// with this widget's Canvas_Manager so that their code can be called upon every time a 
-					// draw / keyboard / mouse event happens on the web page.
-					document.getElementById("main-canvas2").remove();
-					new Canvas_Widget("main-canvas3", scenes3); // Use the Canvas_Widget class to display the WebGL demo.  Pass in
-					// the name of the HTML element we are to replace with the widget.
-				}
+				
 			}
 			
 			function hideTitleScreen()
