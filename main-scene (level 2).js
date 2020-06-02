@@ -455,7 +455,6 @@ class Shadow_Demo2 extends Scene_Component
         var inShad = inShadow(origin_pos,ray,this.shad_bound_box);
         if(inShad)                                    //if not blocked by any of the four planes in shadow
         {
-          var inShad = inShadow(origin_pos,ray,this.shad_bound_box);
           this.shapes.body.draw
             (graphics_state, pos, this.materials.suns.override( {color: Color.of(.5, 0, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
           if(this.maxHealth > this.charHealth)    // don't go above max health
