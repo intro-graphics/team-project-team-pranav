@@ -155,12 +155,7 @@ class Shadow_Demo extends Scene_Component
 	  }
 	  
 	  changeLevel()
-	  {
-		this.winbgm.pause();    
-		this.winbgm.currentTime = 0;
-		this.bgm.play(); 
-		this.disableControls = false;
-		 
+	  {		 
 		document.getElementById("levelcompletebutton").style.display = "initial";
 		  
 		document.getElementById("levelcompleteoverlay").style.opacity = 0;
@@ -177,12 +172,20 @@ class Shadow_Demo extends Scene_Component
         }
         else if(this.level == 2)
         {
+			this.bgm = document.getElementById("superbgm");
+			this.bgm.loop = true;
+			
         	this.level = 3;
         }
         else
         {
         	return;
         }
+		
+		this.winbgm.pause();    
+		this.winbgm.currentTime = 0;
+		this.bgm.play(); 
+		this.disableControls = false;
 		
         this.ud = 0;  // the up-down position of the character
         this.lr = 0; // the left-right position of the character
@@ -203,10 +206,6 @@ class Shadow_Demo extends Scene_Component
         {
           return;
         }
-		if (this.disableControls)
-		{
-			return;
-		}
 		
         //console.log(dir);
 		
@@ -248,11 +247,6 @@ class Shadow_Demo extends Scene_Component
         {
           return;
         }
-  
-		if (this.disableControls)
-		{
-			return;
-		}
 		
           if(dir == 'w')
           {
@@ -356,11 +350,6 @@ class Shadow_Demo extends Scene_Component
     	{
     		return;
     	}
-		
-		if (this.disableControls)
-		{
-			return;
-		}
 
         if(dir == 'w')
         {
@@ -453,6 +442,8 @@ class Shadow_Demo extends Scene_Component
             if the charHealth is less than 0, the character is dead, so don't move then
             also, this.move_dist is the constant of move_dist, if it's value is changed, the max steps in each direction must be changed too 
         */
+		if ( !this.disableControls)
+		{
         this.key_triggered_button("Up", ["w"], () => {  // going Up with 'i'
                 if(this.level == 1)
                 {
@@ -512,6 +503,7 @@ class Shadow_Demo extends Scene_Component
         this.key_triggered_button("Extend_Shadow", ["q"], () => { // going right with 'l'
                 this.extend_shadow = true;
             });
+		}
       }
     // Pranav's code for the world
     draw_map1(graphics_state)
