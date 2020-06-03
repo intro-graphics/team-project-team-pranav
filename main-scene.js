@@ -249,6 +249,11 @@ class Shadow_Demo extends Scene_Component
           return;
         }
   
+		if (this.disableControls)
+		{
+			return;
+		}
+		
           if(dir == 'w')
           {
             if(this.lr < (-20 * this.move_dist))
@@ -351,6 +356,11 @@ class Shadow_Demo extends Scene_Component
     	{
     		return;
     	}
+		
+		if (this.disableControls)
+		{
+			return;
+		}
 
         if(dir == 'w')
         {
