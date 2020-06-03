@@ -51,7 +51,7 @@ class Shadow_Demo extends Scene_Component
         this.player_in_shadow = false;//Suvir- tells if in shadow or not
         this.charHealth = 500; //Suvir- health of the character
 
-        this.level = 1;
+        this.level = 3;
     
         
         this.collisionBuildW = false; //Suvir- detects collision for building
