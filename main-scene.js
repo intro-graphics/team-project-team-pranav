@@ -30,6 +30,7 @@ class Shadow_Demo extends Scene_Component
         this.bgm = document.getElementById("bgm");
         this.bgm.play();
         this.bgm.loop = true;
+		this.winbgm = document.getElementById("winbgm");		
         this.skillsfx = document.getElementById("skillsfx");
         this.footstepsfx = document.getElementById("footstepsfx");
         this.footstepsfx.volume = 0.4;
@@ -37,6 +38,7 @@ class Shadow_Demo extends Scene_Component
 		
         // Pranav's variables
         this.drawTheChar = true;    // whether to trigger the draw_char function
+		this.disableControls = false;
         this.boom = false;  // whether to trigger an explosion during the draw_char function
         this.initial_blow = 0;  // the time you died
         this.move_dist = 0.2;   // the movement distance of the character in each axis
@@ -113,20 +115,33 @@ class Shadow_Demo extends Scene_Component
 			
       }
 	  
-	        caveIn()
+	   caveIn()
       {
 		this.drawtheChar = false;
+		this.disableControls = true;
 		
 		if (this.level == 3)
         {
 			document.getElementById("levelcompletebutton").style.display = "none";
+			this.winbgm = document.getElementById("superwinbgm");
         }
+		
+		this.bgm.pause();
+		this.bgm.currentTime = 0;
+		this.winbgm.play();
+		
+		this.charHealth = 500;
+		
 		document.getElementById("levelcompleteoverlay").style.top = "100px";	
 		document.getElementById("levelcompleteoverlay").style.opacity = 1;
+		document.getElementById("statsoverlay").style.opacity = 0;
+		document.getElementById("controlsoverlay").style.opacity = 0;
+		
       }
 	  
 	  levelTransition()
 	  {
+		  
 		  document.getElementById("levelcompletebutton").style.display = "none";
 			
 		  var youAreNowTheTransitionScreen = document.querySelector("#titlescreen");
@@ -141,11 +156,21 @@ class Shadow_Demo extends Scene_Component
 	  
 	  changeLevel()
 	  {
+		this.winbgm.pause();    
+		this.winbgm.currentTime = 0;
+		this.bgm.play(); 
+		this.disableControls = false;
+		 
 		document.getElementById("levelcompletebutton").style.display = "initial";
 		  
 		document.getElementById("levelcompleteoverlay").style.opacity = 0;
+		document.getElementById("statsoverlay").style.opacity = 1;
+		document.getElementById("controlsoverlay").style.opacity = 1;
+		
 		document.getElementById("levelcompleteoverlay").style.top = "-500px";	
 		  
+		this.drawtheChar = true; 
+		 
 		if(this.level == 1)
         {
         	this.level = 2;
@@ -158,8 +183,6 @@ class Shadow_Demo extends Scene_Component
         {
         	return;
         }
-		
-		this.drawtheChar = true;
 		
         this.ud = 0;  // the up-down position of the character
         this.lr = 0; // the left-right position of the character
@@ -180,8 +203,13 @@ class Shadow_Demo extends Scene_Component
         {
           return;
         }
+		if (this.disableControls)
+		{
+			return;
+		}
+		
         //console.log(dir);
-  
+		
           if(dir == 'w')
           {
           	if(this.ud >= (-146 * this.move_dist) && this.charHealth > 0&&!this.collisionBuildW)  // 146 steps max upwards (from starting position) (not 484 because >=)
