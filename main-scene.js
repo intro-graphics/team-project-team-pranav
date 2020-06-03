@@ -70,6 +70,8 @@ class Shadow_Demo extends Scene_Component
 		this.manaDivElement = document.querySelector("#manadiv");
 		this.manaElement = document.querySelector("#mana");	
 
+		document.getElementById("levelcompletebutton").addEventListener( 'click', () => this.levelTransition() );
+		
         const r = context.width/context.height;
         context.globals.graphics_state.projection_transform = Mat4.perspective( Math.PI/4, r, .1, 1000 );
 		
@@ -110,10 +112,41 @@ class Shadow_Demo extends Scene_Component
 			{ambient: 1.0, diffusivity: 0.0, specularity: 0.0 });
 			
       }
-
-      caveIn()
+	  
+	        caveIn()
       {
-        if(this.level == 1)
+		this.drawtheChar = false;
+		
+		if (this.level == 3)
+        {
+			document.getElementById("levelcompletebutton").style.display = "none";
+        }
+		document.getElementById("levelcompleteoverlay").style.top = "100px";	
+		document.getElementById("levelcompleteoverlay").style.opacity = 1;
+      }
+	  
+	  levelTransition()
+	  {
+		  document.getElementById("levelcompletebutton").style.display = "none";
+			
+		  var youAreNowTheTransitionScreen = document.querySelector("#titlescreen");
+		  youAreNowTheTransitionScreen.style.display = "initial";
+		  youAreNowTheTransitionScreen.innerHTML = "";
+		  youAreNowTheTransitionScreen.style.opacity = 0;
+		  setTimeout(function(){ document.querySelector("#titlescreen").style.opacity = 1 }, 100);
+		  setTimeout(function(){ document.querySelector("#titlescreen").style.opacity = 0 }, 500);
+		  setTimeout(function(){ document.querySelector("#titlescreen").style.display = "none" }, 900);
+		  setTimeout(() => this.changeLevel(), 501);
+	  }
+	  
+	  changeLevel()
+	  {
+		document.getElementById("levelcompletebutton").style.display = "initial";
+		  
+		document.getElementById("levelcompleteoverlay").style.opacity = 0;
+		document.getElementById("levelcompleteoverlay").style.top = "-500px";	
+		  
+		if(this.level == 1)
         {
         	this.level = 2;
         }
@@ -125,7 +158,9 @@ class Shadow_Demo extends Scene_Component
         {
         	return;
         }
-
+		
+		this.drawtheChar = true;
+		
         this.ud = 0;  // the up-down position of the character
         this.lr = 0; // the left-right position of the character
 
@@ -137,7 +172,7 @@ class Shadow_Demo extends Scene_Component
         this.counter = 0;
 
         return;
-      }
+	  }
 
       mover1(dir)
       {
@@ -1463,7 +1498,6 @@ class Shadow_Demo extends Scene_Component
           if(this.drawTheChar) // 05-22-20 Pranav - If you're dead, don't try and draw stuff
             this.draw_char3(graphics_state, t);
         }
-
         
 		this.update_UI()
       }

@@ -179,7 +179,7 @@
 				margin-bottom: -3px;
 				z-index: 2;
 				color: white;
-				transition: all 0.5s ease
+				transition: all 0.2s ease
 			}
 
 			#titletext {
@@ -254,7 +254,7 @@
 				top: 100px;
 				width: 500px;
 				height: 200px;
-				top: 100px;
+				top: -500px;
 				text-align: center;
 				background-color: rgba(0, 0, 0, 0.5);
 				color: white;
@@ -262,7 +262,7 @@
 				padding: 1em;
 				font-size: 96px;
 				border-radius: 10px;
-				transition: opacity 0.2s ease
+				transition: opacity 0.2s ease;
 				opacity: 0;
 			}
 
@@ -359,7 +359,7 @@
 			</div>
 			<div id="levelcompleteoverlay">
 				<div>YOU WIN!</div>
-				<button class="greybutton" id="levelcompletebutton">Click here to proceed to the next level.</button>
+				<button class="greybutton" id="levelcompletebutton" >Click here to proceed to the next level.</button>
 			</div>
 			<div id="deathoverlay">
 				YOU DIED
@@ -376,7 +376,7 @@
 			{
 				document.getElementById("startbutton").disabled = "disabled";
 				document.querySelector("#titlescreen").style.opacity = 0;
-				setTimeout(hideTitleScreen, 500);
+				setTimeout(hideTitleScreen, 2000);
 				var gameStartSFX = document.getElementById("gamestartsfx"); // this game is the Dark Souls of graphics projects
 				gameStartSFX.play();
 				const scenes = ["Shadow_Demo"]; // First, list the names of scenes we will add to our canvas.  These will register themselves
@@ -384,11 +384,6 @@
 				// draw / keyboard / mouse event happens on the web page.
 				new Canvas_Widget("main-canvas", scenes); // Use the Canvas_Widget class to display the WebGL demo.  Pass in
 				// the name of the HTML element we are to replace with the widget.
-			}
-			
-			function iWin()
-			{
-				
 			}
 			
 			function hideTitleScreen()
