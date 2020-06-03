@@ -28,6 +28,7 @@ class Shadow_Demo extends Scene_Component
         this.initial_camera_location = Mat4.inverse( context.globals.graphics_state.camera_transform );
         
         this.bgm = document.getElementById("bgm");
+		this.bgm.volume = 0.4;
         this.bgm.play();
         this.bgm.loop = true;
 		this.winbgm = document.getElementById("winbgm");		
