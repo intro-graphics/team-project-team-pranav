@@ -168,6 +168,9 @@ class Shadow_Demo extends Scene_Component
 		 
 		if(this.level == 1)
         {
+			this.bgm = document.getElementById("duperbgm");
+			this.bgm.loop = true;
+			
         	this.level = 2;
         }
         else if(this.level == 2)
@@ -202,7 +205,7 @@ class Shadow_Demo extends Scene_Component
 
       mover1(dir)
       {
-        if(this.charHealth <= 0)
+        if(this.charHealth <= 0 || this.disableControls )
         {
           return;
         }
@@ -243,7 +246,7 @@ class Shadow_Demo extends Scene_Component
 
       mover2(dir)
       {
-        if(this.charHealth <= 0)
+        if(this.charHealth <= 0 || this.disableControls )
         {
           return;
         }
@@ -346,10 +349,10 @@ class Shadow_Demo extends Scene_Component
 
     mover3(dir)
     {
-    	if(this.charHealth <= 0)
-    	{
-    		return;
-    	}
+    	if(this.charHealth <= 0 || this.disableControls )
+        {
+          return;
+        }
 
         if(dir == 'w')
         {
@@ -442,8 +445,6 @@ class Shadow_Demo extends Scene_Component
             if the charHealth is less than 0, the character is dead, so don't move then
             also, this.move_dist is the constant of move_dist, if it's value is changed, the max steps in each direction must be changed too 
         */
-		if ( !this.disableControls)
-		{
         this.key_triggered_button("Up", ["w"], () => {  // going Up with 'i'
                 if(this.level == 1)
                 {
@@ -465,7 +466,7 @@ class Shadow_Demo extends Scene_Component
                 }
                 else if (this.level == 2)
                 {
-                	this.mover2('s');
+                	this.mover2('s');	
                 }
                 else if (this.level == 3)
                 {
@@ -503,7 +504,6 @@ class Shadow_Demo extends Scene_Component
         this.key_triggered_button("Extend_Shadow", ["q"], () => { // going right with 'l'
                 this.extend_shadow = true;
             });
-		}
       }
     // Pranav's code for the world
     draw_map1(graphics_state)
