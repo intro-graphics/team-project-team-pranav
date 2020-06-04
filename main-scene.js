@@ -1,3 +1,4 @@
+//comment
 class Model extends Shape {
     constructor(name, size=1) {
         super("positions", "normals", "texture_coords");
