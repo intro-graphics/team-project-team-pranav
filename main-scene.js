@@ -86,6 +86,7 @@ class Shadow_Demo extends Scene_Component
                          // Shapes used so far                     
                          sub4: new (Subdivision_Sphere)(4), 
                          body: new (Cube)(),
+                         building: new (Cube)(),
                          shadow_square: new Square(),
                          car:new Model("assets/car.json", 1.5)
                        }
@@ -108,12 +109,12 @@ class Shadow_Demo extends Scene_Component
 			car: context.get_instance(Phong_Shader)
 			    .material(Color.of(0,0,0,1),
 			    {ambient: 1.0, diffusivity: 0.0, specularity: 0.0 })
-			    .override({texture:context.get_instance("assets/car.png", true)})
+			    .override({texture:context.get_instance("assets/car.png", true)}),
+			building: context.get_instance(Phong_Shader)
+			    .material(Color.of(0,0,0,1),
+			    {ambient: 1.0, diffusivity: 0.0, specularity: 0.0 })
+			    .override({texture:context.get_instance("assets/BUILDING_WALL.png", true)})
           }
-          this.materials["shadow"] = context.get_instance(Shadow_Shader)
-			.material(Color.of(0,0,0,1),
-			{ambient: 1.0, diffusivity: 0.0, specularity: 0.0 });
-			
       }
 	  
 	   caveIn()
@@ -540,7 +541,8 @@ class Shadow_Demo extends Scene_Component
         //then get the boundary info and push into shad_bound_box so we can decide whether player is in this 
         //buildings shadow later
         pos = Mat4.identity().times(Mat4.translation([0,1,0])).times(Mat4.scale([1,2,2])).times(Mat4.translation([1,1,1]));
-        this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(0.25, 0.9, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
+        this.shapes.body.draw(graphics_state, pos, this.materials.building);
+        //this.materials.suns.override( {color: Color.of(0.25, 0.9, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
         this.shapes.body.draw(graphics_state,pos,this.materials.shadow);
 
         let faceNorms = getFaceNormals(pos);                              //Get the LR and FB normals as well as one point on it
@@ -552,7 +554,8 @@ class Shadow_Demo extends Scene_Component
 
         //  the yellow building
         pos = Mat4.identity().times(Mat4.translation([-8,1,4])).times(Mat4.scale([1,2,2])).times(Mat4.translation([1,1,1]));
-        this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(1, 1, 0.5, 1)},{ambient:0,specular:1,gouraud:false} ));
+        this.shapes.body.draw(graphics_state, pos, this.materials.building);
+        // this.materials.suns.override( {color: Color.of(1, 1, 0.5, 1)},{ambient:0,specular:1,gouraud:false} ));
         this.shapes.body.draw(graphics_state,pos,this.materials.shadow);
         faceNorms = getFaceNormals(pos);
         bound_list = boundBox(faceNorms,1,5);
@@ -560,7 +563,8 @@ class Shadow_Demo extends Scene_Component
 
         // the gray building
         pos = Mat4.identity().times(Mat4.translation([8,1,2])).times(Mat4.scale([1,2,2])).times(Mat4.translation([1,1,1]));
-        this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(0.5, 0.5, 0.5, 1)},{ambient:0,specular:1,gouraud:false} ));
+        this.shapes.body.draw(graphics_state, pos, this.materials.building);
+        //this.materials.suns.override( {color: Color.of(0.5, 0.5, 0.5, 1)},{ambient:0,specular:1,gouraud:false} ));
         this.shapes.body.draw(graphics_state,pos,this.materials.shadow);
         faceNorms = getFaceNormals(pos);
         bound_list = boundBox(faceNorms,1,5);
@@ -1507,7 +1511,6 @@ class Shadow_Demo extends Scene_Component
         // console.log(this.ud)
         // console.log(this.lr)
         console.log(this.charHealth);
-        
         if(this.level == 1)
         {
           this.draw_map1(graphics_state);
