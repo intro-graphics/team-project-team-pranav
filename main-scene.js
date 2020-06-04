@@ -119,7 +119,11 @@ class Shadow_Demo extends Scene_Component
 	  
 	   caveIn()
       {
-		this.drawtheChar = false;
+        this.lr=0;
+       this.ud=0;
+        this.char_x_pos = 0;
+        this.char_y_pos=0;
+		this.drawTheChar = false;
 		this.disableControls = true;
 		
 		if (this.level == 3)
@@ -166,7 +170,7 @@ class Shadow_Demo extends Scene_Component
 		
 		document.getElementById("levelcompleteoverlay").style.top = "-500px";	
 		  
-		this.drawtheChar = true; 
+		this.drawTheChar = true; 
 		 
 		if(this.level == 1)
         {
@@ -936,6 +940,7 @@ class Shadow_Demo extends Scene_Component
       if(this.lr>=-8.8&&this.lr<=-5.8&&this.ud<=-36.8)
       {
        console.log("in cave");
+       
        this.caveIn();
       }
       if(this.lr>=-4.6&&this.lr<=-4.0&&this.ud-0.2<=-25&&this.ud>=-29.6)
@@ -1340,6 +1345,11 @@ class Shadow_Demo extends Scene_Component
             so if the value returned is less than 100, keep drawing them. Since they can't move once their health is less than 0, we don't have to
             worry that the character will move back into shadows to replenish health.
       */
+     if(this.ud<=-37&&this.lr>=-1.8&&this.lr<=1.2)
+      {
+        console.log("in cave");
+        this.caveIn();
+      }
       if(this.boom)
       {
           if(this.blow_up(graphics_state, time) > 100)
@@ -1521,7 +1531,7 @@ class Shadow_Demo extends Scene_Component
         else if (this.level == 2)
         {
           this.draw_map2(graphics_state);
-       
+
           if(this.drawTheChar) // 05-22-20 Pranav - If you're dead, don't try and draw stuff
             this.draw_char2(graphics_state, t);
         }
