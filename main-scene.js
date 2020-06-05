@@ -48,7 +48,6 @@ class Shadow_Demo extends Scene_Component
         this.maxHealth = 500;   // health shouldn't be able to rise higher than this, should be equal to charHealth at the start
         this.redC = 1; // if in shadow, reduce to 0.5 and make it look darker
         this.shad_bound_box = [];        //add info to this list so we can check for shadow detection
-        this.turn = Mat4.identity();
         this.angle = 0;
 
         this.extend_shadow = false; //Jacob - extend shadow skill is turned off
