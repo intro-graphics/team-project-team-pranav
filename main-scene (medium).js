@@ -13,7 +13,7 @@ class Shadow_DemoM extends Scene_Component
         this.bgm.play();
         this.bgm.loop = true;
 		this.winbgm = document.getElementById("winbgm");		
-        this.skillsfx = document.getElementById("skillsfx");
+                this.skillsfx = document.getElementById("skillsfx");
 		this.skillout = document.getElementById("skillout");
         this.footstepsfx = document.getElementById("footstepsfx");
         this.footstepsfx.volume = 0.4;
@@ -73,7 +73,7 @@ class Shadow_DemoM extends Scene_Component
                          body: new (Cube)(),
                          building: new (Cube)(),
                          shadow_square: new Square(),
-                         knight: new Shape_From_File( "/assets/Pokemon.obj" ),
+                         knight: new Shape_From_File( "/assets/rumia.obj" ),
                          car:new Model("assets/car.json", 1.5),
                          residential: new Shape_From_File("/assets/massBuild.obj")
                        }
@@ -104,11 +104,11 @@ class Shadow_DemoM extends Scene_Component
 			armor: context.get_instance(Phong_Shader)
 			    .material(Color.of(0,0,0,1),
 			    {ambient: 1.0, diffusivity: 0.0, specularity: 0.0 })
-			    .override({texture:context.get_instance("assets/ivysaur.png", true)}),
+			    .override({texture:context.get_instance("assets/rumia.png", true)}),
 			armorShad: context.get_instance(Phong_Shader)
 			    .material(Color.of(0,0,0,1),
 			    {ambient: 0.5, diffusivity: 0.0, specularity: 0.0 })
-			    .override({texture:context.get_instance("assets/ivysaur.png", true)})
+			    .override({texture:context.get_instance("assets/rumia.png", true)})
           }
       }
 	  
