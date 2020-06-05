@@ -61,7 +61,7 @@ function blockedInShad(start,ray,norm_and_pt,x_bound_1,x_bound_2,y_bound_low,y_b
   let z_bound_high = Math.max(z_bound_1,z_bound_2);
   z_bound_high +=.01;
   y_bound_low +=.5;                                                      //the center of the character is .5 above ground, adjust here
-  y_bound_high +=.25;
+  y_bound_high +=.5;
   let scale_factor = intersect(norm_and_pt[0],start,ray,norm_and_pt[1])           //find what t is for the intersection
   if(scale_factor==-9999)                                                //is parallel
   {                                                                      //therefore can't be blocked by LR return false

@@ -88,7 +88,9 @@ class Shadow_Demo extends Scene_Component
                          body: new (Cube)(),
                          building: new (Cube)(),
                          shadow_square: new Square(),
-                         car:new Model("assets/car.json", 1.5)
+                         knight: new Shape_From_File( "/assets/penguin.obj" ),
+                         car:new Model("assets/car.json", 1.5),
+                         residential: new Shape_From_File("/assets/massBuild.obj")
                        }
         this.submit_shapes( context, shapes );
         this.materials =
@@ -113,7 +115,11 @@ class Shadow_Demo extends Scene_Component
 			building: context.get_instance(Phong_Shader)
 			    .material(Color.of(0,0,0,1),
 			    {ambient: 1.0, diffusivity: 0.0, specularity: 0.0 })
-			    .override({texture:context.get_instance("assets/BUILDING_WALL.png", true)})
+			    .override({texture:context.get_instance("assets/Massachussets Hall Albedo.png", true)}),
+			armor: context.get_instance(Phong_Shader)
+			    .material(Color.of(0,0,0,1),
+			    {ambient: 1.0, diffusivity: 0.0, specularity: 0.0 })
+			    .override({texture:context.get_instance("assets/penguin.png", true)})
           }
       }
 	  
@@ -544,12 +550,18 @@ class Shadow_Demo extends Scene_Component
         // use transformations, draw building, draw shadow, then get the norms of the four sides not top and bottom
         //then get the boundary info and push into shad_bound_box so we can decide whether player is in this 
         //buildings shadow later
-        pos = Mat4.identity().times(Mat4.translation([0,1,0])).times(Mat4.scale([1,2,2])).times(Mat4.translation([1,1,1]));
-        this.shapes.body.draw(graphics_state, pos, this.materials.building);
-        //this.materials.suns.override( {color: Color.of(0.25, 0.9, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
-        this.shapes.body.draw(graphics_state,pos,this.materials.shadow);
+         let cube_pos = Mat4.identity().times(Mat4.translation([-.25,1,.5]))    //This is for our original cube
+                      .times(Mat4.scale([1.25,2,1.25]))
+                      .times(Mat4.translation([1,1,1]));
+                      
+        let build_pos = Mat4.identity().times(Mat4.translation([0,1,0]))    //THIS IS FOR THE MODEL
+                        .times(Mat4.scale([1,2.2,2]))
+                        .times(Mat4.translation([1,1,1]));
+        build_pos = build_pos.times(Mat4.translation([0,-.1,0]));
+        this.shapes.residential.draw(graphics_state, build_pos, this.materials.building);
+        this.shapes.residential.draw(graphics_state,build_pos,this.materials.shadow);
 
-        let faceNorms = getFaceNormals(pos);                              //Get the LR and FB normals as well as one point on it
+        let faceNorms = getFaceNormals(cube_pos);                              //Get the LR and FB normals as well as one point on it
         let bound_list = boundBox(faceNorms,1,5);                         //get the boundary information 1 and 5 are the y bounds
         this.shad_bound_box.push(bound_list);                             //push list into shad_bound_box
 
@@ -735,21 +747,23 @@ class Shadow_Demo extends Scene_Component
         let origin_pos = (pos.times(Vec.of(0,0,0,1))); //This is the center position of the person
         let ray = this.lights[0].position.minus(origin_pos);  //This is the vector from the position of the person to sun
         var inShad = inShadow(origin_pos,ray,this.shad_bound_box);
-        if(inShad)                                    //if not blocked by any of the four planes in shadow
+       if(inShad)                                    //if not blocked by any of the four planes in shadow
         {
-          this.shapes.body.draw
-            (graphics_state, pos, this.materials.suns.override( {color: Color.of(.5, 0, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
+          this.shapes.knight.draw
+            (graphics_state, pos, this.materials.armor);
+            //this.materials.suns.override( {color: Color.of(.5, 0, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
           if(this.maxHealth > this.charHealth)    // don't go above max health
                 this.charHealth += 1;
         }
         else                                                        //else not in shadow
         {
-          this.shapes.body.draw
-            (graphics_state, pos, this.materials.suns.override( {color: Color.of(1, 0, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
+          this.shapes.knight.draw
+            (graphics_state, pos, this.materials.armor);
+            //this.materials.suns.override( {color: Color.of(1, 0, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
           if(this.charHealth > 0)    // don't go above max health
                 this.charHealth -= 1;
         }
-        this.shapes.body.draw(graphics_state,pos,this.materials.shadow); //Draw its shadow
+        this.shapes.knight.draw(graphics_state,pos,this.materials.shadow); //Draw its shadow
 
         //Set camera to follow the human
         let camera_matrix = pos.times(Mat4.translation([0,20,15]))
@@ -1546,3 +1560,4 @@ class Shadow_Demo extends Scene_Component
 		this.update_UI()
       }
   }
+
