@@ -667,7 +667,7 @@ class Shadow_Demo extends Scene_Component
       */
 
       //building 1
-     if(this.lr>=-0.4&&this.lr<=1.8&&this.ud-0.2<=-10&&this.ud>=-14.6)
+     if(this.lr>-0.8&&this.lr<=2.0&&this.ud-0.2<=-10.4&&this.ud>=-13.6)
       {
         this.collisionBuildW = true;
       }
@@ -675,7 +675,7 @@ class Shadow_Demo extends Scene_Component
       {
         this.collisionBuildW=false;
       }
-      if(this.lr>=-0.4&&this.lr<=1.8&&this.ud<=-10&&this.ud+0.2>=-14.6)
+      if(this.lr>-0.8&&this.lr<=2.0&&this.ud<=-10.4&&this.ud+0.2>=-13.6)
       {
         this.collisionBuildS = true;
       }
@@ -683,7 +683,7 @@ class Shadow_Demo extends Scene_Component
       {
         this.collisionBuildS=false;
       }
-      if(this.lr>=-0.4&&this.lr-0.2<=1.8&&this.ud<=-10&&this.ud>=-14.6)
+      if(this.lr>-0.8&&this.lr-0.2<=2.0&&this.ud<=-10.4&&this.ud>=-13.6)
       {
         this.collisionBuildA = true;
       }
@@ -691,7 +691,7 @@ class Shadow_Demo extends Scene_Component
       {
         this.collisionBuildA=false;
       }
-      if(this.lr+0.2>=-0.6&&this.lr<=1.8&&this.ud<=-10&&this.ud>=-14.6)
+      if(this.lr+0.2>-0.8&&this.lr<=2.0&&this.ud<=-10.4&&this.ud>=-13.6)
       {
         this.collisionBuildD = true;
       }
