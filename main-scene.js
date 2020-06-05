@@ -119,6 +119,10 @@ class Shadow_Demo extends Scene_Component
 			armor: context.get_instance(Phong_Shader)
 			    .material(Color.of(0,0,0,1),
 			    {ambient: 1.0, diffusivity: 0.0, specularity: 0.0 })
+			    .override({texture:context.get_instance("assets/penguin.png", true)}),
+			armorShad: context.get_instance(Phong_Shader)
+			    .material(Color.of(0,0,0,1),
+			    {ambient: 0.5, diffusivity: 0.0, specularity: 0.0 })
 			    .override({texture:context.get_instance("assets/penguin.png", true)})
           }
       }
@@ -546,12 +550,17 @@ class Shadow_Demo extends Scene_Component
         this.shapes.sub4.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(0, 0, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
         //this.shapes.sub4.draw(graphics_state,pos,this.materials.shadow)
       
-        // the green building ALL BUILDINGS WILL FOLLOW THIS PROCESS
-        // use transformations, draw building, draw shadow, then get the norms of the four sides not top and bottom
-        //then get the boundary info and push into shad_bound_box so we can decide whether player is in this 
-        //buildings shadow later
-        let model_trans = Mat4.identity().times(Mat4.scale([.825,1.125,1.75]));
+        /* the green building : ALL BUILDINGS WILL FOLLOW THIS PROCESS
+        There's two things to account for, first we have to realize that were drawing the model, so our
+        transformation from model to the standard cube in dependencies is with the model_trans array
+        Then from there we just pretend we are operating with the unit cube and do the following
+        use transformations, draw building, draw shadow, then get the norms of the four sides not top and bottom
+        then get the boundary info and push into shad_bound_box so we can decide whether player is in this 
+        buildings shadow later*/
+        let model_trans = Mat4.identity().times(Mat4.scale([.825,1.125,1.75]));          //This is how to scale the model to a cube
         pos = Mat4.identity().times(Mat4.translation([0,1,0])).times(Mat4.scale([1,2,2])).times(Mat4.translation([1,1,1]));
+        
+        //get the model pos and draw the model pos and draw the shadow of model, however all shadow_detection will operate on standard cube
         let model_pos = Mat4.identity().times(pos).times(model_trans);
         this.shapes.residential.draw(graphics_state, model_pos, this.materials.building);
         this.shapes.residential.draw(graphics_state,model_pos,this.materials.shadow);
@@ -744,8 +753,7 @@ class Shadow_Demo extends Scene_Component
        if(inShad)                                    //if not blocked by any of the four planes in shadow
         {
           this.shapes.knight.draw
-            (graphics_state, pos, this.materials.armor);
-            //this.materials.suns.override( {color: Color.of(.5, 0, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
+            (graphics_state, pos, this.materials.armorShad);
           if(this.maxHealth > this.charHealth)    // don't go above max health
                 this.charHealth += 1;
         }
@@ -753,7 +761,6 @@ class Shadow_Demo extends Scene_Component
         {
           this.shapes.knight.draw
             (graphics_state, pos, this.materials.armor);
-            //this.materials.suns.override( {color: Color.of(1, 0, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
           if(this.charHealth > 0)    // don't go above max health
                 this.charHealth -= 1;
         }
@@ -827,25 +834,29 @@ class Shadow_Demo extends Scene_Component
         //this.shapes.sub4.draw(graphics_state,pos,this.materials.shadow)
 
         // the green building all the same process as main-scene level 1
+        let model_trans = Mat4.identity().times(Mat4.scale([.825,1.125,1.75]));
         pos = Mat4.identity().times(Mat4.translation([7,1,14])).times(Mat4.scale([1,2,2])).times(Mat4.translation([1,1,1]));
-        this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(0.25, 0.9, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
-        this.shapes.body.draw(graphics_state,pos,this.materials.shadow);
+        let model_pos = Mat4.identity().times(pos).times(model_trans);
+        this.shapes.residential.draw(graphics_state,model_pos,this.materials.building);
+        this.shapes.residential.draw(graphics_state,model_pos,this.materials.shadow);
         let faceNorms = getFaceNormals(pos);
         let bound_list = boundBox(faceNorms,1,5);
         this.shad_bound_box.push(bound_list);
 
         //  the yellow building
         pos = Mat4.identity().times(Mat4.translation([-13,1,10])).times(Mat4.scale([1,2,2])).times(Mat4.translation([1,1,1]));
-        this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(1, 1, 0.5, 1)},{ambient:0,specular:1,gouraud:false} ));
-        this.shapes.body.draw(graphics_state,pos,this.materials.shadow);
+        model_pos = Mat4.identity().times(pos).times(model_trans);
+        this.shapes.residential.draw(graphics_state,model_pos,this.materials.building);
+        this.shapes.residential.draw(graphics_state,model_pos,this.materials.shadow);
         faceNorms = getFaceNormals(pos);
         bound_list = boundBox(faceNorms,1,5);
         this.shad_bound_box.push(bound_list);
 
         // the gray building
         pos = Mat4.identity().times(Mat4.translation([-4,1,-11])).times(Mat4.scale([1,2,2])).times(Mat4.translation([1,1,1]));
-        this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(0.5, 0.5, 0.5, 1)},{ambient:0,specular:1,gouraud:false} ));
-        this.shapes.body.draw(graphics_state,pos,this.materials.shadow);
+        model_pos = Mat4.identity().times(pos).times(model_trans);
+        this.shapes.residential.draw(graphics_state,model_pos,this.materials.building);
+        this.shapes.residential.draw(graphics_state,model_pos,this.materials.shadow);
         faceNorms = getFaceNormals(pos);
         bound_list = boundBox(faceNorms,1,5);
         this.shad_bound_box.push(bound_list);
@@ -1031,19 +1042,19 @@ class Shadow_Demo extends Scene_Component
         var inShad = inShadow(origin_pos,ray,this.shad_bound_box);
         if(inShad)                                    //if not blocked by any of the four planes in shadow
         {
-          this.shapes.body.draw
-            (graphics_state, pos, this.materials.suns.override( {color: Color.of(.5, 0, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
+          this.shapes.knight.draw
+            (graphics_state, pos, this.materials.armorShad);
           if(this.maxHealth > this.charHealth)    // don't go above max health
                 this.charHealth += 1;
         }
         else                                                        //else not in shadow
         {
-          this.shapes.body.draw
-            (graphics_state, pos, this.materials.suns.override( {color: Color.of(1, 0, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
+          this.shapes.knight.draw
+            (graphics_state, pos, this.materials.armor);
           if(this.charHealth > 0)    // don't go above max health
                 this.charHealth -= 1;
         }
-        this.shapes.body.draw(graphics_state,pos,this.materials.shadow);
+        this.shapes.knight.draw(graphics_state,pos,this.materials.shadow);
 
         //Set camera to follow the human
         let camera_matrix = pos.times(Mat4.translation([0,20,20]))
@@ -1128,33 +1139,38 @@ class Shadow_Demo extends Scene_Component
         //this.shapes.sub4.draw(graphics_state,pos,this.materials.shadow)
 
         //  the yellow building
+        let model_trans = Mat4.identity().times(Mat4.scale([.825,1.125,1.75]));
         pos = Mat4.identity().times(Mat4.translation([-13,1,11.5])).times(Mat4.scale([1,2,2])).times(Mat4.translation([1,1,1]));
-        this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(1, 1, 0.5, 1)},{ambient:0,specular:1,gouraud:false} ));
-        this.shapes.body.draw(graphics_state,pos,this.materials.shadow);
+        let model_pos = Mat4.identity().times(pos).times(model_trans);
+        this.shapes.residential.draw(graphics_state,model_pos,this.materials.building);
+        this.shapes.residential.draw(graphics_state,model_pos,this.materials.shadow);
         let faceNorms = getFaceNormals(pos);
         let bound_list = boundBox(faceNorms,1,5);
         this.shad_bound_box.push(bound_list);
 
         // the green building
         pos = Mat4.identity().times(Mat4.translation([11,1,2])).times(Mat4.scale([1,2,2])).times(Mat4.translation([1,1,1]));
-        this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(0.25, 0.9, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
-        this.shapes.body.draw(graphics_state,pos,this.materials.shadow);
+        model_pos = Mat4.identity().times(pos).times(model_trans);
+        this.shapes.residential.draw(graphics_state,model_pos,this.materials.building);
+        this.shapes.residential.draw(graphics_state,model_pos,this.materials.shadow);
         faceNorms = getFaceNormals(pos);
         bound_list = boundBox(faceNorms,1,5);
         this.shad_bound_box.push(bound_list);
 
         // the gray building
         pos = Mat4.identity().times(Mat4.translation([-13,1,-7.5])).times(Mat4.scale([1,2,2])).times(Mat4.translation([1,1,1]));
-        this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(0.5, 0.5, 0.5, 1)},{ambient:0,specular:1,gouraud:false} ));
-        this.shapes.body.draw(graphics_state,pos,this.materials.shadow);
+        model_pos = Mat4.identity().times(pos).times(model_trans);
+        this.shapes.residential.draw(graphics_state,model_pos,this.materials.building);
+        this.shapes.residential.draw(graphics_state,model_pos,this.materials.shadow);
         faceNorms = getFaceNormals(pos);
         bound_list = boundBox(faceNorms,1,5);
         this.shad_bound_box.push(bound_list);
 
         // the blue building
         pos = Mat4.identity().times(Mat4.translation([11,1,-17])).times(Mat4.scale([1,2,2])).times(Mat4.translation([1,1,1]));
-        this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(0.25, 0.9, 1, 1)},{ambient:0,specular:1,gouraud:false} ));
-        this.shapes.body.draw(graphics_state,pos,this.materials.shadow);
+        model_pos = Mat4.identity().times(pos).times(model_trans);
+        this.shapes.residential.draw(graphics_state,model_pos,this.materials.building);
+        this.shapes.residential.draw(graphics_state,model_pos,this.materials.shadow);
         faceNorms = getFaceNormals(pos);
         bound_list = boundBox(faceNorms,1,5);
         this.shad_bound_box.push(bound_list);
@@ -1407,19 +1423,17 @@ class Shadow_Demo extends Scene_Component
         var inShad = inShadow(origin_pos,ray,this.shad_bound_box);
         if(inShad)                                    //if not blocked by any of the four planes in shadow
         {
-          this.shapes.body.draw
-            (graphics_state, pos, this.materials.suns.override( {color: Color.of(.5, 0, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
+          this.shapes.knight.draw(graphics_state, pos, this.materials.armorShad);
           if(this.maxHealth > this.charHealth)    // don't go above max health
                 this.charHealth += 1;
         }
         else                                                        //else not in shadow
         {
-          this.shapes.body.draw
-            (graphics_state, pos, this.materials.suns.override( {color: Color.of(1, 0, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
+          this.shapes.knight.draw(graphics_state, pos, this.materials.armor);
           if(this.charHealth > 0)    // don't go above max health
                 this.charHealth -= 1;
         }
-        this.shapes.body.draw(graphics_state,pos,this.materials.shadow);
+        this.shapes.knight.draw(graphics_state,pos,this.materials.shadow);
         
         
         //console.log("charHealth: "+this.charHealth);
