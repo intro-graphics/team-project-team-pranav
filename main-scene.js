@@ -88,7 +88,7 @@ class Shadow_Demo extends Scene_Component
                          body: new (Cube)(),
                          building: new (Cube)(),
                          shadow_square: new Square(),
-                         knight: new Shape_From_File( "/assets/penguin.obj" ),
+                         knight: new Shape_From_File( "/assets/Pokemon.obj" ),
                          car:new Model("assets/car.json", 1.5),
                          residential: new Shape_From_File("/assets/massBuild.obj")
                        }
@@ -115,15 +115,15 @@ class Shadow_Demo extends Scene_Component
 			building: context.get_instance(Phong_Shader)
 			    .material(Color.of(0,0,0,1),
 			    {ambient: 1.0, diffusivity: 0.0, specularity: 0.0 })
-			    .override({texture:context.get_instance("assets/Massachussets Hall Albedo.png", true)}),
+			    .override({texture:context.get_instance("assets/massHall.png", true)}),
 			armor: context.get_instance(Phong_Shader)
 			    .material(Color.of(0,0,0,1),
 			    {ambient: 1.0, diffusivity: 0.0, specularity: 0.0 })
-			    .override({texture:context.get_instance("assets/penguin.png", true)}),
+			    .override({texture:context.get_instance("assets/ivysaur.png", true)}),
 			armorShad: context.get_instance(Phong_Shader)
 			    .material(Color.of(0,0,0,1),
 			    {ambient: 0.5, diffusivity: 0.0, specularity: 0.0 })
-			    .override({texture:context.get_instance("assets/penguin.png", true)})
+			    .override({texture:context.get_instance("assets/ivysaur.png", true)})
           }
       }
 	  
