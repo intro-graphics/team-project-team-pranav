@@ -527,14 +527,14 @@ class Shadow_Demo extends Scene_Component
         pos = pos.times(Mat4.translation([-3.5,-9.05,40]))
           .times(Mat4.scale([3.5,5,100]))
           .times(Mat4.rotation(Math.PI / 2, Vec.of(0, 1, 0))).times(Mat4.translation([1, 1, 1]));
-        //this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(0.5, 0.5, 0.5, 1)},{ambient:0,specular:1,gouraud:false} ));
+        this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(0.5, 0.5, 0.5, 1)},{ambient:0,specular:1,gouraud:false} ));
         // the grass to the right
         pos = pos.times(Mat4.scale([1,1,8])).times(Mat4.translation([0, -0.01, 1.125]))
-        //this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(0.5, 1, 0.5, 1)},{ambient:0,specular:1,gouraud:false} ));
+        this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(0.5, 1, 0.5, 1)},{ambient:0,specular:1,gouraud:false} ));
 
         // the grass to the left
         pos = pos.times(Mat4.translation([0, 0, -2]))
-        //this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(0.5, 1, 0.5, 1)}, {ambient:0,specular:1,gouraud:false}));
+        this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(0.5, 1, 0.5, 1)}, {ambient:0,specular:1,gouraud:false}));
 
         // the cave
         pos = Mat4.identity().times(Mat4.scale([3.5,3.2,3])).times(Mat4.translation([0,0,-6]));
@@ -550,18 +550,13 @@ class Shadow_Demo extends Scene_Component
         // use transformations, draw building, draw shadow, then get the norms of the four sides not top and bottom
         //then get the boundary info and push into shad_bound_box so we can decide whether player is in this 
         //buildings shadow later
-         let cube_pos = Mat4.identity().times(Mat4.translation([-.25,1,.5]))    //This is for our original cube
-                      .times(Mat4.scale([1.25,2,1.25]))
-                      .times(Mat4.translation([1,1,1]));
-                      
-        let build_pos = Mat4.identity().times(Mat4.translation([0,1,0]))    //THIS IS FOR THE MODEL
-                        .times(Mat4.scale([1,2.2,2]))
-                        .times(Mat4.translation([1,1,1]));
-        build_pos = build_pos.times(Mat4.translation([0,-.1,0]));
-        this.shapes.residential.draw(graphics_state, build_pos, this.materials.building);
-        this.shapes.residential.draw(graphics_state,build_pos,this.materials.shadow);
+        let model_trans = Mat4.identity().times(Mat4.scale([.825,1.125,1.75]));
+        pos = Mat4.identity().times(Mat4.translation([0,1,0])).times(Mat4.scale([1,2,2])).times(Mat4.translation([1,1,1]));
+        let model_pos = Mat4.identity().times(pos).times(model_trans);
+        this.shapes.residential.draw(graphics_state, model_pos, this.materials.building);
+        this.shapes.residential.draw(graphics_state,model_pos,this.materials.shadow);
 
-        let faceNorms = getFaceNormals(cube_pos);                              //Get the LR and FB normals as well as one point on it
+        let faceNorms = getFaceNormals(pos);                              //Get the LR and FB normals as well as one point on it
         let bound_list = boundBox(faceNorms,1,5);                         //get the boundary information 1 and 5 are the y bounds
         this.shad_bound_box.push(bound_list);                             //push list into shad_bound_box
 
@@ -570,26 +565,21 @@ class Shadow_Demo extends Scene_Component
 
         //  the yellow building
         pos = Mat4.identity().times(Mat4.translation([-8,1,4])).times(Mat4.scale([1,2,2])).times(Mat4.translation([1,1,1]));
-        this.shapes.body.draw(graphics_state, pos, this.materials.building);
-        // this.materials.suns.override( {color: Color.of(1, 1, 0.5, 1)},{ambient:0,specular:1,gouraud:false} ));
-        this.shapes.body.draw(graphics_state,pos,this.materials.shadow);
+        model_pos = Mat4.identity().times(pos).times(model_trans);
+        this.shapes.residential.draw(graphics_state,model_pos,this.materials.building);
+        this.shapes.residential.draw(graphics_state,model_pos,this.materials.shadow);
         faceNorms = getFaceNormals(pos);
         bound_list = boundBox(faceNorms,1,5);
         this.shad_bound_box.push(bound_list);
 
         // the gray building
         pos = Mat4.identity().times(Mat4.translation([8,1,2])).times(Mat4.scale([1,2,2])).times(Mat4.translation([1,1,1]));
-        this.shapes.body.draw(graphics_state, pos, this.materials.building);
-        //this.materials.suns.override( {color: Color.of(0.5, 0.5, 0.5, 1)},{ambient:0,specular:1,gouraud:false} ));
-        this.shapes.body.draw(graphics_state,pos,this.materials.shadow);
+        model_pos = Mat4.identity().times(pos).times(model_trans);
+        this.shapes.residential.draw(graphics_state,model_pos,this.materials.building);
+        this.shapes.residential.draw(graphics_state,model_pos,this.materials.shadow);
         faceNorms = getFaceNormals(pos);
         bound_list = boundBox(faceNorms,1,5);
         this.shad_bound_box.push(bound_list);
-
-        pos = Mat4.identity();
-        this.shapes.residential.draw(graphics_state,pos,this.materials.building);
-        this.shapes.body.draw(graphics_state,pos,this.materials.suns.override( {color: Color.of(1, 1, 0.5, 1)},{ambient:0,specular:1,gouraud:false} ));
-
 
         // the skybox (can be seen if you tilt the camera)
         pos = Mat4.identity().times(Mat4.scale([100,100,100]))
@@ -671,7 +661,7 @@ class Shadow_Demo extends Scene_Component
       */
 
       //building 1
-     if(this.lr>-0.8&&this.lr<=2.0&&this.ud-0.2<=-10.4&&this.ud>=-13.6)
+     if(this.lr>=-0.4&&this.lr<=1.8&&this.ud-0.2<=-10&&this.ud>=-14.6)
       {
         this.collisionBuildW = true;
       }
@@ -679,7 +669,7 @@ class Shadow_Demo extends Scene_Component
       {
         this.collisionBuildW=false;
       }
-      if(this.lr>-0.8&&this.lr<=2.0&&this.ud<=-10.4&&this.ud+0.2>=-13.6)
+      if(this.lr>=-0.4&&this.lr<=1.8&&this.ud<=-10&&this.ud+0.2>=-14.6)
       {
         this.collisionBuildS = true;
       }
@@ -687,7 +677,7 @@ class Shadow_Demo extends Scene_Component
       {
         this.collisionBuildS=false;
       }
-      if(this.lr>-0.8&&this.lr-0.2<=2.0&&this.ud<=-10.4&&this.ud>=-13.6)
+      if(this.lr>=-0.4&&this.lr-0.2<=1.8&&this.ud<=-10&&this.ud>=-14.6)
       {
         this.collisionBuildA = true;
       }
@@ -695,7 +685,7 @@ class Shadow_Demo extends Scene_Component
       {
         this.collisionBuildA=false;
       }
-      if(this.lr+0.2>-0.8&&this.lr<=2.0&&this.ud<=-10.4&&this.ud>=-13.6)
+      if(this.lr+0.2>=-0.6&&this.lr<=1.8&&this.ud<=-10&&this.ud>=-14.6)
       {
         this.collisionBuildD = true;
       }
