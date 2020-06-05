@@ -10,7 +10,9 @@
 		</script>
 		<script src="tiny-graphics.js"></script><!--  Javascript "include" files.  Any code in them gets executed as part of the page loading. //-->
 		<script src="dependencies.js"></script>
-		<script src="main-scene.js"></script>
+        <script src="main-scene (easy).js"></script>
+		<script src="main-scene (medium).js"></script>
+		<script src="main-scene (hard).js"></script>
 		<script src="shadow_shader.js"></script>
 		<script src="simpleRayCast.js"></script>
 		<style>
@@ -387,7 +389,7 @@
 				setTimeout(hideTitleScreen, 2000);
 				var gameStartSFX = document.getElementById("gamestartsfx"); // this game is the Dark Souls of graphics projects
 				gameStartSFX.play();
-				const scenes = ["Shadow_Demo"]; // First, list the names of scenes we will add to our canvas.  These will register themselves
+				const scenes = ["Shadow_DemoM"]; // First, list the names of scenes we will add to our canvas.  These will register themselves
 				// with this widget's Canvas_Manager so that their code can be called upon every time a 
 				// draw / keyboard / mouse event happens on the web page.
 				new Canvas_Widget("main-canvas", scenes); // Use the Canvas_Widget class to display the WebGL demo.  Pass in
