@@ -54,7 +54,7 @@ class Shadow_Demo extends Scene_Component
         this.player_in_shadow = false;//Suvir- tells if in shadow or not
         this.charHealth = 500; //Suvir- health of the character
 
-        this.level = 3;
+        this.level = 1;
     
         
         this.collisionBuildW = false; //Suvir- detects collision for building
@@ -550,12 +550,17 @@ class Shadow_Demo extends Scene_Component
         this.shapes.sub4.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(0, 0, 0, 1)},{ambient:0,specular:1,gouraud:false} ));
         //this.shapes.sub4.draw(graphics_state,pos,this.materials.shadow)
       
-        // the green building ALL BUILDINGS WILL FOLLOW THIS PROCESS
-        // use transformations, draw building, draw shadow, then get the norms of the four sides not top and bottom
-        //then get the boundary info and push into shad_bound_box so we can decide whether player is in this 
-        //buildings shadow later
-        let model_trans = Mat4.identity().times(Mat4.scale([.825,1.125,1.75]));
+        /* the green building : ALL BUILDINGS WILL FOLLOW THIS PROCESS
+        There's two things to account for, first we have to realize that were drawing the model, so our
+        transformation from model to the standard cube in dependencies is with the model_trans array
+        Then from there we just pretend we are operating with the unit cube and do the following
+        use transformations, draw building, draw shadow, then get the norms of the four sides not top and bottom
+        then get the boundary info and push into shad_bound_box so we can decide whether player is in this 
+        buildings shadow later*/
+        let model_trans = Mat4.identity().times(Mat4.scale([.825,1.125,1.75]));          //This is how to scale the model to a cube
         pos = Mat4.identity().times(Mat4.translation([0,1,0])).times(Mat4.scale([1,2,2])).times(Mat4.translation([1,1,1]));
+        
+        //get the model pos and draw the model pos and draw the shadow of model, however all shadow_detection will operate on standard cube
         let model_pos = Mat4.identity().times(pos).times(model_trans);
         this.shapes.residential.draw(graphics_state, model_pos, this.materials.building);
         this.shapes.residential.draw(graphics_state,model_pos,this.materials.shadow);
