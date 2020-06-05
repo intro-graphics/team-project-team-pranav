@@ -48,6 +48,8 @@ class Shadow_Demo extends Scene_Component
         this.maxHealth = 500;   // health shouldn't be able to rise higher than this, should be equal to charHealth at the start
         this.redC = 1; // if in shadow, reduce to 0.5 and make it look darker
         this.shad_bound_box = [];        //add info to this list so we can check for shadow detection
+        this.turn = Mat4.identity();
+        this.angle = 0;
 
         this.extend_shadow = false; //Jacob - extend shadow skill is turned off
         this.counter = 0; //Jacob - counts to set how long extend_shadow lasts
@@ -230,6 +232,12 @@ class Shadow_Demo extends Scene_Component
 		
           if(dir == 'w')
           {
+          	if(this.angle == Math.PI/2)              //This sets up the face direction of our character
+          	  this.angle = Math.PI/4;
+          	else if(this.angle == -Math.PI/2)
+          	  this.angle = -Math.PI/4;
+          	else
+          	  this.angle = 0;
           	if(this.ud >= (-146 * this.move_dist) && this.charHealth > 0&&!this.collisionBuildW)  // 146 steps max upwards (from starting position) (not 484 because >=)
             {
               this.ud = this.ud - 0.2;
@@ -237,6 +245,12 @@ class Shadow_Demo extends Scene_Component
           }
           else if(dir == 's')
           {
+          	if(this.angle == Math.PI/2)               //All the this.angles are for later so that the character faces the right way
+          	  this.angle = 3*Math.PI/4;
+          	else if(this.angle == -Math.PI/2)
+          	  this.angle = -3*Math.PI/4;
+          	else
+          	  this.angle = Math.PI;
           	if(this.ud <= (20 * this.move_dist) && this.charHealth > 0&&!this.collisionBuildS)  // 6 steps max downwards
             {
               this.ud = this.ud + 0.2;
@@ -244,6 +258,12 @@ class Shadow_Demo extends Scene_Component
           }
           else if(dir == 'a')
           {
+          	if(this.angle == 0)
+          	  this.angle = Math.PI/4;
+          	else if(this.angle == Math.PI)
+          	  this.angle = 3*Math.PI/4;
+          	else
+          	  this.angle = Math.PI/2;
             if(this.lr >= (-17 * this.move_dist) && this.charHealth > 0&&!this.collisionBuildA)  //  17 steps max left
             {   
               this.lr = this.lr - 0.2;
@@ -251,6 +271,12 @@ class Shadow_Demo extends Scene_Component
           }
           else if(dir == 'd')
           {
+            if(this.angle == 0)
+          	  this.angle = -Math.PI/4;
+          	else if(this.angle == Math.PI)
+          	  this.angle = -3*Math.PI/4;
+          	else
+          	  this.angle = -Math.PI/2;
             if(this.lr <= (13 * this.move_dist) && this.charHealth > 0&&!this.collisionBuildD) //  13 steps max right
             {  
               this.lr = this.lr + 0.2;
@@ -269,6 +295,12 @@ class Shadow_Demo extends Scene_Component
 		
           if(dir == 'w')
           {
+          	if(this.angle == Math.PI/2)
+          	  this.angle = Math.PI/4;
+          	else if(this.angle == -Math.PI/2)
+          	  this.angle = -Math.PI/4;
+          	else
+          	  this.angle = 0;
             if(this.lr < (-20 * this.move_dist))
             {
               if(this.ud > (-188 * this.move_dist) )
@@ -292,6 +324,12 @@ class Shadow_Demo extends Scene_Component
           }
           else if(dir == 's')
           {
+          	if(this.angle == Math.PI/2)
+          	  this.angle = 3*Math.PI/4;
+          	else if(this.angle == -Math.PI/2)
+          	  this.angle = -3*Math.PI/4;
+          	else
+          	  this.angle = Math.PI;
             if(this.lr < (-20 * this.move_dist))
             {
               if(this.ud < (-17 * this.move_dist) )
@@ -315,6 +353,12 @@ class Shadow_Demo extends Scene_Component
           }
           else if(dir == 'a')
           {
+          	if(this.angle == 0)
+          	  this.angle = Math.PI/4;
+          	else if(this.angle == Math.PI)
+          	  this.angle = 3*Math.PI/4;
+          	else
+          	  this.angle = Math.PI/2;
             if(this.ud < (-16 * this.move_dist))
             {
               if(this.lr > (-51 * this.move_dist) )
@@ -338,6 +382,12 @@ class Shadow_Demo extends Scene_Component
           }
           else if(dir == 'd')
           {
+          	if(this.angle == 0)
+          	  this.angle = -Math.PI/4;
+          	else if(this.angle == Math.PI)
+          	  this.angle = -3*Math.PI/4;
+          	else
+          	  this.angle = -Math.PI/2;
             if(this.ud < (-55 * this.move_dist))
             {
               if(this.lr < (-21 * this.move_dist) )
@@ -372,6 +422,12 @@ class Shadow_Demo extends Scene_Component
 
         if(dir == 'w')
         {
+        	if(this.angle == Math.PI/2)
+          	  this.angle = Math.PI/4;
+          	else if(this.angle == -Math.PI/2)
+          	  this.angle = -Math.PI/4;
+          	else
+          	  this.angle = 0;
         	if( this.lr > (-17 * this.move_dist) && this.lr < (16 * this.move_dist))
         	{
         		if(this.ud > (-203 * this.move_dist) )
@@ -396,6 +452,12 @@ class Shadow_Demo extends Scene_Component
         }
         else if(dir == 's')
         {
+        	if(this.angle == Math.PI/2)
+          	  this.angle = 3*Math.PI/4;
+          	else if(this.angle == -Math.PI/2)
+          	  this.angle = -3*Math.PI/4;
+          	else
+          	  this.angle = Math.PI;
         	if( this.lr > (-17 * this.move_dist) && this.lr < (16 * this.move_dist))
         	{
         		if(this.ud < (6 * this.move_dist) )
@@ -420,6 +482,12 @@ class Shadow_Demo extends Scene_Component
         }
         else if(dir == 'a')
         {
+        	if(this.angle == 0)
+          	  this.angle = Math.PI/4;
+          	else if(this.angle == Math.PI)
+          	  this.angle = 3*Math.PI/4;
+          	else
+          	  this.angle = Math.PI/2;
         	if( (this.ud < (-7 * this.move_dist) && this.ud > (-40 * this.move_dist)) || (this.ud < (-107 * this.move_dist) && this.ud > (-138 * this.move_dist))  )
             {
         		if(this.lr > (-50 * this.move_dist) )
@@ -437,6 +505,12 @@ class Shadow_Demo extends Scene_Component
         }
         else if(dir == 'd')
         {
+        	if(this.angle == 0)
+          	  this.angle = -Math.PI/4;
+          	else if(this.angle == Math.PI)
+          	  this.angle = -3*Math.PI/4;
+          	else
+          	  this.angle = -Math.PI/2;
         	if( (this.ud < (-57 * this.move_dist) && this.ud > (-88 * this.move_dist))   || (this.ud < (-156 * this.move_dist) && this.ud > (-188 * this.move_dist)) )
             {
         		if(this.lr < (50 * this.move_dist) )
@@ -730,7 +804,8 @@ class Shadow_Demo extends Scene_Component
         pos = Mat4.identity().times(Mat4.translation([0,1,14]))
             .times(Mat4.translation([this.lr,0,this.ud]))
             .times(Mat4.scale([0.3,0.5,0.3]))
-            .times(Mat4.translation([1,1,1]));
+            .times(Mat4.translation([1,1,1]))
+            .times(Mat4.rotation(this.angle,Vec.of(0,1,0)));
         console.log("this.ud: "+ this.ud);
         console.log("this.lr: "+ this.lr);
 
@@ -1018,7 +1093,8 @@ class Shadow_Demo extends Scene_Component
         pos = Mat4.identity().times(Mat4.translation([0,1,18]))
             .times(Mat4.translation([this.lr,0,this.ud]))
             .times(Mat4.scale([0.3,0.5,0.3]))
-            .times(Mat4.translation([1,1,1]));
+            .times(Mat4.translation([1,1,1]))
+            .times(Mat4.rotation(this.angle,Vec.of(0,1,0)));
         console.log("x axis: "+ (pos[0][3]));
         console.log("y axis: "+ pos[2][3]);
       
@@ -1397,7 +1473,8 @@ class Shadow_Demo extends Scene_Component
         pos = Mat4.identity().times(Mat4.translation([-0.3,1,18]))
             .times(Mat4.translation([this.lr,0,this.ud]))
             .times(Mat4.scale([0.3,0.5,0.3]))
-            .times(Mat4.translation([1,1,1]));
+            .times(Mat4.translation([1,1,1]))
+            .times(Mat4.rotation(this.angle,Vec.of(0,1,0)));
         console.log("x axis: "+ (pos[0][3]));
         console.log("y axis: "+ pos[2][3]);
 
