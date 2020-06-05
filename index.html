@@ -10,7 +10,7 @@
 		</script>
 		<script src="tiny-graphics.js"></script><!--  Javascript "include" files.  Any code in them gets executed as part of the page loading. //-->
 		<script src="dependencies.js"></script>
-        <script src="main-scene (easy).js"></script>
+		<script src="main-scene (easy).js"></script>
 		<script src="main-scene (medium).js"></script>
 		<script src="main-scene (hard).js"></script>
 		<script src="shadow_shader.js"></script>
@@ -161,7 +161,7 @@
 				color: grey;
 				padding: 6px;
 				font-family: monospace;
-				transition: transform .5s, color .5s
+				transition: transform .5s, color .5s, opacity .2s
 			}
 			
 			.greybutton:hover,
@@ -180,6 +180,13 @@
 				z-index: 2;
 				color: white;
 				transition: all 0.2s ease
+			}
+			#logo {
+				position: absolute;
+				opacity: 0.1;
+				margin: auto;
+				top: 0; left: 0; bottom: 0; right: 0;
+				z-index: -1;
 			}
 
 			#titletext {
@@ -205,14 +212,36 @@
 				top: 300px;
 				text-align: center;
 			}
+			
+			#diffwrapper {
+				position: relative;
+				text-align: center;
+			}
 
 			#startbutton {
 				font-size: 24px;
 			}
+			
+			#easybutton {
+				font-size: 24px;
+				opacity: 0;
+			}
+			
+			#mediumbutton {
+				font-size: 24px;
+				opacity: 0;
+			}
+			
+			#hardbutton {
+				font-size: 24px;
+				opacity: 0;
+			}
 
 			#copyright {
-				position: relative;
-				top: 360px;
+				position: absolute;
+				top: 520px;
+				left: 0;
+				right: 0;
 				text-align: center;
 				font-size: 12px;
 				font-family: times;
@@ -291,16 +320,10 @@
 				letter-spacing: 5px
 			}
 
-			#manadiv {
-				opacity: 0;
-				transition: opacity 0.2s ease
-			}
-
 			#mana {
-				opacity: 1;
 				position: absolute;
 				color: white;
-				transition: opacity 1s ease;
+				letter-spacing: 5px;
 			}
 		</style>
 		<title></title>
@@ -325,11 +348,17 @@
 		<audio id="gamestartsfx">
 			<source src="sfxZ10.wav">
 		</audio>
+		<audio id="startbuttonsfx">
+			<source src="sfxZ02.wav">
+		</audio>
 		<audio id="footstepsfx">
 			<source src="Ancient_Game_Metallic_Game_UI_Button_2_Muffled.wav">
 		</audio>
 		<audio id="skillsfx">
 			<source src="This%20is%20the%20Monado's%20power.mp3">
+		</audio>
+		<audio id="skillout">
+			<source src="Yeah this is bad.mp3">
 		</audio>
 		<audio id="lowhealthsfx">
 			<source src="GAME_MENU_SCORE_SFX001571.wav">
@@ -342,6 +371,7 @@
 		</audio>
 		<div class="container">
 			<div id="titlescreen">
+				<image id="logo" src="dead parents.png"></image>
 				<div id="titletext">
 					It's Always Sunny in UCLA
 				</div>
@@ -349,24 +379,25 @@
 					HD Turbo Remix Arcade Edition Re: Sunburn
 				</div>
 				<div id="startwrapper">
-					<button class="greybutton" id="startbutton" onclick="startGame()">Start Game</button>
+					<button class="greybutton" id="startbutton" onclick="startButton()">Start Game</button>
+					<div id="diffwrapper">
+						<button class="greybutton" id="easybutton" disabled="true" onclick="diffEasy()">Easy</button>
+						<button class="greybutton" id="mediumbutton" disabled="true" onclick="diffMed()">Medium</button>
+						<button class="greybutton" id="hardbutton" disabled="true" onclick="diffHard()">Hard</button>
+					</div>
 				</div>
 				<div id="copyright">
 					©2020 Team Pranav Inc. All Rights Reserved. This is a work of fiction. All resemblance to actual figures are purely coincidental. Nico is best Love Live.
 				</div>
 			</div>
 			<div id="statsoverlay">
-				<div>
-					Health&nbsp;<span id="health"></span><span id="losthealth">♥♥♥♥♥♥♥♥♥♥</span>
-				</div>
-				<div id="manadiv">
-					You are filled with determination!<span id="mana">😤😤😤</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-				</div>
+				<p>Health&nbsp;<span id="health"></span><span id="losthealth">♥♥♥♥♥♥♥♥♥♥</p>
+				<p>Chalices of grape juice&nbsp;<span id="mana"></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
 			</div>
 			<div id="controlsoverlay">
 				<p>Use WASD to move your character.</p>
-				<p>Use Q to look deep within yourself</p>
-				<p>and draw out your hidden ability.</p>
+				<p>Use Q to refresh yourself</p>
+				<p>with some delicious "grape juice".</p>
 				<!--- <button class="greybutton" id="iwinbutton" onclick="iWin()">Press here to win the game!</button> -->
 			</div>
 			<div id="levelcompleteoverlay">
@@ -382,14 +413,56 @@
 			"use strict" // ********************* THE ENTRY POINT OF YOUR WHOLE PROGRAM STARTS HERE ********************* 
 			// Use this code to embed a widget into any web page.  The widget inclues a 3D WebGL area
 			// (an HTML canvas) and various panels of controls.
-			function startGame()
+			function startButton()
+			{
+				document.getElementById("startbuttonsfx").play();
+			
+				document.getElementById("startbutton").disabled = true;
+				
+				document.getElementById("easybutton").disabled = false;
+				document.getElementById("mediumbutton").disabled = false;
+				document.getElementById("hardbutton").disabled = false;
+				
+				document.getElementById("startbutton").style.opacity = 0;
+				
+				
+				setTimeout(function(){ document.getElementById("startbutton").style.display = "none";
+				document.getElementById("easybutton").style.opacity = 1;
+				document.getElementById("mediumbutton").style.opacity = 1;
+				document.getElementById("hardbutton").style.opacity = 1;
+				}, 300);
+			}
+			
+			function diffEasy()
+			{
+				startGame(1);
+			}
+			
+			function diffMed()
+			{
+				startGame(2);
+			}
+			
+			function diffHard()
+			{
+				startGame(3);
+			}
+			
+			function startGame(difficulty)
 			{
 				document.getElementById("startbutton").disabled = "disabled";
 				document.querySelector("#titlescreen").style.opacity = 0;
 				setTimeout(hideTitleScreen, 2000);
 				var gameStartSFX = document.getElementById("gamestartsfx"); // this game is the Dark Souls of graphics projects
 				gameStartSFX.play();
-				const scenes = ["Shadow_DemoM"]; // First, list the names of scenes we will add to our canvas.  These will register themselves
+				
+					var scenes;
+				if (difficulty == 1)
+					scenes = ["Shadow_DemoE"]; // First, list the names of scenes we will add to our canvas.  These will register themselves
+				else if (difficulty == 2)
+					scenes = ["Shadow_DemoM"];
+				else
+					scenes = ["Shadow_DemoH"];
 				// with this widget's Canvas_Manager so that their code can be called upon every time a 
 				// draw / keyboard / mouse event happens on the web page.
 				new Canvas_Widget("main-canvas", scenes); // Use the Canvas_Widget class to display the WebGL demo.  Pass in

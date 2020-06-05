@@ -445,28 +445,7 @@ class Shadow_Demo extends Scene_Component
         //console.log("charHealth: "+this.charHealth);
         //Jacob - If skill extend_shadow is on, draw the shadow in front of the character, order of transformations is to move to origin, scale, rotate
         //then move to where the character is
-        if(this.extend_shadow || (this.counter < 120 && this.counter > 0))
-        {
-            if(this.extend_shadow) //Jacob - if extend_shadow is pressed set counter to 1
-			{
-                this.counter = 1;
-				this.manaDivElement.style.opacity = "1.0";
-				this.skillsfx.play();
-			}
-            //Jacob - transformation for the extend_shadow skill
-            pos = Mat4.identity();
-            pos = pos.times(Mat4.translation([0,5.01,12])).times(Mat4.translation([this.lr,0,this.ud]))
-            pos = pos.times(Mat4.rotation(Math.PI/2,Vec.of(1,0,0)));
-            pos = pos.times(Mat4.scale([.3,1,1]));
-            pos = pos.times(Mat4.translation([1,1,0]));
-            this.shapes.shadow_square.draw(graphics_state, pos, this.materials.shadow_mat);
-        }
-        else
-		{
-            this.counter = 0;               //Jacob - if counter goes over 120 or is 0, reset back to 0
-			this.manaDivElement.style.opacity = "0";
-		}
-        this.extend_shadow = false;         //set extend_shadow back to false
+         //extend shadows is... gone, reduced to ashes
     }
 
     blow_up(graphics_state, time)   // 05-22-20 Pranav - Added this to create an explosion, if you need something changed, let me know, don't change urself

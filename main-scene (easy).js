@@ -33,6 +33,7 @@ class Shadow_DemoE extends Scene_Component
         this.bgm.loop = true;
 		this.winbgm = document.getElementById("winbgm");		
         this.skillsfx = document.getElementById("skillsfx");
+		this.skillout = document.getElementById("skillout");
         this.footstepsfx = document.getElementById("footstepsfx");
         this.footstepsfx.volume = 0.4;
         this.lowhealthsfx = document.getElementById("lowhealthsfx");
@@ -70,11 +71,11 @@ class Shadow_DemoE extends Scene_Component
 		this.healthElement = document.querySelector("#health");
 		this.healthNode = document.createTextNode("");
 		this.healthElement.appendChild(this.healthNode);
-		this.healthNode.nodeValue = "♥♥♥♥♥♥♥♥♥♥";
 		
 		// grabs the mana text
-		this.manaDivElement = document.querySelector("#manadiv");
 		this.manaElement = document.querySelector("#mana");	
+		this.manaNode = document.createTextNode("");
+		this.manaElement.appendChild(this.manaNode);
 
 		document.getElementById("levelcompletebutton").addEventListener( 'click', () => this.levelTransition() );
 		
@@ -600,6 +601,8 @@ class Shadow_DemoE extends Scene_Component
                   this.skillsfx.play();
                   this.healthUses--;
                 }
+				else
+				  this.skillout.play();
             });
       }
     // Pranav's code for the world
@@ -860,28 +863,7 @@ class Shadow_DemoE extends Scene_Component
 
         //Jacob - If skill extend_shadow is on, draw the shadow in front of the character, order of transformations is to move to origin, scale, rotate
         //then move to where the character is
-        if(this.extend_shadow || (this.counter < 120 && this.counter > 0))
-        {
-            if(this.extend_shadow) //Jacob - if extend_shadow is pressed set counter to 1
-			{
-                this.counter = 1;
-				this.manaDivElement.style.opacity = "1.0";
-				this.skillsfx.play();
-			}
-            //Jacob - transformation for the extend_shadow skill
-            pos = Mat4.identity();
-            pos = pos.times(Mat4.translation([0,5.01,12])).times(Mat4.translation([this.lr,0,this.ud]))
-            pos = pos.times(Mat4.rotation(Math.PI/2,Vec.of(1,0,0)));
-            pos = pos.times(Mat4.scale([.3,1,1]));
-            pos = pos.times(Mat4.translation([1,1,0]));
-            this.shapes.shadow_square.draw(graphics_state, pos, this.materials.shadow_mat);
-        }
-        else
-		{
-            this.counter = 0;               //Jacob - if counter goes over 120 or is 0, reset back to 0
-			this.manaDivElement.style.opacity = "0";
-		}
-        this.extend_shadow = false;         //set extend_shadow back to false
+         //extend shadows is... gone, reduced to ashes
     }
 
 
@@ -1155,28 +1137,7 @@ class Shadow_DemoE extends Scene_Component
         
         //Jacob - If skill extend_shadow is on, draw the shadow in front of the character, order of transformations is to move to origin, scale, rotate
         //then move to where the character is
-        if(this.extend_shadow || (this.counter < 120 && this.counter > 0))
-        {
-            if(this.extend_shadow) //Jacob - if extend_shadow is pressed set counter to 1
-			{
-                this.counter = 1;
-				this.manaDivElement.style.opacity = "1.0";
-				this.skillsfx.play();
-			}
-            //Jacob - transformation for the extend_shadow skill
-            pos = Mat4.identity();
-            pos = pos.times(Mat4.translation([0,5.01,12])).times(Mat4.translation([this.lr,0,this.ud]))
-            pos = pos.times(Mat4.rotation(Math.PI/2,Vec.of(1,0,0)));
-            pos = pos.times(Mat4.scale([.3,1,1]));
-            pos = pos.times(Mat4.translation([1,1,0]));
-            this.shapes.shadow_square.draw(graphics_state, pos, this.materials.shadow_mat);
-        }
-        else
-		{
-            this.counter = 0;               //Jacob - if counter goes over 120 or is 0, reset back to 0
-			this.manaDivElement.style.opacity = "0";
-		}
-        this.extend_shadow = false;         //set extend_shadow back to false
+         //extend shadows is... gone, reduced to ashes
     }
 
 
@@ -1534,28 +1495,7 @@ class Shadow_DemoE extends Scene_Component
         //console.log("charHealth: "+this.charHealth);
         //Jacob - If skill extend_shadow is on, draw the shadow in front of the character, order of transformations is to move to origin, scale, rotate
         //then move to where the character is
-        if(this.extend_shadow || (this.counter < 120 && this.counter > 0))
-        {
-            if(this.extend_shadow) //Jacob - if extend_shadow is pressed set counter to 1
-			{
-                this.counter = 1;
-				this.manaDivElement.style.opacity = "1.0";
-				this.skillsfx.play();
-			}
-            //Jacob - transformation for the extend_shadow skill
-            pos = Mat4.identity();
-            pos = pos.times(Mat4.translation([0,5.01,12])).times(Mat4.translation([this.lr,0,this.ud]))
-            pos = pos.times(Mat4.rotation(Math.PI/2,Vec.of(1,0,0)));
-            pos = pos.times(Mat4.scale([.3,1,1]));
-            pos = pos.times(Mat4.translation([1,1,0]));
-            this.shapes.shadow_square.draw(graphics_state, pos, this.materials.shadow_mat);
-        }
-        else
-		{
-            this.counter = 0;               //Jacob - if counter goes over 120 or is 0, reset back to 0
-			this.manaDivElement.style.opacity = "0";
-		}
-        this.extend_shadow = false;         //set extend_shadow back to false
+         //extend shadows is... gone, reduced to ashes
     }
 
 
@@ -1611,6 +1551,7 @@ class Shadow_DemoE extends Scene_Component
       numBars = 0;
     if ( numBars < 5 && numBars > 0 )
 			this.lowhealthsfx.play();
+		
 		var BarsText = "";
 		for ( var i = 0; i < numBars; i++ )
 			BarsText += "♥";
@@ -1618,11 +1559,10 @@ class Shadow_DemoE extends Scene_Component
 		this.healthElement.style.animationDuration = (numBars/10).toFixed(1) + "s";
 
 		// update mana
-		var numBarsMana = 5 - Math.ceil(this.counter/24);
-		if ( numBarsMana < 0 )
-			numBarsMana = 0;
-		this.manaElement.style.opacity = (numBarsMana/5).toFixed(1);
-		
+		BarsText = "";
+		for ( var i = 0; i < this.healthUses; i++ )
+			BarsText += "🍷";
+		this.manaNode.nodeValue = BarsText;
 	}
 
     display( graphics_state )
