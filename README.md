@@ -1,5 +1,4 @@
-
-Vampire Rush:
+Vampire Rush 
 Instructions:
 Just run the host file, and go to http://localhost:8000/. Select your difficulty level on the start screen, and start the game.
 
