@@ -527,14 +527,14 @@ class Shadow_Demo extends Scene_Component
         pos = pos.times(Mat4.translation([-3.5,-9.05,40]))
           .times(Mat4.scale([3.5,5,100]))
           .times(Mat4.rotation(Math.PI / 2, Vec.of(0, 1, 0))).times(Mat4.translation([1, 1, 1]));
-        this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(0.5, 0.5, 0.5, 1)},{ambient:0,specular:1,gouraud:false} ));
+        //this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(0.5, 0.5, 0.5, 1)},{ambient:0,specular:1,gouraud:false} ));
         // the grass to the right
         pos = pos.times(Mat4.scale([1,1,8])).times(Mat4.translation([0, -0.01, 1.125]))
-        this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(0.5, 1, 0.5, 1)},{ambient:0,specular:1,gouraud:false} ));
+        //this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(0.5, 1, 0.5, 1)},{ambient:0,specular:1,gouraud:false} ));
 
         // the grass to the left
         pos = pos.times(Mat4.translation([0, 0, -2]))
-        this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(0.5, 1, 0.5, 1)}, {ambient:0,specular:1,gouraud:false}));
+        //this.shapes.body.draw(graphics_state, pos, this.materials.suns.override( {color: Color.of(0.5, 1, 0.5, 1)}, {ambient:0,specular:1,gouraud:false}));
 
         // the cave
         pos = Mat4.identity().times(Mat4.scale([3.5,3.2,3])).times(Mat4.translation([0,0,-6]));
@@ -585,6 +585,10 @@ class Shadow_Demo extends Scene_Component
         faceNorms = getFaceNormals(pos);
         bound_list = boundBox(faceNorms,1,5);
         this.shad_bound_box.push(bound_list);
+
+        pos = Mat4.identity();
+        this.shapes.residential.draw(graphics_state,pos,this.materials.building);
+        this.shapes.body.draw(graphics_state,pos,this.materials.suns.override( {color: Color.of(1, 1, 0.5, 1)},{ambient:0,specular:1,gouraud:false} ));
 
 
         // the skybox (can be seen if you tilt the camera)
