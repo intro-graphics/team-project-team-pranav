@@ -28,8 +28,10 @@ class Shadow_Demo extends Scene_Component
         this.initial_camera_location = Mat4.inverse( context.globals.graphics_state.camera_transform );
         
         this.bgm = document.getElementById("bgm");
+		this.bgm.volume = 0.4;
         this.bgm.play();
         this.bgm.loop = true;
+		this.winbgm = document.getElementById("winbgm");		
         this.skillsfx = document.getElementById("skillsfx");
         this.footstepsfx = document.getElementById("footstepsfx");
         this.footstepsfx.volume = 0.4;
@@ -37,6 +39,7 @@ class Shadow_Demo extends Scene_Component
 		
         // Pranav's variables
         this.drawTheChar = true;    // whether to trigger the draw_char function
+		this.disableControls = false;
         this.boom = false;  // whether to trigger an explosion during the draw_char function
         this.initial_blow = 0;  // the time you died
         this.move_dist = 0.2;   // the movement distance of the character in each axis
@@ -70,6 +73,8 @@ class Shadow_Demo extends Scene_Component
 		this.manaDivElement = document.querySelector("#manadiv");
 		this.manaElement = document.querySelector("#mana");	
 
+		document.getElementById("levelcompletebutton").addEventListener( 'click', () => this.levelTransition() );
+		
         const r = context.width/context.height;
         context.globals.graphics_state.projection_transform = Mat4.perspective( Math.PI/4, r, .1, 1000 );
 		
@@ -115,25 +120,88 @@ class Shadow_Demo extends Scene_Component
 			    .material(Color.of(0,0,0,1),
 			    {ambient: 1.0, diffusivity: 0.0, specularity: 0.0 })
 			    .override({texture:context.get_instance("assets/penguin.png", true)})
-
           }
       }
-
-      caveIn()
+	  
+	   caveIn()
       {
-        if(this.level == 1)
+        this.lr=0;
+       this.ud=0;
+        this.char_x_pos = 0;
+        this.char_y_pos=0;
+		this.drawTheChar = false;
+		this.disableControls = true;
+		
+		if (this.level == 3)
         {
+			document.getElementById("levelcompletebutton").style.display = "none";
+			this.winbgm = document.getElementById("superwinbgm");
+        }
+		
+		this.bgm.pause();
+		this.bgm.currentTime = 0;
+		this.winbgm.play();
+		
+		this.charHealth = 500;
+		
+		document.getElementById("levelcompleteoverlay").style.top = "100px";	
+		document.getElementById("levelcompleteoverlay").style.opacity = 1;
+		document.getElementById("statsoverlay").style.opacity = 0;
+		document.getElementById("controlsoverlay").style.opacity = 0;
+		
+      }
+	  
+	  levelTransition()
+	  {
+		  
+		  document.getElementById("levelcompletebutton").style.display = "none";
+			
+		  var youAreNowTheTransitionScreen = document.querySelector("#titlescreen");
+		  youAreNowTheTransitionScreen.style.display = "initial";
+		  youAreNowTheTransitionScreen.innerHTML = "";
+		  youAreNowTheTransitionScreen.style.opacity = 0;
+		  setTimeout(function(){ document.querySelector("#titlescreen").style.opacity = 1 }, 100);
+		  setTimeout(function(){ document.querySelector("#titlescreen").style.opacity = 0 }, 500);
+		  setTimeout(function(){ document.querySelector("#titlescreen").style.display = "none" }, 900);
+		  setTimeout(() => this.changeLevel(), 501);
+	  }
+	  
+	  changeLevel()
+	  {		 
+		document.getElementById("levelcompletebutton").style.display = "initial";
+		  
+		document.getElementById("levelcompleteoverlay").style.opacity = 0;
+		document.getElementById("statsoverlay").style.opacity = 1;
+		document.getElementById("controlsoverlay").style.opacity = 1;
+		
+		document.getElementById("levelcompleteoverlay").style.top = "-500px";	
+		  
+		this.drawTheChar = true; 
+		 
+		if(this.level == 1)
+        {
+			this.bgm = document.getElementById("duperbgm");
+			this.bgm.loop = true;
+			
         	this.level = 2;
         }
         else if(this.level == 2)
         {
+			this.bgm = document.getElementById("superbgm");
+			this.bgm.loop = true;
+			
         	this.level = 3;
         }
         else
         {
         	return;
         }
-
+		
+		this.winbgm.pause();    
+		this.winbgm.currentTime = 0;
+		this.bgm.play(); 
+		this.disableControls = false;
+		
         this.ud = 0;  // the up-down position of the character
         this.lr = 0; // the left-right position of the character
 
@@ -145,16 +213,17 @@ class Shadow_Demo extends Scene_Component
         this.counter = 0;
 
         return;
-      }
+	  }
 
       mover1(dir)
       {
-        if(this.charHealth <= 0)
+        if(this.charHealth <= 0 || this.disableControls )
         {
           return;
         }
+		
         //console.log(dir);
-  
+		
           if(dir == 'w')
           {
           	if(this.ud >= (-146 * this.move_dist) && this.charHealth > 0&&!this.collisionBuildW)  // 146 steps max upwards (from starting position) (not 484 because >=)
@@ -189,11 +258,11 @@ class Shadow_Demo extends Scene_Component
 
       mover2(dir)
       {
-        if(this.charHealth <= 0)
+        if(this.charHealth <= 0 || this.disableControls )
         {
           return;
         }
-  
+		
           if(dir == 'w')
           {
             if(this.lr < (-20 * this.move_dist))
@@ -292,10 +361,10 @@ class Shadow_Demo extends Scene_Component
 
     mover3(dir)
     {
-    	if(this.charHealth <= 0)
-    	{
-    		return;
-    	}
+    	if(this.charHealth <= 0 || this.disableControls )
+        {
+          return;
+        }
 
         if(dir == 'w')
         {
@@ -409,7 +478,7 @@ class Shadow_Demo extends Scene_Component
                 }
                 else if (this.level == 2)
                 {
-                	this.mover2('s');
+                	this.mover2('s');	
                 }
                 else if (this.level == 3)
                 {
@@ -481,7 +550,7 @@ class Shadow_Demo extends Scene_Component
         // use transformations, draw building, draw shadow, then get the norms of the four sides not top and bottom
         //then get the boundary info and push into shad_bound_box so we can decide whether player is in this 
         //buildings shadow later
-        let cube_pos = Mat4.identity().times(Mat4.translation([-.25,1,.5]))    //This is for our original cube
+         let cube_pos = Mat4.identity().times(Mat4.translation([-.25,1,.5]))    //This is for our original cube
                       .times(Mat4.scale([1.25,2,1.25]))
                       .times(Mat4.translation([1,1,1]));
                       
@@ -678,7 +747,7 @@ class Shadow_Demo extends Scene_Component
         let origin_pos = (pos.times(Vec.of(0,0,0,1))); //This is the center position of the person
         let ray = this.lights[0].position.minus(origin_pos);  //This is the vector from the position of the person to sun
         var inShad = inShadow(origin_pos,ray,this.shad_bound_box);
-        if(inShad)                                    //if not blocked by any of the four planes in shadow
+       if(inShad)                                    //if not blocked by any of the four planes in shadow
         {
           this.shapes.knight.draw
             (graphics_state, pos, this.materials.armor);
@@ -885,6 +954,7 @@ class Shadow_Demo extends Scene_Component
       if(this.lr>=-8.8&&this.lr<=-5.8&&this.ud<=-36.8)
       {
        console.log("in cave");
+       
        this.caveIn();
       }
       if(this.lr>=-4.6&&this.lr<=-4.0&&this.ud-0.2<=-25&&this.ud>=-29.6)
@@ -1289,6 +1359,11 @@ class Shadow_Demo extends Scene_Component
             so if the value returned is less than 100, keep drawing them. Since they can't move once their health is less than 0, we don't have to
             worry that the character will move back into shadows to replenish health.
       */
+     if(this.ud<=-37&&this.lr>=-1.8&&this.lr<=1.2)
+      {
+        console.log("in cave");
+        this.caveIn();
+      }
       if(this.boom)
       {
           if(this.blow_up(graphics_state, time) > 100)
@@ -1470,7 +1545,7 @@ class Shadow_Demo extends Scene_Component
         else if (this.level == 2)
         {
           this.draw_map2(graphics_state);
-       
+
           if(this.drawTheChar) // 05-22-20 Pranav - If you're dead, don't try and draw stuff
             this.draw_char2(graphics_state, t);
         }
@@ -1481,8 +1556,8 @@ class Shadow_Demo extends Scene_Component
           if(this.drawTheChar) // 05-22-20 Pranav - If you're dead, don't try and draw stuff
             this.draw_char3(graphics_state, t);
         }
-
         
 		this.update_UI()
       }
   }
+
