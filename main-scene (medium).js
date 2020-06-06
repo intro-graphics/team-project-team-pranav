@@ -1100,7 +1100,7 @@ class Shadow_DemoM extends Scene_Component
           this.shapes.knight.draw
             (graphics_state, pos, this.materials.armor);
           if(this.charHealth > 0)    // don't go above max health
-                this.charHealth -= 0.85;
+                this.charHealth -= 3;
         }
         this.shapes.knight.draw(graphics_state,pos,this.materials.shadow);
 
@@ -1535,7 +1535,7 @@ class Shadow_DemoM extends Scene_Component
 		// update mana
 		BarsText = "";
 		for ( var i = 0; i < this.healthUses; i++ )
-			BarsText += "🍷";
+			BarsText += "☕";
 		this.manaNode.nodeValue = BarsText;
 	}
 
