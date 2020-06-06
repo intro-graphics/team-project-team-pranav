@@ -92,7 +92,7 @@ class Shadow_DemoE extends Scene_Component
                          body: new (Cube)(),
                          building: new (Cube)(),
                          shadow_square: new Square(),
-                         knight: new Shape_From_File( "/assets/rumia.obj" ),
+                         knight: new Shape_From_File( "/assets/bear.obj" ),
                          car:new Model("assets/car.json", 1.5),
                          residential: new Shape_From_File("/assets/massBuild.obj")
                        }
@@ -123,11 +123,11 @@ class Shadow_DemoE extends Scene_Component
 			armor: context.get_instance(Phong_Shader)
 			    .material(Color.of(0,0,0,1),
 			    {ambient: 1.0, diffusivity: 0.0, specularity: 0.0 })
-			    .override({texture:context.get_instance("assets/rumia.png", true)}),
+			    .override({texture:context.get_instance("assets/bear.png", true)}),
 			armorShad: context.get_instance(Phong_Shader)
 			    .material(Color.of(0,0,0,1),
 			    {ambient: 0.5, diffusivity: 0.0, specularity: 0.0 })
-			    .override({texture:context.get_instance("assets/rumia.png", true)})
+			    .override({texture:context.get_instance("assets/bear.png", true)})
           }
       }
 	  
