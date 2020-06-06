@@ -593,7 +593,7 @@ class Shadow_DemoE extends Scene_Component
                 	this.mover3('d')
                 }
             });
-        this.key_triggered_button("Extend_Shadow", ["q"], () => { // going right with 'l'
+        this.key_triggered_button("Potion", ["q"], () => { // going right with 'l'
                 //this.extend_shadow = true;
                 if(this.healthUses > 0 && this.charHealth > 0)
                 {
