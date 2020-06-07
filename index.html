@@ -167,11 +167,11 @@
 			.greybutton:hover,
 			button:focus {
 				transform: scale(1.2);
-				color: white
+				color: black
 			}
 
 			#titlescreen {
-				background-color: black;
+				background-color: white;
 				border: black;
 				position: absolute;
 				width: 1080px;
@@ -186,6 +186,8 @@
 				opacity: 0.1;
 				margin: auto;
 				top: 0; left: 0; bottom: 0; right: 0;
+				height: 400px;
+				width: 400px;
 				z-index: -1;
 			}
 
@@ -195,6 +197,7 @@
 				text-align: center;
 				font-size: 72px;
 				font-family: impact;
+				color: #2774AE;
 				animation: white-pulse 2s infinite alternate
 			}
 
@@ -204,7 +207,7 @@
 				text-align: center;
 				font-size: 36px;
 				font-family: impact;
-				color: #880000
+				color: #ffb300
 			}
 
 			#startwrapper {
@@ -371,12 +374,12 @@
 		</audio>
 		<div class="container">
 			<div id="titlescreen">
-				<image id="logo" src="dead parents.png"></image>
+				<image id="logo" src="ucla-bruins-1-logo-png-transparent.png"></image>
 				<div id="titletext">
-					Vampire Rush
+					It's Always Sunny in UCLA
 				</div>
 				<div id="subtitletext">
-					HD Turbo Remix Arcade Edition Re: Sunburn
+					Go Bruins Edition
 				</div>
 				<div id="startwrapper">
 					<button class="greybutton" id="startbutton" onclick="startButton()">Start Game</button>
